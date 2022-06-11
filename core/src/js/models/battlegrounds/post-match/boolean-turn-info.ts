@@ -1,4 +1,4 @@
 export class BooleanTurnInfo {
-	readonly turn: number;
-	readonly value: boolean;
+    readonly turn: number;
+    readonly value: boolean;
 }

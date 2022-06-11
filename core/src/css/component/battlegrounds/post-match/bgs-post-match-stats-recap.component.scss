@@ -1,80 +1,81 @@
 .stats-recap {
-	background: var(--color-7);
-	display: flex;
-	flex-direction: column;
-	padding: 10px 20px;
-	min-height: 0;
-	overflow: auto;
-	height: 100%;
-	color: var(--color-8);
-	font-size: 20px;
-	position: relative;
+  background: var(--color-7);
+  display: flex;
+  flex-direction: column;
+  padding: 10px 20px;
+  min-height: 0;
+  overflow: auto;
+  height: 100%;
+  color: var(--color-8);
+  font-size: 20px;
+  position: relative;
 
-	stat-cell:not(:last-child) {
-		border-bottom: 1px solid var(--color-3);
-	}
+  stat-cell:not(:last-child) {
+    border-bottom: 1px solid var(--color-3);
+  }
 
-	.entry {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		height: 14%;
-		min-height: 60px;
-		&:not(:last-child) {
-			border-bottom: 1px solid var(--color-3);
-		}
-	}
+  .entry {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 14%;
+    min-height: 60px;
 
-	.cell {
-		display: flex;
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--color-3);
+    }
+  }
 
-		.label {
-			flex-grow: 1;
-		}
+  .cell {
+    display: flex;
 
-		.value {
-			color: var(--default-text-color);
-		}
+    .label {
+      flex-grow: 1;
+    }
 
-		.record-icon {
-			display: none;
-			width: 40px;
-			height: 40px;
-			position: relative;
-			top: -5px;
-		}
+    .value {
+      color: var(--default-text-color);
+    }
 
-		&.new-record .record-icon {
-			display: inline-block;
-		}
-	}
+    .record-icon {
+      display: none;
+      width: 40px;
+      height: 40px;
+      position: relative;
+      top: -5px;
+    }
 
-	.battle-luck .label {
-		display: flex;
-		flex-direction: column;
-		position: relative;
-	}
+    &.new-record .record-icon {
+      display: inline-block;
+    }
+  }
 
-	.explain-link {
-		display: inline-block;
-		// color: var(--default-title-color);
-		color: var(--default-text-color);
-		font-size: 12px;
-		width: auto;
-		text-indent: 2px;
-		position: absolute;
-		top: 20px;
-		opacity: 0.4;
+  .battle-luck .label {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
 
-		&:hover {
-			opacity: 0.7;
-			background: transparent;
-		}
-	}
+  .explain-link {
+    display: inline-block;
+    // color: var(--default-title-color);
+    color: var(--default-text-color);
+    font-size: 12px;
+    width: auto;
+    text-indent: 2px;
+    position: absolute;
+    top: 20px;
+    opacity: 0.4;
 
-	.face-offs {
-		.cell {
-			width: 75px;
-		}
-	}
+    &:hover {
+      opacity: 0.7;
+      background: transparent;
+    }
+  }
+
+  .face-offs {
+    .cell {
+      width: 75px;
+    }
+  }
 }

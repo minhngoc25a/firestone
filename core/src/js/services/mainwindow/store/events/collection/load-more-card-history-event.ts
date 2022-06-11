@@ -1,24 +1,25 @@
-import { MainWindowStoreEvent } from '../main-window-store-event';
+import {MainWindowStoreEvent} from '../main-window-store-event';
 
 export class LoadMoreCardHistoryEvent implements MainWindowStoreEvent {
-	constructor(maxResults: number) {
-		this.maxResults = maxResults;
-	}
-	readonly maxResults: number;
+    readonly maxResults: number;
 
-	public static eventName(): string {
-		return 'LoadMoreCardHistoryEvent';
-	}
+    constructor(maxResults: number) {
+        this.maxResults = maxResults;
+    }
 
-	public eventName(): string {
-		return 'LoadMoreCardHistoryEvent';
-	}
+    public static eventName(): string {
+        return 'LoadMoreCardHistoryEvent';
+    }
 
-	public isNavigationEvent(): boolean {
-		return false;
-	}
+    public eventName(): string {
+        return 'LoadMoreCardHistoryEvent';
+    }
 
-	public isResetHistoryEvent(): boolean {
-		return false;
-	}
+    public isNavigationEvent(): boolean {
+        return false;
+    }
+
+    public isResetHistoryEvent(): boolean {
+        return false;
+    }
 }

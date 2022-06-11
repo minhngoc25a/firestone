@@ -2,114 +2,116 @@
 @import '../../global/fonts';
 
 .hero-portraits {
-	position: relative;
-	top: -2px;
-	flex-grow: 1;
-	display: flex;
-	flex-direction: column;
+  position: relative;
+  top: -2px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 
-	collection-empty-state {
-		flex-grow: 1;
-		display: flex;
-	}
+  collection-empty-state {
+    flex-grow: 1;
+    display: flex;
+  }
 
-	.show-filter {
-		display: flex;
-		flex-shrink: 0;
-		align-items: center;
-		margin-right: 20px;
-		padding-bottom: 18px;
-		justify-content: flex-start;
-		margin-bottom: 10px;
+  .show-filter {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    margin-right: 20px;
+    padding-bottom: 18px;
+    justify-content: flex-start;
+    margin-bottom: 10px;
 
-		.filter {
-			::ng-deep filter-dropdown {
-				width: 175px;
-				margin-right: 10px;
-				ng-select {
-					width: 175px;
-					select-dropdown .below {
-						background: var(--color-5);
-					}
-				}
-			}
-		}
+    .filter {
+      ::ng-deep filter-dropdown {
+        width: 175px;
+        margin-right: 10px;
 
-		.progress-bar {
-			margin-left: auto;
-		}
-	}
+        ng-select {
+          width: 175px;
 
-	.cards-list {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		margin-top: -6px;
-		width: 100%;
-		height: 100%;
-		justify-content: flex-start;
-		display: flex;
-		flex-direction: column;
-		// flex-wrap: wrap;
-		overflow-y: scroll;
-		align-content: start;
+          select-dropdown .below {
+            background: var(--color-5);
+          }
+        }
+      }
+    }
 
-		.portraits-for-class {
-			list-style: none;
-			padding: 0;
-			margin: 0;
-			// margin-top: -6px;
-			width: 100%;
-			justify-content: flex-start;
-			display: flex;
-			flex-direction: column;
-			align-content: start;
-			margin-bottom: 50px;
+    .progress-bar {
+      margin-left: auto;
+    }
+  }
 
-			.portraits-container {
-				list-style: none;
-				padding: 0;
-				margin: 0;
-				width: 100%;
-				justify-content: flex-start;
-				display: flex;
-				// flex-wrap: wrap;
-				align-content: start;
-				flex-wrap: wrap;
-				padding-right: 10px;
-			}
+  .cards-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-top: -6px;
+    width: 100%;
+    height: 100%;
+    justify-content: flex-start;
+    display: flex;
+    flex-direction: column;
+    // flex-wrap: wrap;
+    overflow-y: scroll;
+    align-content: start;
 
-			.header {
-				font-family: Open Sans;
-				font-style: normal;
-				font-weight: normal;
-				font-size: 18px;
-				line-height: 19px;
-				color: var(--default-title-color);
-				margin-bottom: 5px;
-			}
-		}
+    .portraits-for-class {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      // margin-top: -6px;
+      width: 100%;
+      justify-content: flex-start;
+      display: flex;
+      flex-direction: column;
+      align-content: start;
+      margin-bottom: 50px;
 
-		.hero-portrait {
-			margin-right: 0;
-			margin-bottom: 0;
-			position: relative;
-			transition: all 0.15s ease;
-			width: 175px;
-			padding: 0;
-			margin-right: -20px;
-		}
-	}
+      .portraits-container {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        justify-content: flex-start;
+        display: flex;
+        // flex-wrap: wrap;
+        align-content: start;
+        flex-wrap: wrap;
+        padding-right: 10px;
+      }
+
+      .header {
+        font-family: Open Sans;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 18px;
+        line-height: 19px;
+        color: var(--default-title-color);
+        margin-bottom: 5px;
+      }
+    }
+
+    .hero-portrait {
+      margin-right: 0;
+      margin-bottom: 0;
+      position: relative;
+      transition: all 0.15s ease;
+      width: 175px;
+      padding: 0;
+      margin-right: -20px;
+    }
+  }
 }
 
 .loading {
-	font-family: 'Open Sans', sans-serif;
-	font-weight: 400;
-	font-size: 16px;
-	color: #d9c3ab;
-	height: 100%;
-	width: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: #d9c3ab;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

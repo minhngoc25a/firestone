@@ -1,16 +1,16 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { MercenariesAction } from '../../../../models/mercenaries/mercenaries-battle-state';
-import { CardsFacadeService } from '../../../../services/cards-facade.service';
-import { LocalizationFacadeService } from '../../../../services/localization-facade.service';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {MercenariesAction} from '../../../../models/mercenaries/mercenaries-battle-state';
+import {CardsFacadeService} from '../../../../services/cards-facade.service';
+import {LocalizationFacadeService} from '../../../../services/localization-facade.service';
 
 @Component({
-	selector: 'mercenaries-action',
-	styleUrls: [
-		'../../../../../css/global/components-global.scss',
-		'../../../../../css/component/mercenaries/overlay/teams/mercenaries-team-ability.component.scss',
-		'../../../../../css/component/mercenaries/overlay/action-queue/mercenaries-action.component.scss',
-	],
-	template: `
+    selector: 'mercenaries-action',
+    styleUrls: [
+        '../../../../../css/global/components-global.scss',
+        '../../../../../css/component/mercenaries/overlay/teams/mercenaries-team-ability.component.scss',
+        '../../../../../css/component/mercenaries/overlay/action-queue/mercenaries-action.component.scss',
+    ],
+    template: `
 		<div class="item {{ side }}">
 			<div class="action-order">{{ actionOrder }}</div>
 			<div
@@ -40,35 +40,35 @@ import { LocalizationFacadeService } from '../../../../services/localization-fac
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MercenariesActionComponent {
-	@Input() tooltipPosition: boolean;
+    @Input() tooltipPosition: boolean;
+    actionOrder: number;
+    cardId: string;
+    ownerCardId: string;
+    cardImage: string;
+    name: string;
+    speed: number;
+    portraitUrl: string;
+    frameUrl: string;
+    side: 'player' | 'opponent';
 
-	@Input() set action(value: MercenariesAction) {
-		const abilityCard = this.allCards.getCard(value.abilityCardId);
-		this.actionOrder = (value as any).actionOrder;
-		this.cardId = value.abilityCardId;
-		this.ownerCardId = value.ownerCardId;
-		this.cardImage = `url(https://static.zerotoheroes.com/hearthstone/cardart/tiles/${value.abilityCardId}.jpg?v=4)`;
-		this.name = abilityCard.name;
-		this.speed = value.speed;
-		this.side = value.side;
-		this.portraitUrl = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.ownerCardId}.jpg`;
-		this.frameUrl = `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_hero_frame_${
-			abilityCard.mercenaryRole ?? 'neutral'
-		}.png?v=5`;
-	}
+    constructor(private readonly allCards: CardsFacadeService, private readonly i18n: LocalizationFacadeService) {
+    }
 
-	actionOrder: number;
-	cardId: string;
-	ownerCardId: string;
-	cardImage: string;
-	name: string;
-	speed: number;
-	portraitUrl: string;
-	frameUrl: string;
-	side: 'player' | 'opponent';
-
-	constructor(private readonly allCards: CardsFacadeService, private readonly i18n: LocalizationFacadeService) {}
+    @Input() set action(value: MercenariesAction) {
+        const abilityCard = this.allCards.getCard(value.abilityCardId);
+        this.actionOrder = (value as any).actionOrder;
+        this.cardId = value.abilityCardId;
+        this.ownerCardId = value.ownerCardId;
+        this.cardImage = `url(https://static.zerotoheroes.com/hearthstone/cardart/tiles/${value.abilityCardId}.jpg?v=4)`;
+        this.name = abilityCard.name;
+        this.speed = value.speed;
+        this.side = value.side;
+        this.portraitUrl = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.ownerCardId}.jpg`;
+        this.frameUrl = `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_hero_frame_${
+            abilityCard.mercenaryRole ?? 'neutral'
+        }.png?v=5`;
+    }
 }

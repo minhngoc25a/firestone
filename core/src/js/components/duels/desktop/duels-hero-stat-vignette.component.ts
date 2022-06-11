@@ -1,19 +1,19 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef } from '@angular/core';
-import { CardIds } from '@firestone-hs/reference-data';
-import { CardsFacadeService } from '@services/cards-facade.service';
-import { DuelsHeroPlayerStat } from '../../../models/duels/duels-player-stats';
-import { formatClass } from '../../../services/hs-utils';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
-import { OverwolfService } from '../../../services/overwolf.service';
-import { SimpleBarChartData } from '../../common/chart/simple-bar-chart-data';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef} from '@angular/core';
+import {CardIds} from '@firestone-hs/reference-data';
+import {CardsFacadeService} from '@services/cards-facade.service';
+import {DuelsHeroPlayerStat} from '../../../models/duels/duels-player-stats';
+import {formatClass} from '../../../services/hs-utils';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
+import {OverwolfService} from '../../../services/overwolf.service';
+import {SimpleBarChartData} from '../../common/chart/simple-bar-chart-data';
 
 @Component({
-	selector: 'duels-hero-stat-vignette',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/duels/desktop/duels-hero-stat-vignette.component.scss`,
-	],
-	template: `
+    selector: 'duels-hero-stat-vignette',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/duels/desktop/duels-hero-stat-vignette.component.scss`,
+    ],
+    template: `
 		<div class="duels-hero-stat-vignette" [ngClass]="{ 'unused': playerGamesPlayed === 0 }">
 			<div class="box-side">
 				<div class="name-container">
@@ -62,80 +62,82 @@ import { SimpleBarChartData } from '../../common/chart/simple-bar-chart-data';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DuelsHeroStatVignetteComponent {
-	@Input() set stat(value: DuelsHeroPlayerStat) {
-		if (!value || value === this._stat) {
-			return;
-		}
-		const card = value.cardId ? this.cards.getCard(value.cardId) : null;
-		this._stat = value;
-		this.cardId = value.cardId;
-		this.playerClassLoc = formatClass(card?.playerClass, this.i18n);
-		const isNeutralHero =
-			value.cardId.startsWith(CardIds.VanndarStormpikeTavernBrawl) ||
-			value.cardId.startsWith(CardIds.DrektharTavernBrawl);
-		this.name = isNeutralHero ? `${this.playerClassLoc} ${card?.name}` : card?.name;
-		this.secondaryClassIcon = isNeutralHero
-			? `https://static.zerotoheroes.com/hearthstone/asset/firestone/images/deck/classes/${card?.playerClass?.toLowerCase()}.png?v=2`
-			: null;
-		this.icon = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.cardId}.jpg`;
-		this.playerWinrate = value.playerWinrate;
-		this.globalWinrate = value.globalWinrate;
-		this.playerGamesPlayed = value.playerTotalMatches || 0;
-		this.globalWinDistribution = {
-			data:
-				value.globalWinDistribution?.map((input) => ({
-					label: '' + input.winNumber,
-					// To never show an empty bar
-					value: Math.max(input.value, 0.5),
-				})) ?? [],
-		} as SimpleBarChartData;
-		this.numberOfGamesTooltip = this.i18n.translateString('app.duels.hero-stat.number-of-games-tooltip', {
-			totalRuns: value.globalTotalMatches.toLocaleString(),
-			popularity: this.buildPercents(value.globalPopularity),
-		});
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    cardId: string;
+    name: string;
+    playerClassLoc: string;
+    icon: string;
+    playerWinrate: number;
+    globalWinrate: number;
+    playerGamesPlayed: number;
+    globalWinDistribution: SimpleBarChartData;
+    numberOfGamesTooltip: string;
+    secondaryClassIcon: string;
 
-	_stat: DuelsHeroPlayerStat;
-	cardId: string;
-	name: string;
-	playerClassLoc: string;
-	icon: string;
-	playerWinrate: number;
-	globalWinrate: number;
-	playerGamesPlayed: number;
-	globalWinDistribution: SimpleBarChartData;
-	numberOfGamesTooltip: string;
-	secondaryClassIcon: string;
+    constructor(
+        private readonly ow: OverwolfService,
+        private readonly i18n: LocalizationFacadeService,
+        private readonly cards: CardsFacadeService,
+        private readonly cdr: ChangeDetectorRef,
+    ) {
+    }
 
-	constructor(
-		private readonly ow: OverwolfService,
-		private readonly i18n: LocalizationFacadeService,
-		private readonly cards: CardsFacadeService,
-		private readonly cdr: ChangeDetectorRef,
-	) {}
+    _stat: DuelsHeroPlayerStat;
 
-	buildPercents(value: number): string {
-		return value == null ? '-' : value.toFixed(1) + '%';
-	}
+    @Input() set stat(value: DuelsHeroPlayerStat) {
+        if (!value || value === this._stat) {
+            return;
+        }
+        const card = value.cardId ? this.cards.getCard(value.cardId) : null;
+        this._stat = value;
+        this.cardId = value.cardId;
+        this.playerClassLoc = formatClass(card?.playerClass, this.i18n);
+        const isNeutralHero =
+            value.cardId.startsWith(CardIds.VanndarStormpikeTavernBrawl) ||
+            value.cardId.startsWith(CardIds.DrektharTavernBrawl);
+        this.name = isNeutralHero ? `${this.playerClassLoc} ${card?.name}` : card?.name;
+        this.secondaryClassIcon = isNeutralHero
+            ? `https://static.zerotoheroes.com/hearthstone/asset/firestone/images/deck/classes/${card?.playerClass?.toLowerCase()}.png?v=2`
+            : null;
+        this.icon = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.cardId}.jpg`;
+        this.playerWinrate = value.playerWinrate;
+        this.globalWinrate = value.globalWinrate;
+        this.playerGamesPlayed = value.playerTotalMatches || 0;
+        this.globalWinDistribution = {
+            data:
+                value.globalWinDistribution?.map((input) => ({
+                    label: '' + input.winNumber,
+                    // To never show an empty bar
+                    value: Math.max(input.value, 0.5),
+                })) ?? [],
+        } as SimpleBarChartData;
+        this.numberOfGamesTooltip = this.i18n.translateString('app.duels.hero-stat.number-of-games-tooltip', {
+            totalRuns: value.globalTotalMatches.toLocaleString(),
+            popularity: this.buildPercents(value.globalPopularity),
+        });
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	buildValue(value: number, decimal = 2): string {
-		return value == null ? '-' : value === 0 ? '0' : value.toFixed(decimal);
-	}
+    buildPercents(value: number): string {
+        return value == null ? '-' : value.toFixed(1) + '%';
+    }
+
+    buildValue(value: number, decimal = 2): string {
+        return value == null ? '-' : value === 0 ? '0' : value.toFixed(decimal);
+    }
 }
 
 @Component({
-	selector: 'duels-global-value',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/duels/desktop/duels-hero-stat-vignette.component.scss`,
-	],
-	template: `
+    selector: 'duels-global-value',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/duels/desktop/duels-hero-stat-vignette.component.scss`,
+    ],
+    template: `
 		<div class="global-value" helpTooltip="Average value for the community">
 			<div class="global-icon">
 				<svg class="svg-icon-fill">
@@ -145,8 +147,8 @@ export class DuelsHeroStatVignetteComponent {
 			<span class="value">{{ value }}</span>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DuelsGlobalValueComponent {
-	@Input() value: string;
+    @Input() value: string;
 }

@@ -1,35 +1,35 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewRef } from '@angular/core';
-import { Observable } from 'rxjs';
-import { distinctUntilChanged, filter, map, takeUntil, tap } from 'rxjs/operators';
-import { GameStat } from '../../../models/mainwindow/stats/game-stat';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewRef} from '@angular/core';
+import {Observable} from 'rxjs';
+import {distinctUntilChanged, filter, map, takeUntil, tap} from 'rxjs/operators';
+import {GameStat} from '../../../models/mainwindow/stats/game-stat';
 import {
-	MercenariesHeroLevelFilterType,
-	MercenariesModeFilterType,
-	MercenariesPveDifficultyFilterType,
-	MercenariesPvpMmrFilterType,
+    MercenariesHeroLevelFilterType,
+    MercenariesModeFilterType,
+    MercenariesPveDifficultyFilterType,
+    MercenariesPvpMmrFilterType,
 } from '../../../models/mercenaries/mercenaries-filter-types';
-import { CardsFacadeService } from '../../../services/cards-facade.service';
+import {CardsFacadeService} from '../../../services/cards-facade.service';
 import {
-	MercenariesComposition,
-	MercenariesCompositionBench,
-	MercenariesGlobalStats,
+    MercenariesComposition,
+    MercenariesCompositionBench,
+    MercenariesGlobalStats,
 } from '../../../services/mercenaries/mercenaries-state-builder.service';
-import { getHeroRole } from '../../../services/mercenaries/mercenaries-utils';
-import { OverwolfService } from '../../../services/overwolf.service';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { cdLog } from '../../../services/ui-store/app-ui-store.service';
-import { filterMercenariesCompositions } from '../../../services/ui-store/mercenaries-ui-helper';
-import { arraysEqual, groupByFunction, sumOnArray } from '../../../services/utils';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
-import { MercenaryCompositionInfoBench, MercenaryInfo } from './mercenary-info';
+import {getHeroRole} from '../../../services/mercenaries/mercenaries-utils';
+import {OverwolfService} from '../../../services/overwolf.service';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {cdLog} from '../../../services/ui-store/app-ui-store.service';
+import {filterMercenariesCompositions} from '../../../services/ui-store/mercenaries-ui-helper';
+import {arraysEqual, groupByFunction, sumOnArray} from '../../../services/utils';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
+import {MercenaryCompositionInfoBench, MercenaryInfo} from './mercenary-info';
 
 @Component({
-	selector: 'mercenaries-composition-details',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/mercenaries/desktop/mercenaries-composition-details.component.scss`,
-	],
-	template: `
+    selector: 'mercenaries-composition-details',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/mercenaries/desktop/mercenaries-composition-details.component.scss`,
+    ],
+    template: `
 		<!-- Component is unused for now -->
 		<div class="mercenaries-composition-details" *ngIf="compositionStat$ | async as stats">
 			<div class="overview">
@@ -84,154 +84,154 @@ import { MercenaryCompositionInfoBench, MercenaryInfo } from './mercenary-info';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MercenariesComposiionDetailsComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	compositionStat$: Observable<CompositionStat>;
+    compositionStat$: Observable<CompositionStat>;
 
-	constructor(
-		private readonly ow: OverwolfService,
-		private readonly allCards: CardsFacadeService,
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-	) {
-		super(store, cdr);
-	}
+    constructor(
+        private readonly ow: OverwolfService,
+        private readonly allCards: CardsFacadeService,
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+    ) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.compositionStat$ = this.store
-			.listen$(
-				([main, nav]) => main.mercenaries.globalStats,
-				([main, nav]) => main.stats.gameStats,
-				([main, nav, prefs]) => nav.navigationMercenaries.selectedCompositionId,
-				([main, nav, prefs]) => prefs.mercenariesActiveModeFilter,
-				([main, nav, prefs]) => prefs.mercenariesActivePveDifficultyFilter,
-				([main, nav, prefs]) => prefs.mercenariesActivePvpMmrFilter,
-				([main, nav, prefs]) => prefs.mercenariesActiveHeroLevelFilter2,
-			)
-			.pipe(
-				filter(
-					([globalStats, gameStats, heroId, modeFilter, difficultyFilter, mmrFilter, levelFilter]) =>
-						!!globalStats && !!heroId,
-				),
-				// tap((info) => console.debug('ga', info)),
-				map(
-					([globalStats, gameStats, selectedHeroId, modeFilter, difficultyFilter, mmrFilter, levelFilter]) =>
-						[
-							globalStats,
-							modeFilter === 'pve'
-								? gameStats.stats.filter((stat) => (stat.gameMode as any) === 'mercenaries')
-								: gameStats.stats.filter((stat) => (stat.gameMode as any) === 'mercenaries-pvp'),
-							selectedHeroId,
-							modeFilter,
-							difficultyFilter,
-							mmrFilter,
-							levelFilter,
-						] as [
-							MercenariesGlobalStats,
-							readonly GameStat[],
-							string,
-							MercenariesModeFilterType,
-							MercenariesPveDifficultyFilterType,
-							MercenariesPvpMmrFilterType,
-							MercenariesHeroLevelFilterType,
-						],
-				),
-				distinctUntilChanged((a, b) => arraysEqual(a, b)),
-				map(([globalStats, gameStats, compositionId, modeFilter, difficultyFilter, mmrFilter, levelFilter]) => {
-					const infos = globalStats.pvp;
-					return [
-						filterMercenariesCompositions(
-							infos.compositions.filter((c) => c.stringifiedHeroes === compositionId),
-							mmrFilter,
-						),
-					] as [readonly MercenariesComposition[]];
-				}),
-				// tap((info) => console.debug('ga 3', info)),
-				distinctUntilChanged((a, b) => arraysEqual(a, b)),
-				map(([compositionStats]) => {
-					const refHeroStat = compositionStats[0];
-					const globalTotalMatches = sumOnArray(compositionStats, (stat) => stat.totalMatches);
-					const allBenches = compositionStats.map((comp) => comp.benches).reduce((a, b) => [...a, ...b], []);
-					const groupedByBench = groupByFunction((bench: MercenariesCompositionBench) =>
-						bench.heroCardIds.join(','),
-					)(allBenches);
-					const benches: readonly MercenaryCompositionInfoBench[] = Object.values(groupedByBench)
-						.map((benches) => {
-							const ref = benches[0];
-							const globalTotalMatchesForBench = sumOnArray(benches, (stat) => stat.totalMatches);
-							return {
-								id: 'bench-' + ref.heroCardIds.join(','),
-								heroCardIds: ref.heroCardIds,
-								globalTotalMatches: globalTotalMatchesForBench,
-								globalWinrate:
-									(100 * sumOnArray(benches, (stat) => stat.totalWins)) / globalTotalMatchesForBench,
-								globalPopularity: globalTotalMatchesForBench / globalTotalMatches,
-								playerTotalMatches: 0,
-								playerWinrate: null,
-							};
-						})
-						.sort((a, b) => b.globalWinrate - a.globalWinrate)
-						.slice(0, 15);
-					console.debug('benches', benches, compositionStats);
-					return {
-						starterHeroes: refHeroStat.heroCardIds.map((cardId) => ({
-							cardId: cardId,
-							portraitUrl: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${cardId}.jpg`,
-							frameUrl: `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_hero_frame_golden_${getHeroRole(
-								this.allCards.getCard(cardId).mercenaryRole,
-							)}.png?v=2`,
-						})),
-						globalTotalMatches: globalTotalMatches,
-						globalWinrate:
-							(100 * sumOnArray(compositionStats, (stat) => stat.totalWins)) / globalTotalMatches,
-						playerTotalMatches: 0,
-						playerWinrate: null,
-						benches: benches,
-					} as CompositionStat;
-				}),
-				tap((filter) =>
-					setTimeout(() => {
-						if (!(this.cdr as ViewRef)?.destroyed) {
-							this.cdr.detectChanges();
-						}
-					}, 0),
-				),
-				tap((info) => cdLog('emitting stats in ', this.constructor.name, info)),
-				takeUntil(this.destroyed$),
-			);
-	}
+    ngAfterContentInit() {
+        this.compositionStat$ = this.store
+            .listen$(
+                ([main, nav]) => main.mercenaries.globalStats,
+                ([main, nav]) => main.stats.gameStats,
+                ([main, nav, prefs]) => nav.navigationMercenaries.selectedCompositionId,
+                ([main, nav, prefs]) => prefs.mercenariesActiveModeFilter,
+                ([main, nav, prefs]) => prefs.mercenariesActivePveDifficultyFilter,
+                ([main, nav, prefs]) => prefs.mercenariesActivePvpMmrFilter,
+                ([main, nav, prefs]) => prefs.mercenariesActiveHeroLevelFilter2,
+            )
+            .pipe(
+                filter(
+                    ([globalStats, gameStats, heroId, modeFilter, difficultyFilter, mmrFilter, levelFilter]) =>
+                        !!globalStats && !!heroId,
+                ),
+                // tap((info) => console.debug('ga', info)),
+                map(
+                    ([globalStats, gameStats, selectedHeroId, modeFilter, difficultyFilter, mmrFilter, levelFilter]) =>
+                        [
+                            globalStats,
+                            modeFilter === 'pve'
+                                ? gameStats.stats.filter((stat) => (stat.gameMode as any) === 'mercenaries')
+                                : gameStats.stats.filter((stat) => (stat.gameMode as any) === 'mercenaries-pvp'),
+                            selectedHeroId,
+                            modeFilter,
+                            difficultyFilter,
+                            mmrFilter,
+                            levelFilter,
+                        ] as [
+                            MercenariesGlobalStats,
+                            readonly GameStat[],
+                            string,
+                            MercenariesModeFilterType,
+                            MercenariesPveDifficultyFilterType,
+                            MercenariesPvpMmrFilterType,
+                            MercenariesHeroLevelFilterType,
+                        ],
+                ),
+                distinctUntilChanged((a, b) => arraysEqual(a, b)),
+                map(([globalStats, gameStats, compositionId, modeFilter, difficultyFilter, mmrFilter, levelFilter]) => {
+                    const infos = globalStats.pvp;
+                    return [
+                        filterMercenariesCompositions(
+                            infos.compositions.filter((c) => c.stringifiedHeroes === compositionId),
+                            mmrFilter,
+                        ),
+                    ] as [readonly MercenariesComposition[]];
+                }),
+                // tap((info) => console.debug('ga 3', info)),
+                distinctUntilChanged((a, b) => arraysEqual(a, b)),
+                map(([compositionStats]) => {
+                    const refHeroStat = compositionStats[0];
+                    const globalTotalMatches = sumOnArray(compositionStats, (stat) => stat.totalMatches);
+                    const allBenches = compositionStats.map((comp) => comp.benches).reduce((a, b) => [...a, ...b], []);
+                    const groupedByBench = groupByFunction((bench: MercenariesCompositionBench) =>
+                        bench.heroCardIds.join(','),
+                    )(allBenches);
+                    const benches: readonly MercenaryCompositionInfoBench[] = Object.values(groupedByBench)
+                        .map((benches) => {
+                            const ref = benches[0];
+                            const globalTotalMatchesForBench = sumOnArray(benches, (stat) => stat.totalMatches);
+                            return {
+                                id: 'bench-' + ref.heroCardIds.join(','),
+                                heroCardIds: ref.heroCardIds,
+                                globalTotalMatches: globalTotalMatchesForBench,
+                                globalWinrate:
+                                    (100 * sumOnArray(benches, (stat) => stat.totalWins)) / globalTotalMatchesForBench,
+                                globalPopularity: globalTotalMatchesForBench / globalTotalMatches,
+                                playerTotalMatches: 0,
+                                playerWinrate: null,
+                            };
+                        })
+                        .sort((a, b) => b.globalWinrate - a.globalWinrate)
+                        .slice(0, 15);
+                    console.debug('benches', benches, compositionStats);
+                    return {
+                        starterHeroes: refHeroStat.heroCardIds.map((cardId) => ({
+                            cardId: cardId,
+                            portraitUrl: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${cardId}.jpg`,
+                            frameUrl: `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_hero_frame_golden_${getHeroRole(
+                                this.allCards.getCard(cardId).mercenaryRole,
+                            )}.png?v=2`,
+                        })),
+                        globalTotalMatches: globalTotalMatches,
+                        globalWinrate:
+                            (100 * sumOnArray(compositionStats, (stat) => stat.totalWins)) / globalTotalMatches,
+                        playerTotalMatches: 0,
+                        playerWinrate: null,
+                        benches: benches,
+                    } as CompositionStat;
+                }),
+                tap((filter) =>
+                    setTimeout(() => {
+                        if (!(this.cdr as ViewRef)?.destroyed) {
+                            this.cdr.detectChanges();
+                        }
+                    }, 0),
+                ),
+                tap((info) => cdLog('emitting stats in ', this.constructor.name, info)),
+                takeUntil(this.destroyed$),
+            );
+    }
 
-	trackByFn(index: number, item: MercenaryInfo) {
-		return item.id;
-	}
+    trackByFn(index: number, item: MercenaryInfo) {
+        return item.id;
+    }
 
-	buildValue(value: number, decimals = 2): string {
-		if (value === 100) {
-			return '100';
-		}
-		return value == null ? '-' : value.toFixed(decimals);
-	}
+    buildValue(value: number, decimals = 2): string {
+        if (value === 100) {
+            return '100';
+        }
+        return value == null ? '-' : value.toFixed(decimals);
+    }
 
-	buildValuePercent(value: number, decimals = 1): string {
-		if (value === 100) {
-			return '100%';
-		}
-		return value == null ? '-' : value.toFixed(decimals) + '%';
-	}
+    buildValuePercent(value: number, decimals = 1): string {
+        if (value === 100) {
+            return '100%';
+        }
+        return value == null ? '-' : value.toFixed(decimals) + '%';
+    }
 }
 
 interface CompositionStat {
-	readonly starterHeroes: readonly Hero[];
-	readonly globalTotalMatches: number;
-	readonly globalWinrate: number;
-	readonly playerTotalMatches: number;
-	readonly playerWinrate: number;
-	readonly benches: readonly MercenaryCompositionInfoBench[];
+    readonly starterHeroes: readonly Hero[];
+    readonly globalTotalMatches: number;
+    readonly globalWinrate: number;
+    readonly playerTotalMatches: number;
+    readonly playerWinrate: number;
+    readonly benches: readonly MercenaryCompositionInfoBench[];
 }
 
 interface Hero {
-	readonly cardId: string;
-	readonly portraitUrl: string;
-	readonly frameUrl: string;
+    readonly cardId: string;
+    readonly portraitUrl: string;
+    readonly frameUrl: string;
 }

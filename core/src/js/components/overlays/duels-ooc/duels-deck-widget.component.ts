@@ -1,22 +1,22 @@
-import { animate, style, transition, trigger } from '@angular/animations';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef } from '@angular/core';
-import { sanitizeDeckstring } from '@components/decktracker/copy-deckstring.component';
-import { DuelsDeckWidgetDeck } from '@components/overlays/duels-ooc/duels-deck-widget-deck';
-import { SetCard } from '@models/set';
-import { CardsFacadeService } from '@services/cards-facade.service';
-import { LocalizationFacadeService } from '@services/localization-facade.service';
-import { OverwolfService } from '@services/overwolf.service';
-import { decode, encode } from 'deckstrings';
+import {animate, style, transition, trigger} from '@angular/animations';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef} from '@angular/core';
+import {sanitizeDeckstring} from '@components/decktracker/copy-deckstring.component';
+import {DuelsDeckWidgetDeck} from '@components/overlays/duels-ooc/duels-deck-widget-deck';
+import {SetCard} from '@models/set';
+import {CardsFacadeService} from '@services/cards-facade.service';
+import {LocalizationFacadeService} from '@services/localization-facade.service';
+import {OverwolfService} from '@services/overwolf.service';
+import {decode, encode} from 'deckstrings';
 
 declare let amplitude;
 
 @Component({
-	selector: 'duels-deck-widget',
-	styleUrls: [
-		'../../../../css/global/components-global.scss',
-		'../../../../css/component/overlays/duels-ooc/duels-deck-widget.component.scss',
-	],
-	template: `
+    selector: 'duels-deck-widget',
+    styleUrls: [
+        '../../../../css/global/components-global.scss',
+        '../../../../css/component/overlays/duels-ooc/duels-deck-widget.component.scss',
+    ],
+    template: `
 		<div class="duels-deck-widget">
 			<div class="treasures-container">
 				<img
@@ -69,83 +69,81 @@ declare let amplitude;
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
-	animations: [
-		trigger('screenCapture', [
-			transition(':enter', [style({ opacity: 0 }), animate('200ms', style({ opacity: 1 }))]),
-			transition(':leave', [style({ opacity: 1 }), animate('200ms', style({ opacity: 0 }))]),
-		]),
-	],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    animations: [
+        trigger('screenCapture', [
+            transition(':enter', [style({opacity: 0}), animate('200ms', style({opacity: 1}))]),
+            transition(':leave', [style({opacity: 1}), animate('200ms', style({opacity: 0}))]),
+        ]),
+    ],
 })
 export class DuelsDeckWidgetComponent {
-	@Input() collection: readonly SetCard[];
+    @Input() collection: readonly SetCard[];
+    gameModeImage: string;
+    rankText: string;
+    initialDeck: string;
+    screenCaptureOn: boolean;
+    treasureCardIds: readonly string[] = [];
+    wins: number;
+    losses: number;
+    initialDecklist: string;
+    finalDecklist: string;
+    isLastPersonalDeck: boolean;
+    dustCost: number;
+    private defaultCopyTooltip = this.i18n.translateString('duels.deck-select.copy-deck-tooltip');
+    copyTooltip = this.defaultCopyTooltip;
 
-	@Input() set deck(value: DuelsDeckWidgetDeck) {
-		this.initialDeck = value.initialDeckList;
-		this.gameModeImage =
-			value.type === 'duels'
-				? 'assets/images/deck/ranks/casual_duels.png'
-				: 'assets/images/deck/ranks/heroic_duels.png';
-		this.rankText = `${value.mmr}`;
-		this.treasureCardIds = value.treasureCardIds ?? [];
-		this.wins = value.wins;
-		this.losses = value.losses;
-		this.initialDecklist = value.initialDeckList;
-		this.finalDecklist = value.finalDeckList;
-		this.isLastPersonalDeck = value.isLastPersonalDeck;
-		this.dustCost = value.dustCost;
-	}
+    constructor(
+        private readonly ow: OverwolfService,
+        private readonly cdr: ChangeDetectorRef,
+        private readonly i18n: LocalizationFacadeService,
+        private readonly allCards: CardsFacadeService,
+    ) {
+    }
 
-	gameModeImage: string;
-	rankText: string;
-	initialDeck: string;
-	screenCaptureOn: boolean;
-	treasureCardIds: readonly string[] = [];
-	wins: number;
-	losses: number;
-	initialDecklist: string;
-	finalDecklist: string;
-	isLastPersonalDeck: boolean;
-	dustCost: number;
+    @Input() set deck(value: DuelsDeckWidgetDeck) {
+        this.initialDeck = value.initialDeckList;
+        this.gameModeImage =
+            value.type === 'duels'
+                ? 'assets/images/deck/ranks/casual_duels.png'
+                : 'assets/images/deck/ranks/heroic_duels.png';
+        this.rankText = `${value.mmr}`;
+        this.treasureCardIds = value.treasureCardIds ?? [];
+        this.wins = value.wins;
+        this.losses = value.losses;
+        this.initialDecklist = value.initialDeckList;
+        this.finalDecklist = value.finalDeckList;
+        this.isLastPersonalDeck = value.isLastPersonalDeck;
+        this.dustCost = value.dustCost;
+    }
 
-	private defaultCopyTooltip = this.i18n.translateString('duels.deck-select.copy-deck-tooltip');
+    copyDeckCode() {
+        const deckDefinition = decode(this.initialDeck);
+        const updatedDeckDefinition = sanitizeDeckstring(deckDefinition, this.allCards);
+        const normalizedDeckstring = encode(updatedDeckDefinition);
+        this.ow.placeOnClipboard(normalizedDeckstring);
+        this.screenCaptureOn = true;
+        this.copyTooltip = this.i18n.translateString('duels.deck-select.copy-deck-tooltip-confirmation');
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
 
-	copyTooltip = this.defaultCopyTooltip;
+        setTimeout(() => {
+            this.screenCaptureOn = false;
+            if (!(this.cdr as ViewRef)?.destroyed) {
+                this.cdr.detectChanges();
+            }
+        }, 200);
+        setTimeout(() => {
+            this.copyTooltip = this.defaultCopyTooltip;
+            if (!(this.cdr as ViewRef)?.destroyed) {
+                this.cdr.detectChanges();
+            }
+        }, 2000);
+        amplitude.getInstance().logEvent('copy-deckstring', {'origin': 'duels-quick-deck'});
+    }
 
-	constructor(
-		private readonly ow: OverwolfService,
-		private readonly cdr: ChangeDetectorRef,
-		private readonly i18n: LocalizationFacadeService,
-		private readonly allCards: CardsFacadeService,
-	) {}
-
-	copyDeckCode() {
-		const deckDefinition = decode(this.initialDeck);
-		const updatedDeckDefinition = sanitizeDeckstring(deckDefinition, this.allCards);
-		const normalizedDeckstring = encode(updatedDeckDefinition);
-		this.ow.placeOnClipboard(normalizedDeckstring);
-		this.screenCaptureOn = true;
-		this.copyTooltip = this.i18n.translateString('duels.deck-select.copy-deck-tooltip-confirmation');
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-
-		setTimeout(() => {
-			this.screenCaptureOn = false;
-			if (!(this.cdr as ViewRef)?.destroyed) {
-				this.cdr.detectChanges();
-			}
-		}, 200);
-		setTimeout(() => {
-			this.copyTooltip = this.defaultCopyTooltip;
-			if (!(this.cdr as ViewRef)?.destroyed) {
-				this.cdr.detectChanges();
-			}
-		}, 2000);
-		amplitude.getInstance().logEvent('copy-deckstring', { 'origin': 'duels-quick-deck' });
-	}
-
-	getImage(cardId: string) {
-		return `https://static.zerotoheroes.com/hearthstone/cardart/256x/${cardId}.jpg`;
-	}
+    getImage(cardId: string) {
+        return `https://static.zerotoheroes.com/hearthstone/cardart/256x/${cardId}.jpg`;
+    }
 }

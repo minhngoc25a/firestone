@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { SimpleBarChartData } from '@components/common/chart/simple-bar-chart-data';
-import { DuelsHeroInfoTopDeck, DuelsHeroPowerInfo } from '@components/overlays/duels-ooc/duels-hero-info';
-import { LocalizationFacadeService } from '@services/localization-facade.service';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {SimpleBarChartData} from '@components/common/chart/simple-bar-chart-data';
+import {DuelsHeroInfoTopDeck, DuelsHeroPowerInfo} from '@components/overlays/duels-ooc/duels-hero-info';
+import {LocalizationFacadeService} from '@services/localization-facade.service';
 
 @Component({
-	selector: 'duels-hero-power-info',
-	styleUrls: [
-		'../../../../css/global/components-global.scss',
-		'../../../../css/component/overlays/duels-ooc/duels-hero-power-info.component.scss',
-	],
-	template: `
+    selector: 'duels-hero-power-info',
+    styleUrls: [
+        '../../../../css/global/components-global.scss',
+        '../../../../css/component/overlays/duels-ooc/duels-hero-power-info.component.scss',
+    ],
+    template: `
 		<div class="hero-power-info">
 			<div class="bio">
 				<div class="name">{{ name }}</div>
@@ -107,53 +107,54 @@ import { LocalizationFacadeService } from '@services/localization-facade.service
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DuelsHeroPowerInfoComponent {
-	@Input() set heroPowerInfo(value: DuelsHeroPowerInfo) {
-		this.heroPortrait = this.i18n.getCardImage(value.heroCardId, { isHighRes: true, isHeroSkin: true });
-		this.heroPowerImage = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.cardId}.jpg`;
-		this.name = value.name;
-		this.globalWinrate = value.globalWinrate;
-		this.playerWinrate = value.playerWinrate;
-		this.globalPopularity = value.globalPopularity;
-		this.playerMatches = this.i18n.translateString('duels.hero-info.player-matches', {
-			value: value.playerMatches,
-		});
-		this.globalWinDistribution = {
-			data:
-				value.globalWinDistribution?.map((input) => ({
-					label: '' + input.winNumber,
-					value: input.value,
-				})) ?? [],
-		} as SimpleBarChartData;
-		this.totalDecks = value.topDecks?.length ?? 0;
-		this.decks = value.topDecks?.slice(0, 6);
-		this.totalRuns = value.globalTotalMatches ?? 0;
-	}
+    heroPortrait: string;
+    heroPowerImage: string;
+    name: string;
+    globalWinrate: number;
+    playerWinrate: number;
+    globalPopularity: number;
+    playerMatches: string;
+    globalWinDistribution: SimpleBarChartData;
+    decks: readonly DuelsHeroInfoTopDeck[];
+    totalRuns: number;
+    totalDecks: number;
 
-	heroPortrait: string;
-	heroPowerImage: string;
-	name: string;
-	globalWinrate: number;
-	playerWinrate: number;
-	globalPopularity: number;
-	playerMatches: string;
-	globalWinDistribution: SimpleBarChartData;
-	decks: readonly DuelsHeroInfoTopDeck[];
-	totalRuns: number;
-	totalDecks: number;
+    constructor(private readonly i18n: LocalizationFacadeService) {
+    }
 
-	constructor(private readonly i18n: LocalizationFacadeService) {}
+    @Input() set heroPowerInfo(value: DuelsHeroPowerInfo) {
+        this.heroPortrait = this.i18n.getCardImage(value.heroCardId, {isHighRes: true, isHeroSkin: true});
+        this.heroPowerImage = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.cardId}.jpg`;
+        this.name = value.name;
+        this.globalWinrate = value.globalWinrate;
+        this.playerWinrate = value.playerWinrate;
+        this.globalPopularity = value.globalPopularity;
+        this.playerMatches = this.i18n.translateString('duels.hero-info.player-matches', {
+            value: value.playerMatches,
+        });
+        this.globalWinDistribution = {
+            data:
+                value.globalWinDistribution?.map((input) => ({
+                    label: '' + input.winNumber,
+                    value: input.value,
+                })) ?? [],
+        } as SimpleBarChartData;
+        this.totalDecks = value.topDecks?.length ?? 0;
+        this.decks = value.topDecks?.slice(0, 6);
+        this.totalRuns = value.globalTotalMatches ?? 0;
+    }
 
-	buildValue(value: number, decimals = 2): string {
-		if (value === 100) {
-			return '100';
-		}
-		return !value ? '-' : value.toFixed(decimals);
-	}
+    buildValue(value: number, decimals = 2): string {
+        if (value === 100) {
+            return '100';
+        }
+        return !value ? '-' : value.toFixed(decimals);
+    }
 
-	getArt(cardId: string): string {
-		return `https://static.zerotoheroes.com/hearthstone/cardart/256x/${cardId}.jpg`;
-	}
+    getArt(cardId: string): string {
+        return `https://static.zerotoheroes.com/hearthstone/cardart/256x/${cardId}.jpg`;
+    }
 }

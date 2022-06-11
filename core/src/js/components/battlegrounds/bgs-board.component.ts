@@ -1,16 +1,16 @@
-import { ComponentType } from '@angular/cdk/portal';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Input, OnDestroy } from '@angular/core';
-import { Entity } from '@firestone-hs/replay-parser';
-import { CardsFacadeService } from '@services/cards-facade.service';
-import { MinionStat } from '../../models/battlegrounds/post-match/minion-stat';
-import { OverwolfService } from '../../services/overwolf.service';
-import { BgsCardTooltipComponent } from './bgs-card-tooltip.component';
-import { normalizeCardId } from './post-match/card-utils';
+import {ComponentType} from '@angular/cdk/portal';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Input, OnDestroy} from '@angular/core';
+import {Entity} from '@firestone-hs/replay-parser';
+import {CardsFacadeService} from '@services/cards-facade.service';
+import {MinionStat} from '../../models/battlegrounds/post-match/minion-stat';
+import {OverwolfService} from '../../services/overwolf.service';
+import {BgsCardTooltipComponent} from './bgs-card-tooltip.component';
+import {normalizeCardId} from './post-match/card-utils';
 
 @Component({
-	selector: 'bgs-board',
-	styleUrls: [`../../../css/component/battlegrounds/bgs-board.component.scss`],
-	template: `
+    selector: 'bgs-board',
+    styleUrls: [`../../../css/component/battlegrounds/bgs-board.component.scss`],
+    template: `
 		<div class="board-turn" *ngIf="customTitle">
 			{{ customTitle }}
 		</div>
@@ -68,89 +68,91 @@ import { normalizeCardId } from './post-match/card-utils';
 			</div>
 		</ul>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsBoardComponent implements OnDestroy {
-	componentType: ComponentType<any> = BgsCardTooltipComponent;
+    componentType: ComponentType<any> = BgsCardTooltipComponent;
+    @Input() hideDamageHeader: boolean;
+    @Input() customTitle: string;
+    @Input() isMainPlayer: boolean;
+    @Input() debug: boolean;
+    @Input() isRecruitPhase: boolean;
+    @Input() currentTurn: number;
+    @Input() boardTurn: number;
+    @Input() finalBoard: boolean;
+    @Input() tooltipPosition: 'left' | 'right' | 'top' | 'bottom' = 'right';
+    // Used when the container will scroll, so we don't want to constrain the height
+    @Input() useFullWidth = false;
+    private inputEntities: readonly Entity[];
+    private stateChangedListener: (message: any) => void;
 
-	_entities: readonly Entity[];
-	_enchantmentCandidates: readonly Entity[];
-	_options: readonly number[];
-	_minionStats: readonly MinionStat[];
+    constructor(
+        private readonly cdr: ChangeDetectorRef,
+        private readonly allCards: CardsFacadeService,
+        private readonly ow: OverwolfService,
+    ) {
+    }
 
-	@Input() hideDamageHeader: boolean;
-	@Input() customTitle: string;
-	@Input() isMainPlayer: boolean;
-	@Input() debug: boolean;
-	@Input() isRecruitPhase: boolean;
-	@Input() currentTurn: number;
-	@Input() boardTurn: number;
-	@Input() finalBoard: boolean;
-	@Input() tooltipPosition: 'left' | 'right' | 'top' | 'bottom' = 'right';
-	// Used when the container will scroll, so we don't want to constrain the height
-	@Input() useFullWidth = false;
+    _entities: readonly Entity[];
 
-	@Input() set minionStats(value: readonly MinionStat[]) {
-		this._minionStats = value;
-	}
+    @Input('entities') set entities(value: readonly Entity[]) {
+        this.inputEntities = value || [];
+        this._entities = this.inputEntities.map((entity) => Entity.create({...entity} as Entity));
+        // if (!(this.cdr as ViewRef)?.destroyed) {
+        // 	this.cdr.detectChanges();
+        // }
+    }
 
-	@Input('entities') set entities(value: readonly Entity[]) {
-		this.inputEntities = value || [];
-		this._entities = this.inputEntities.map((entity) => Entity.create({ ...entity } as Entity));
-		// if (!(this.cdr as ViewRef)?.destroyed) {
-		// 	this.cdr.detectChanges();
-		// }
-	}
+    _enchantmentCandidates: readonly Entity[];
 
-	@Input('enchantmentCandidates') set enchantmentCandidates(value: readonly Entity[]) {
-		this._enchantmentCandidates = value;
-	}
+    @Input('enchantmentCandidates') set enchantmentCandidates(value: readonly Entity[]) {
+        this._enchantmentCandidates = value;
+    }
 
-	@Input('options') set options(value: readonly number[]) {
-		this._options = value;
-	}
+    _options: readonly number[];
 
-	private inputEntities: readonly Entity[];
-	private stateChangedListener: (message: any) => void;
+    @Input('options') set options(value: readonly number[]) {
+        this._options = value;
+    }
 
-	constructor(
-		private readonly cdr: ChangeDetectorRef,
-		private readonly allCards: CardsFacadeService,
-		private readonly ow: OverwolfService,
-	) {}
+    _minionStats: readonly MinionStat[];
 
-	@HostListener('window:beforeunload')
-	ngOnDestroy() {
-		this.ow.isOwEnabled() && this.ow.removeStateChangedListener(this.stateChangedListener);
-	}
+    @Input() set minionStats(value: readonly MinionStat[]) {
+        this._minionStats = value;
+    }
 
-	showTooltipWarning(entity: Entity): boolean {
-		return (
-			this._entities
-				?.map((e) => normalizeCardId(e.cardID, this.allCards))
-				?.filter((cardId) => cardId === normalizeCardId(entity.cardID, this.allCards)).length > 1
-		);
-	}
+    @HostListener('window:beforeunload')
+    ngOnDestroy() {
+        this.ow.isOwEnabled() && this.ow.removeStateChangedListener(this.stateChangedListener);
+    }
 
-	getDamageDealt(entity: Entity): number {
-		return this._minionStats?.find((stat) => stat.cardId === normalizeCardId(entity.cardID, this.allCards))
-			?.damageDealt;
-	}
+    showTooltipWarning(entity: Entity): boolean {
+        return (
+            this._entities
+                ?.map((e) => normalizeCardId(e.cardID, this.allCards))
+                ?.filter((cardId) => cardId === normalizeCardId(entity.cardID, this.allCards)).length > 1
+        );
+    }
 
-	getDamageTaken(entity: Entity): number {
-		return this._minionStats?.find((stat) => stat.cardId === normalizeCardId(entity.cardID, this.allCards))
-			?.damageTaken;
-	}
+    getDamageDealt(entity: Entity): number {
+        return this._minionStats?.find((stat) => stat.cardId === normalizeCardId(entity.cardID, this.allCards))
+            ?.damageDealt;
+    }
 
-	isNumber(value: number): boolean {
-		return !isNaN(value);
-	}
+    getDamageTaken(entity: Entity): number {
+        return this._minionStats?.find((stat) => stat.cardId === normalizeCardId(entity.cardID, this.allCards))
+            ?.damageTaken;
+    }
 
-	trackByEntity(index: number, entity: Entity) {
-		return entity.id;
-	}
+    isNumber(value: number): boolean {
+        return !isNaN(value);
+    }
 
-	trackByFn(index: number, item: Entity) {
-		return item.id;
-	}
+    trackByEntity(index: number, entity: Entity) {
+        return entity.id;
+    }
+
+    trackByFn(index: number, item: Entity) {
+        return item.id;
+    }
 }

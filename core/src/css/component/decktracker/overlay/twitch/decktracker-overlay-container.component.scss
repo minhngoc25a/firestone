@@ -1,46 +1,47 @@
 :host() {
-	height: 100%;
-	width: 100%;
-	position: relative;
+  height: 100%;
+  width: 100%;
+  position: relative;
 }
 
 .container {
-	position: relative;
-	display: flex;
-	justify-content: flex-end;
-	height: 100%;
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  height: 100%;
 
-	state-mouse-over {
-		z-index: 2;
-	}
+  state-mouse-over {
+    z-index: 2;
+  }
 
-	decktracker-overlay-standalone {
-		z-index: 3;
-	}
+  decktracker-overlay-standalone {
+    z-index: 3;
+  }
 
-	bgs-simulation-overlay-standalone {
-		z-index: 3;
-	}
+  bgs-simulation-overlay-standalone {
+    z-index: 3;
+  }
 
-	battlegrounds-minions-tiers-twitch {
-		z-index: 3;
-	}
+  battlegrounds-minions-tiers-twitch {
+    z-index: 3;
+  }
 
-	twitch-config-widget {
-		z-index: 4;
-	}
+  twitch-config-widget {
+    z-index: 4;
+  }
 
-	::ng-deep {
-		numeric-input {
-			.numeric-input.numeric-input.numeric-input {
-				// Because double clicking on the arrow will always toggle the full screen mode
-				.buttons {
-					display: none;
-				}
-				input {
-					width: 45px;
-				}
-			}
-		}
-	}
+  ::ng-deep {
+    numeric-input {
+      .numeric-input.numeric-input.numeric-input {
+        // Because double clicking on the arrow will always toggle the full screen mode
+        .buttons {
+          display: none;
+        }
+
+        input {
+          width: 45px;
+        }
+      }
+    }
+  }
 }

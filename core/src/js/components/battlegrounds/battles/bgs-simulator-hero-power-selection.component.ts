@@ -1,33 +1,33 @@
 import {
-	AfterContentInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	HostListener,
-	Input,
-	OnDestroy,
-	ViewRef,
+    AfterContentInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    HostListener,
+    Input,
+    OnDestroy,
+    ViewRef,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { CardIds } from '@firestone-hs/reference-data';
-import { BehaviorSubject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, takeUntil, tap } from 'rxjs/operators';
-import { getHeroPower } from '../../../services/battlegrounds/bgs-utils';
-import { CardsFacadeService } from '../../../services/cards-facade.service';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { sortByProperties } from '../../../services/utils';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
+import {FormControl} from '@angular/forms';
+import {CardIds} from '@firestone-hs/reference-data';
+import {BehaviorSubject, Subscription} from 'rxjs';
+import {debounceTime, distinctUntilChanged, map, takeUntil, tap} from 'rxjs/operators';
+import {getHeroPower} from '../../../services/battlegrounds/bgs-utils';
+import {CardsFacadeService} from '../../../services/cards-facade.service';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {sortByProperties} from '../../../services/utils';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
 
 @Component({
-	selector: 'bgs-simulator-hero-power-selection',
-	styleUrls: [
-		`../../../../css/global/scrollbar.scss`,
-		`../../../../css/component/controls/controls.scss`,
-		`../../../../css/component/controls/control-close.component.scss`,
-		`../../../../css/component/battlegrounds/battles/bgs-simulator-hero-power-selection.component.scss`,
-	],
-	template: `
+    selector: 'bgs-simulator-hero-power-selection',
+    styleUrls: [
+        `../../../../css/global/scrollbar.scss`,
+        `../../../../css/component/controls/controls.scss`,
+        `../../../../css/component/controls/control-close.component.scss`,
+        `../../../../css/component/battlegrounds/battles/bgs-simulator-hero-power-selection.component.scss`,
+    ],
+    template: `
 		<div class="container">
 			<button class="i-30 close-button" (mousedown)="close()">
 				<svg class="svg-icon-fill">
@@ -103,237 +103,234 @@ import { AbstractSubscriptionComponent } from '../../abstract-subscription.compo
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsSimulatorHeroPowerSelectionComponent
-	extends AbstractSubscriptionComponent
-	implements AfterContentInit, OnDestroy {
-	@Input() closeHandler: () => void;
-	@Input() applyHandler: (newHeroCardId: string, heroPowerInfo: number) => void;
+    extends AbstractSubscriptionComponent
+    implements AfterContentInit, OnDestroy {
+    @Input() closeHandler: () => void;
+    @Input() applyHandler: (newHeroCardId: string, heroPowerInfo: number) => void;
+    searchForm = new FormControl();
+    allHeroes: readonly HeroPower[];
+    currentHeroId: string;
+    heroIcon: string;
+    heroName: string;
+    heroPowerText: string;
+    searchString = new BehaviorSubject<string>(null);
+    showHeroPowerInfo: boolean;
+    heroPowerInfo: number;
+    heroPowerInfoLabel: string;
+    private subscription: Subscription;
 
-	@Input() set currentHero(heroPowerCardId: string) {
-		this.currentHeroId = heroPowerCardId;
-		if (!!heroPowerCardId) {
-			this.heroIcon = this.i18n.getCardImage(heroPowerCardId);
-			this.heroName = this.allCards.getCard(heroPowerCardId)?.name;
-			this.heroPowerText = this.sanitizeText(this.allCards.getCard(heroPowerCardId)?.text);
-		} else {
-			this.heroIcon = null;
-			this.heroName = this.i18n.translateString('battlegrounds.sim.select-hero-power-placeholder');
-			this.heroPowerText = null;
-		}
-		const isTavishHp = [
-			CardIds.AimLeftToken,
-			CardIds.AimRightToken,
-			CardIds.AimLowToken,
-			CardIds.AimHighToken,
-		].includes(heroPowerCardId as CardIds);
-		// this.heroPowerInfo = undefined;
-		this.showHeroPowerInfo = isTavishHp;
-		this.heroPowerInfoLabel = isTavishHp
-			? this.i18n.translateString('battlegrounds.sim.hero-power-info-tavish')
-			: null;
+    constructor(
+        private readonly allCards: CardsFacadeService,
+        private readonly i18n: LocalizationFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+        protected readonly store: AppUiStoreFacadeService,
+    ) {
+        super(store, cdr);
+        this.cdr.detach();
+    }
 
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    @Input() set currentHero(heroPowerCardId: string) {
+        this.currentHeroId = heroPowerCardId;
+        if (!!heroPowerCardId) {
+            this.heroIcon = this.i18n.getCardImage(heroPowerCardId);
+            this.heroName = this.allCards.getCard(heroPowerCardId)?.name;
+            this.heroPowerText = this.sanitizeText(this.allCards.getCard(heroPowerCardId)?.text);
+        } else {
+            this.heroIcon = null;
+            this.heroName = this.i18n.translateString('battlegrounds.sim.select-hero-power-placeholder');
+            this.heroPowerText = null;
+        }
+        const isTavishHp = [
+            CardIds.AimLeftToken,
+            CardIds.AimRightToken,
+            CardIds.AimLowToken,
+            CardIds.AimHighToken,
+        ].includes(heroPowerCardId as CardIds);
+        // this.heroPowerInfo = undefined;
+        this.showHeroPowerInfo = isTavishHp;
+        this.heroPowerInfoLabel = isTavishHp
+            ? this.i18n.translateString('battlegrounds.sim.hero-power-info-tavish')
+            : null;
 
-	@Input() set heroPowerData(value: number) {
-		this.heroPowerInfo = value;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	searchForm = new FormControl();
+    @Input() set heroPowerData(value: number) {
+        this.heroPowerInfo = value;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	allHeroes: readonly HeroPower[];
-	currentHeroId: string;
-	heroIcon: string;
-	heroName: string;
-	heroPowerText: string;
-	searchString = new BehaviorSubject<string>(null);
-	showHeroPowerInfo: boolean;
-	heroPowerInfo: number;
-	heroPowerInfoLabel: string;
+    ngAfterContentInit(): void {
+        const allHeroesAndHeroPowers = this.allCards
+            .getCards()
+            .filter((card) => card.set === 'Battlegrounds')
+            .filter((card) => card.battlegroundsHero || card.type === 'Hero_power');
+        this.searchString
+            .asObservable()
+            .pipe(
+                debounceTime(200),
+                distinctUntilChanged(),
+                map((searchString) => {
+                    const allCardIds = allHeroesAndHeroPowers
+                        .filter(
+                            (card) =>
+                                !searchString?.length ||
+                                (card.type === 'Hero_power' && card.name.toLowerCase().includes(searchString)) ||
+                                (card.type === 'Hero' && card.name.toLowerCase().includes(searchString)),
+                        )
+                        .map((card) =>
+                            card.type === 'Hero_power'
+                                ? card
+                                : this.allCards.getCard(getHeroPower(card.id, this.allCards)),
+                        )
+                        .map((card) => card.id);
+                    console.debug('allcardids', allCardIds);
+                    const uniqueCardIds = Array.from(new Set(allCardIds));
+                    console.debug('uniqueCardIds', uniqueCardIds);
+                    const result = uniqueCardIds
+                        .map((card) => this.allCards.getCard(card))
+                        .map((card) => ({
+                            id: card.id,
+                            icon: this.i18n.getCardImage(card.id),
+                            name: card.name,
+                            text: this.sanitizeText(card.text),
+                        }))
+                        .sort(sortByProperties((hero: HeroPower) => [hero.name]));
+                    console.debug('result', result);
+                    return result;
+                }),
+                // startWith([]),
+                // FIXME
+                tap((filter) => setTimeout(() => this.cdr.detectChanges(), 0)),
+                tap((heroes) => console.debug('hero powers', heroes)),
+                takeUntil(this.destroyed$),
+            )
+            .subscribe((heroes) => {
+                this.allHeroes = [];
+                if (!(this.cdr as ViewRef)?.destroyed) {
+                    this.cdr.detectChanges();
+                }
+                setTimeout(() => {
+                    this.allHeroes = heroes;
+                    if (!(this.cdr as ViewRef)?.destroyed) {
+                        this.cdr.detectChanges();
+                    }
+                });
+            });
+        this.subscription = this.searchForm.valueChanges
+            .pipe(debounceTime(200), distinctUntilChanged(), takeUntil(this.destroyed$))
+            .subscribe((data) => {
+                this.searchString.next(data);
+            });
+        // To bind the async pipes
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	private subscription: Subscription;
+    @HostListener('window:beforeunload')
+    ngOnDestroy() {
+        super.ngOnDestroy();
+        this.subscription.unsubscribe();
+    }
 
-	constructor(
-		private readonly allCards: CardsFacadeService,
-		private readonly i18n: LocalizationFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-		protected readonly store: AppUiStoreFacadeService,
-	) {
-		super(store, cdr);
-		this.cdr.detach();
-	}
+    @HostListener('document:keyup', ['$event'])
+    handleKeyboardControl(event: KeyboardEvent) {
+        if (event.key === 'Enter' && (event.ctrlKey || event.shiftKey || event.altKey)) {
+            this.validate();
+        } else if (event.key === 'Enter' && !!this.allHeroes?.length) {
+            this.selectHero(this.allHeroes[0]);
+        } else if (event.key === 'Escape') {
+            this.close();
+        }
+    }
 
-	ngAfterContentInit(): void {
-		const allHeroesAndHeroPowers = this.allCards
-			.getCards()
-			.filter((card) => card.set === 'Battlegrounds')
-			.filter((card) => card.battlegroundsHero || card.type === 'Hero_power');
-		this.searchString
-			.asObservable()
-			.pipe(
-				debounceTime(200),
-				distinctUntilChanged(),
-				map((searchString) => {
-					const allCardIds = allHeroesAndHeroPowers
-						.filter(
-							(card) =>
-								!searchString?.length ||
-								(card.type === 'Hero_power' && card.name.toLowerCase().includes(searchString)) ||
-								(card.type === 'Hero' && card.name.toLowerCase().includes(searchString)),
-						)
-						.map((card) =>
-							card.type === 'Hero_power'
-								? card
-								: this.allCards.getCard(getHeroPower(card.id, this.allCards)),
-						)
-						.map((card) => card.id);
-					console.debug('allcardids', allCardIds);
-					const uniqueCardIds = Array.from(new Set(allCardIds));
-					console.debug('uniqueCardIds', uniqueCardIds);
-					const result = uniqueCardIds
-						.map((card) => this.allCards.getCard(card))
-						.map((card) => ({
-							id: card.id,
-							icon: this.i18n.getCardImage(card.id),
-							name: card.name,
-							text: this.sanitizeText(card.text),
-						}))
-						.sort(sortByProperties((hero: HeroPower) => [hero.name]));
-					console.debug('result', result);
-					return result;
-				}),
-				// startWith([]),
-				// FIXME
-				tap((filter) => setTimeout(() => this.cdr.detectChanges(), 0)),
-				tap((heroes) => console.debug('hero powers', heroes)),
-				takeUntil(this.destroyed$),
-			)
-			.subscribe((heroes) => {
-				this.allHeroes = [];
-				if (!(this.cdr as ViewRef)?.destroyed) {
-					this.cdr.detectChanges();
-				}
-				setTimeout(() => {
-					this.allHeroes = heroes;
-					if (!(this.cdr as ViewRef)?.destroyed) {
-						this.cdr.detectChanges();
-					}
-				});
-			});
-		this.subscription = this.searchForm.valueChanges
-			.pipe(debounceTime(200), distinctUntilChanged(), takeUntil(this.destroyed$))
-			.subscribe((data) => {
-				this.searchString.next(data);
-			});
-		// To bind the async pipes
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    selectHero(hero: HeroPower) {
+        this.currentHeroId = hero.id;
+        this.heroIcon = hero.icon;
+        this.heroName = hero.name;
+        this.heroPowerText = hero.text;
+        this.heroPowerInfo = undefined;
+        const isTavishHp = [
+            CardIds.AimLeftToken,
+            CardIds.AimRightToken,
+            CardIds.AimLowToken,
+            CardIds.AimHighToken,
+        ].includes(hero.id as CardIds);
+        this.showHeroPowerInfo = isTavishHp;
+        this.heroPowerInfo = 0;
+        this.heroPowerInfoLabel = isTavishHp
+            ? this.i18n.translateString('battlegrounds.sim.hero-power-info-tavish')
+            : null;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	@HostListener('window:beforeunload')
-	ngOnDestroy() {
-		super.ngOnDestroy();
-		this.subscription.unsubscribe();
-	}
+    onHeroPowerInfoChanged(value: number) {
+        this.heroPowerInfo = value;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	@HostListener('document:keyup', ['$event'])
-	handleKeyboardControl(event: KeyboardEvent) {
-		if (event.key === 'Enter' && (event.ctrlKey || event.shiftKey || event.altKey)) {
-			this.validate();
-		} else if (event.key === 'Enter' && !!this.allHeroes?.length) {
-			this.selectHero(this.allHeroes[0]);
-		} else if (event.key === 'Escape') {
-			this.close();
-		}
-	}
+    incrementHeroPowerInfo() {
+        this.heroPowerInfo++;
+    }
 
-	selectHero(hero: HeroPower) {
-		this.currentHeroId = hero.id;
-		this.heroIcon = hero.icon;
-		this.heroName = hero.name;
-		this.heroPowerText = hero.text;
-		this.heroPowerInfo = undefined;
-		const isTavishHp = [
-			CardIds.AimLeftToken,
-			CardIds.AimRightToken,
-			CardIds.AimLowToken,
-			CardIds.AimHighToken,
-		].includes(hero.id as CardIds);
-		this.showHeroPowerInfo = isTavishHp;
-		this.heroPowerInfo = 0;
-		this.heroPowerInfoLabel = isTavishHp
-			? this.i18n.translateString('battlegrounds.sim.hero-power-info-tavish')
-			: null;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    decrementHeroPowerInfo() {
+        if (this.heroPowerInfo <= 0) {
+            return;
+        }
+        this.heroPowerInfo--;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	onHeroPowerInfoChanged(value: number) {
-		this.heroPowerInfo = value;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    preventDrag(event: MouseEvent) {
+        event.stopPropagation();
+    }
 
-	incrementHeroPowerInfo() {
-		this.heroPowerInfo++;
-	}
+    close() {
+        this.closeHandler();
+    }
 
-	decrementHeroPowerInfo() {
-		if (this.heroPowerInfo <= 0) {
-			return;
-		}
-		this.heroPowerInfo--;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    validate() {
+        console.log('validating', this.currentHeroId, this.heroPowerInfo);
+        this.applyHandler(this.currentHeroId, this.heroPowerInfo);
+    }
 
-	preventDrag(event: MouseEvent) {
-		event.stopPropagation();
-	}
+    onMouseDown(event: Event) {
+        event.stopPropagation();
+    }
 
-	close() {
-		this.closeHandler();
-	}
-
-	validate() {
-		console.log('validating', this.currentHeroId, this.heroPowerInfo);
-		this.applyHandler(this.currentHeroId, this.heroPowerInfo);
-	}
-
-	onMouseDown(event: Event) {
-		event.stopPropagation();
-	}
-
-	private sanitizeText(text: string): string {
-		return text
-			? text
-					.replace(/\[x\]/g, '')
-					.replace(/<b>/g, '')
-					.replace(/<\/b>/g, '')
-					.replace(/<i>/g, '')
-					.replace(/<\/i>/g, '')
-					.replace(/<br>/g, '')
-					.replace(/Passive\. /g, '')
-					.replace(/Passive /g, '')
-					.replace(/Passive/g, '')
-			: text;
-	}
+    private sanitizeText(text: string): string {
+        return text
+            ? text
+                .replace(/\[x\]/g, '')
+                .replace(/<b>/g, '')
+                .replace(/<\/b>/g, '')
+                .replace(/<i>/g, '')
+                .replace(/<\/i>/g, '')
+                .replace(/<br>/g, '')
+                .replace(/Passive\. /g, '')
+                .replace(/Passive /g, '')
+                .replace(/Passive/g, '')
+            : text;
+    }
 }
 
 interface HeroPower {
-	id: string;
-	icon: string;
-	name: string;
-	text: string;
+    id: string;
+    icon: string;
+    name: string;
+    text: string;
 }

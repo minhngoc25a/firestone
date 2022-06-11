@@ -1,16 +1,16 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
-import { CardPackResult, PackResult } from '@firestone-hs/user-packs';
-import { LocalizationFacadeService } from '../../services/localization-facade.service';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
+import {CardPackResult, PackResult} from '@firestone-hs/user-packs';
+import {LocalizationFacadeService} from '../../services/localization-facade.service';
 
 @Component({
-	selector: 'pack-display',
-	styleUrls: [
-		`../../../css/global/scrollbar.scss`,
-		`../../../css/global/forms.scss`,
-		`../../../css/global/toggle.scss`,
-		`../../../css/component/collection/pack-display.component.scss`,
-	],
-	template: `
+    selector: 'pack-display',
+    styleUrls: [
+        `../../../css/global/scrollbar.scss`,
+        `../../../css/global/forms.scss`,
+        `../../../css/global/toggle.scss`,
+        `../../../css/component/collection/pack-display.component.scss`,
+    ],
+    template: `
 		<div class="pack-display" *ngIf="cards?.length">
 			<div
 				class="card {{ card.cardType?.toLowerCase() }}"
@@ -35,28 +35,29 @@ import { LocalizationFacadeService } from '../../services/localization-facade.se
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PackDisplayComponent {
-	@Input() set pack(value: PackResult) {
-		this.cards = value.cards;
-	}
+    cards: readonly CardPackResult[];
 
-	cards: readonly CardPackResult[];
+    constructor(private readonly cdr: ChangeDetectorRef, private readonly i18n: LocalizationFacadeService) {
+    }
 
-	constructor(private readonly cdr: ChangeDetectorRef, private readonly i18n: LocalizationFacadeService) {}
+    @Input() set pack(value: PackResult) {
+        this.cards = value.cards;
+    }
 
-	getLeft(i: number): number {
-		const offset = 0;
-		const step = 18;
-		return offset + i * step;
-	}
+    getLeft(i: number): number {
+        const offset = 0;
+        const step = 18;
+        return offset + i * step;
+    }
 
-	trackByFn(index: number, item: CardPackResult) {
-		return item.cardId + '' + index;
-	}
+    trackByFn(index: number, item: CardPackResult) {
+        return item.cardId + '' + index;
+    }
 
-	getCardImage(cardId: string, isPremium: boolean): string {
-		return this.i18n.getCardImage(cardId, { isPremium: isPremium });
-	}
+    getCardImage(cardId: string, isPremium: boolean): string {
+        return this.i18n.getCardImage(cardId, {isPremium: isPremium});
+    }
 }

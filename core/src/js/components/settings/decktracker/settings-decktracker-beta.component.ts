@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 @Component({
-	selector: 'settings-decktracker-beta',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/global/scrollbar-settings.scss`,
-		`../../../../css/global/forms.scss`,
-		`../../../../css/component/settings/settings-common.component.scss`,
-		`../../../../css/component/settings/decktracker/settings-decktracker-beta.component.scss`,
-	],
-	template: `
+    selector: 'settings-decktracker-beta',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/global/scrollbar-settings.scss`,
+        `../../../../css/global/forms.scss`,
+        `../../../../css/component/settings/settings-common.component.scss`,
+        `../../../../css/component/settings/decktracker/settings-decktracker-beta.component.scss`,
+    ],
+    template: `
 		<div class="settings-group decktracker-beta">
 			<h2 class="modes">Activate beta features</h2>
 			<div class="explanation">
@@ -19,6 +19,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 			<section class="toggle-label">No beta feature available for now</section>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsDecktrackerBetaComponent {}
+export class SettingsDecktrackerBetaComponent {
+}

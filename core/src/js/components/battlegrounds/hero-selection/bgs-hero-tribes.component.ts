@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef } from '@angular/core';
-import { BgsHeroStat } from '../../../models/battlegrounds/stats/bgs-hero-stat';
-import { getTribeIcon } from '../../../services/battlegrounds/bgs-utils';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef} from '@angular/core';
+import {BgsHeroStat} from '../../../models/battlegrounds/stats/bgs-hero-stat';
+import {getTribeIcon} from '../../../services/battlegrounds/bgs-utils';
 
 @Component({
-	selector: 'bgs-hero-tribes',
-	styleUrls: [
-		`../../../../css/global/reset-styles.scss`,
-		`../../../../css/component/battlegrounds/hero-selection/bgs-hero-selection-layout.component.scss`,
-		`../../../../css/component/battlegrounds/hero-selection/bgs-hero-tribes.component.scss`,
-	],
-	template: `
+    selector: 'bgs-hero-tribes',
+    styleUrls: [
+        `../../../../css/global/reset-styles.scss`,
+        `../../../../css/component/battlegrounds/hero-selection/bgs-hero-selection-layout.component.scss`,
+        `../../../../css/component/battlegrounds/hero-selection/bgs-hero-tribes.component.scss`,
+    ],
+    template: `
 		<div class="tribes">
 			<div
 				class="title"
@@ -27,37 +27,38 @@ import { getTribeIcon } from '../../../services/battlegrounds/bgs-utils';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsHeroTribesComponent {
-	tribes: readonly { tribe: string; percent: string }[];
+    tribes: readonly { tribe: string; percent: string }[];
 
-	@Input() set hero(value: BgsHeroStat) {
-		// this.tribes = [...value.tribesStat]
-		// 	.sort((a, b) => b.percent - a.percent)
-		// 	.map((stat) => ({ tribe: this.getTribe(stat.tribe), percent: stat.percent.toFixed(1) }))
-		// 	.slice(0, 5);
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    constructor(private readonly cdr: ChangeDetectorRef) {
+    }
 
-	constructor(private readonly cdr: ChangeDetectorRef) {}
+    @Input() set hero(value: BgsHeroStat) {
+        // this.tribes = [...value.tribesStat]
+        // 	.sort((a, b) => b.percent - a.percent)
+        // 	.map((stat) => ({ tribe: this.getTribe(stat.tribe), percent: stat.percent.toFixed(1) }))
+        // 	.slice(0, 5);
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	getIcon(tribe: string): string {
-		return getTribeIcon(tribe);
-	}
+    getIcon(tribe: string): string {
+        return getTribeIcon(tribe);
+    }
 
-	trackByTribeFn(index, item: { tribe: string; percent: string }) {
-		return item.tribe;
-	}
+    trackByTribeFn(index, item: { tribe: string; percent: string }) {
+        return item.tribe;
+    }
 
-	private getTribe(tribe: string): string {
-		if (tribe === 'mechanical') {
-			tribe = 'mech';
-		} else if (tribe === 'blank') {
-			tribe = 'no tribe';
-		}
-		return tribe.charAt(0).toUpperCase() + tribe.slice(1);
-	}
+    private getTribe(tribe: string): string {
+        if (tribe === 'mechanical') {
+            tribe = 'mech';
+        } else if (tribe === 'blank') {
+            tribe = 'no tribe';
+        }
+        return tribe.charAt(0).toUpperCase() + tribe.slice(1);
+    }
 }

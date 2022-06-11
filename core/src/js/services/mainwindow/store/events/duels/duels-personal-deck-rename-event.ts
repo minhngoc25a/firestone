@@ -1,21 +1,22 @@
-import { MainWindowStoreEvent } from '../main-window-store-event';
+import {MainWindowStoreEvent} from '../main-window-store-event';
 
 export class DuelsPersonalDeckRenameEvent implements MainWindowStoreEvent {
-	public static eventName(): string {
-		return 'DuelsPersonalDeckRenameEvent';
-	}
+    constructor(public readonly deckstring: string, public readonly newName: string) {
+    }
 
-	constructor(public readonly deckstring: string, public readonly newName: string) {}
+    public static eventName(): string {
+        return 'DuelsPersonalDeckRenameEvent';
+    }
 
-	public eventName(): string {
-		return 'DuelsPersonalDeckRenameEvent';
-	}
+    public eventName(): string {
+        return 'DuelsPersonalDeckRenameEvent';
+    }
 
-	public isNavigationEvent(): boolean {
-		return true;
-	}
+    public isNavigationEvent(): boolean {
+        return true;
+    }
 
-	public isResetHistoryEvent(): boolean {
-		return false;
-	}
+    public isResetHistoryEvent(): boolean {
+        return false;
+    }
 }

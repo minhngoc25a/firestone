@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 @Component({
-	selector: 'settings-decktracker-launch',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/global/scrollbar-settings.scss`,
-		`../../../../css/global/forms.scss`,
-		`../../../../css/component/settings/settings-common.component.scss`,
-		`../../../../css/component/settings/decktracker/settings-decktracker-launch.component.scss`,
-	],
-	template: `
+    selector: 'settings-decktracker-launch',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/global/scrollbar-settings.scss`,
+        `../../../../css/global/forms.scss`,
+        `../../../../css/component/settings/settings-common.component.scss`,
+        `../../../../css/component/settings/decktracker/settings-decktracker-launch.component.scss`,
+    ],
+    template: `
 		<div class="settings-group decktracker-launch">
 			<h2 class="modes" [owTranslate]="'settings.decktracker.modes.title'"></h2>
 			<section class="toggle-label">
@@ -44,6 +44,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 			</section>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsDecktrackerLaunchComponent {}
+export class SettingsDecktrackerLaunchComponent {
+}

@@ -1,24 +1,24 @@
-import { ComponentType } from '@angular/cdk/portal';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { GameType } from '@firestone-hs/reference-data';
-import { Entity } from '@firestone-hs/replay-parser';
-import { BgsFaceOffWithSimulation } from '../../../models/battlegrounds/bgs-face-off-with-simulation';
-import { buildEntityFromBoardEntity } from '../../../services/battlegrounds/bgs-utils';
-import { CardsFacadeService } from '../../../services/cards-facade.service';
-import { defaultStartingHp } from '../../../services/hs-utils';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
-import { BgsCardTooltipComponent } from '../bgs-card-tooltip.component';
+import {ComponentType} from '@angular/cdk/portal';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {GameType} from '@firestone-hs/reference-data';
+import {Entity} from '@firestone-hs/replay-parser';
+import {BgsFaceOffWithSimulation} from '../../../models/battlegrounds/bgs-face-off-with-simulation';
+import {buildEntityFromBoardEntity} from '../../../services/battlegrounds/bgs-utils';
+import {CardsFacadeService} from '../../../services/cards-facade.service';
+import {defaultStartingHp} from '../../../services/hs-utils';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
+import {BgsCardTooltipComponent} from '../bgs-card-tooltip.component';
 
 declare let amplitude;
 
 @Component({
-	selector: 'bgs-battle-recap',
-	styleUrls: [
-		`../../../../css/global/reset-styles.scss`,
-		`../../../../css/global/scrollbar.scss`,
-		`../../../../css/component/battlegrounds/battles/bgs-battle-recap.component.scss`,
-	],
-	template: `
+    selector: 'bgs-battle-recap',
+    styleUrls: [
+        `../../../../css/global/reset-styles.scss`,
+        `../../../../css/global/scrollbar.scss`,
+        `../../../../css/component/battlegrounds/battles/bgs-battle-recap.component.scss`,
+    ],
+    template: `
 		<div class="bgs-battle-recap" [ngClass]="{ 'selectable': selectable }">
 			<div class="turn-label" *ngIf="turnNumber">
 				<div
@@ -79,64 +79,64 @@ declare let amplitude;
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsBattleRecapComponent {
-	componentType: ComponentType<any> = BgsCardTooltipComponent;
+    componentType: ComponentType<any> = BgsCardTooltipComponent;
+    turnNumber: number;
+    result: string;
+    i18nResult: string;
+    selectable: boolean;
+    playerHeroCardId: string;
+    playerHealth: number;
+    playerMaxHealth: number;
+    playerTavernTier: number;
+    playerEntities: readonly Entity[];
+    battle: BgsFaceOffWithSimulation;
+    opponentHeroCardId: string;
+    opponentHealth: number;
+    opponentMaxHealth: number;
+    opponentTavernTier: number;
+    opponentEntities: readonly Entity[];
 
-	@Input() set faceOff(value: BgsFaceOffWithSimulation) {
-		if (!value) {
-			return;
-		}
+    constructor(private readonly allCards: CardsFacadeService, private readonly i18n: LocalizationFacadeService) {
+    }
 
-		this.turnNumber = value.turn;
-		this.result = value.result;
-		this.i18nResult = value.result
-			? this.i18n.translateString(`battlegrounds.battle.result.${value.result}`)
-			: undefined;
+    @Input() set faceOff(value: BgsFaceOffWithSimulation) {
+        if (!value) {
+            return;
+        }
 
-		this.playerHeroCardId = value.playerCardId;
-		this.playerHealth = value.playerHpLeft;
-		this.playerMaxHealth = defaultStartingHp(GameType.GT_BATTLEGROUNDS, this.playerHeroCardId);
-		this.playerTavernTier = value.playerTavern;
+        this.turnNumber = value.turn;
+        this.result = value.result;
+        this.i18nResult = value.result
+            ? this.i18n.translateString(`battlegrounds.battle.result.${value.result}`)
+            : undefined;
 
-		this.battle = value;
+        this.playerHeroCardId = value.playerCardId;
+        this.playerHealth = value.playerHpLeft;
+        this.playerMaxHealth = defaultStartingHp(GameType.GT_BATTLEGROUNDS, this.playerHeroCardId);
+        this.playerTavernTier = value.playerTavern;
 
-		this.opponentHeroCardId = value.opponentCardId;
-		this.opponentHealth = value.opponentHpLeft;
-		this.opponentMaxHealth = defaultStartingHp(GameType.GT_BATTLEGROUNDS, this.opponentHeroCardId);
-		this.opponentTavernTier = value.opponentTavern;
+        this.battle = value;
 
-		this.selectable = true; // !!value.battleInfo;
-		if (value.battleInfo) {
-			this.playerEntities = value.battleInfo.playerBoard.board.map((minion) =>
-				buildEntityFromBoardEntity(minion, this.allCards),
-			);
-			this.opponentEntities = value.battleInfo.opponentBoard.board.map((minion) =>
-				buildEntityFromBoardEntity(minion, this.allCards),
-			);
-		}
-	}
+        this.opponentHeroCardId = value.opponentCardId;
+        this.opponentHealth = value.opponentHpLeft;
+        this.opponentMaxHealth = defaultStartingHp(GameType.GT_BATTLEGROUNDS, this.opponentHeroCardId);
+        this.opponentTavernTier = value.opponentTavern;
 
-	turnNumber: number;
-	result: string;
-	i18nResult: string;
-	selectable: boolean;
-	playerHeroCardId: string;
-	playerHealth: number;
-	playerMaxHealth: number;
-	playerTavernTier: number;
-	playerEntities: readonly Entity[];
-	battle: BgsFaceOffWithSimulation;
-	opponentHeroCardId: string;
-	opponentHealth: number;
-	opponentMaxHealth: number;
-	opponentTavernTier: number;
-	opponentEntities: readonly Entity[];
+        this.selectable = true; // !!value.battleInfo;
+        if (value.battleInfo) {
+            this.playerEntities = value.battleInfo.playerBoard.board.map((minion) =>
+                buildEntityFromBoardEntity(minion, this.allCards),
+            );
+            this.opponentEntities = value.battleInfo.opponentBoard.board.map((minion) =>
+                buildEntityFromBoardEntity(minion, this.allCards),
+            );
+        }
+    }
 
-	constructor(private readonly allCards: CardsFacadeService, private readonly i18n: LocalizationFacadeService) {}
-
-	trackByEntityFn(index: number, entity: Entity) {
-		return entity.id;
-	}
+    trackByEntityFn(index: number, entity: Entity) {
+        return entity.id;
+    }
 }

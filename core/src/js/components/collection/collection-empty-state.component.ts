@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Set } from '../../models/set';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {Set} from '../../models/set';
 
 @Component({
-	selector: 'collection-empty-state',
-	styleUrls: [
-		`../../../css/global/components-global.scss`,
-		`../../../css/component/collection/collection-empty-state.component.scss`,
-	],
-	template: `
+    selector: 'collection-empty-state',
+    styleUrls: [
+        `../../../css/global/components-global.scss`,
+        `../../../css/component/collection/collection-empty-state.component.scss`,
+    ],
+    template: `
 		<ng-container [ngSwitch]="sectionSelector">
 			<section class="empty-state no-missing-card-in-set" *ngSwitchCase="NO_MISSING_CARD_IN_SET">
 				<div class="state-container">
@@ -82,52 +82,54 @@ import { Set } from '../../models/set';
 			</section>
 		</ng-container>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionEmptyStateComponent {
-	readonly NO_MISSING_CARD_IN_SET = 'no-missing-card-in-set';
-	readonly NO_CARD_IN_SET = 'no-card-in-set';
-	readonly NO_GOLDEN_IN_SET = 'no-golden-in-set';
-	readonly NO_SEARCH_RESULT = 'no-search-result';
-	readonly DEFAULT = 'default';
+    readonly NO_MISSING_CARD_IN_SET = 'no-missing-card-in-set';
+    readonly NO_CARD_IN_SET = 'no-card-in-set';
+    readonly NO_GOLDEN_IN_SET = 'no-golden-in-set';
+    readonly NO_SEARCH_RESULT = 'no-search-result';
+    readonly DEFAULT = 'default';
 
-	// TODO: duplicate from CardsComponent, not good
-	readonly FILTER_OWN = 'own';
-	readonly FILTER_GOLDEN_OWN = 'goldenown';
-	readonly FILTER_DONT_OWN = 'dontown';
-	readonly FILTER_ALL = 'all';
+    // TODO: duplicate from CardsComponent, not good
+    readonly FILTER_OWN = 'own';
+    readonly FILTER_GOLDEN_OWN = 'goldenown';
+    readonly FILTER_DONT_OWN = 'dontown';
+    readonly FILTER_ALL = 'all';
 
-	sectionSelector: string = this.DEFAULT;
+    sectionSelector: string = this.DEFAULT;
 
-	_set: Set;
-	_activeFilter: string;
-	_searchString: string;
+    _set: Set;
 
-	@Input('set') set set(set: Set) {
-		this._set = set;
-		this.updateSectionSelector();
-	}
+    @Input('set') set set(set: Set) {
+        this._set = set;
+        this.updateSectionSelector();
+    }
 
-	@Input('activeFilter') set activeFilter(activeFilter: string) {
-		this._activeFilter = activeFilter;
-		this.updateSectionSelector();
-	}
+    _activeFilter: string;
 
-	@Input('searchString') set searchString(searchString: string) {
-		this._searchString = searchString;
-		this.updateSectionSelector();
-	}
+    @Input('activeFilter') set activeFilter(activeFilter: string) {
+        this._activeFilter = activeFilter;
+        this.updateSectionSelector();
+    }
 
-	private updateSectionSelector() {
-		this.sectionSelector = undefined;
-		if (this._set && this._activeFilter === this.FILTER_DONT_OWN) {
-			this.sectionSelector = this.NO_MISSING_CARD_IN_SET;
-		} else if (this._set && this._activeFilter === this.FILTER_OWN) {
-			this.sectionSelector = this.NO_CARD_IN_SET;
-		} else if (this._set && this._activeFilter === this.FILTER_GOLDEN_OWN) {
-			this.sectionSelector = this.NO_GOLDEN_IN_SET;
-		} else if (this._searchString) {
-			this.sectionSelector = this.NO_SEARCH_RESULT;
-		}
-	}
+    _searchString: string;
+
+    @Input('searchString') set searchString(searchString: string) {
+        this._searchString = searchString;
+        this.updateSectionSelector();
+    }
+
+    private updateSectionSelector() {
+        this.sectionSelector = undefined;
+        if (this._set && this._activeFilter === this.FILTER_DONT_OWN) {
+            this.sectionSelector = this.NO_MISSING_CARD_IN_SET;
+        } else if (this._set && this._activeFilter === this.FILTER_OWN) {
+            this.sectionSelector = this.NO_CARD_IN_SET;
+        } else if (this._set && this._activeFilter === this.FILTER_GOLDEN_OWN) {
+            this.sectionSelector = this.NO_GOLDEN_IN_SET;
+        } else if (this._searchString) {
+            this.sectionSelector = this.NO_SEARCH_RESULT;
+        }
+    }
 }

@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
 
 @Component({
-	selector: 'progress-bar',
-	styleUrls: [`../../css/component/progress-bar.component.scss`],
-	template: `
+    selector: 'progress-bar',
+    styleUrls: [`../../css/component/progress-bar.component.scss`],
+    template: `
 		<div class="progress-bar">
 			<span class="current" *ngIf="total > 0 && (!fullTotalLabel || current !== total)"
 				>{{ current }}/{{ total }}</span
@@ -20,13 +20,13 @@ import { ChangeDetectionStrategy, Component, Input, ViewEncapsulation } from '@a
 			</div>
 		</div>
 	`,
-	// TODO: remove this
-	encapsulation: ViewEncapsulation.None,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    // TODO: remove this
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProgressBarComponent {
-	@Input() current: number;
-	@Input() total: number;
-	@Input() fullTotalLabel: string;
-	@Input() fullTotalTooltip: string;
+    @Input() current: number;
+    @Input() total: number;
+    @Input() fullTotalLabel: string;
+    @Input() fullTotalTooltip: string;
 }

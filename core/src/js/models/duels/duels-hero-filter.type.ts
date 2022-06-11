@@ -1,3 +1,3 @@
-import { allDuelsHeroes } from '@firestone-hs/reference-data';
+import {allDuelsHeroes} from '@firestone-hs/reference-data';
 
 export type DuelsHeroFilterType = typeof allDuelsHeroes[number][];

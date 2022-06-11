@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { GroupedReplays } from '../../models/mainwindow/replays/grouped-replays';
-import { GameStat } from '../../models/mainwindow/stats/game-stat';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {GroupedReplays} from '../../models/mainwindow/replays/grouped-replays';
+import {GameStat} from '../../models/mainwindow/stats/game-stat';
 
 @Component({
-	selector: 'grouped-replays',
-	styleUrls: [`../../../css/global/menu.scss`, `../../../css/component/replays/grouped-replays.component.scss`],
-	template: `
+    selector: 'grouped-replays',
+    styleUrls: [`../../../css/global/menu.scss`, `../../../css/component/replays/grouped-replays.component.scss`],
+    template: `
 		<div class="grouped-replays">
 			<div class="header">{{ header }}</div>
 			<ul class="replays">
@@ -15,14 +15,14 @@ import { GameStat } from '../../models/mainwindow/stats/game-stat';
 			</ul>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GroupedReplaysComponent {
-	@Input() set groupedReplays(value: GroupedReplays) {
-		this.header = value.header;
-		this._replays = value.replays;
-	}
+    header: string;
+    _replays: readonly GameStat[];
 
-	header: string;
-	_replays: readonly GameStat[];
+    @Input() set groupedReplays(value: GroupedReplays) {
+        this.header = value.header;
+        this._replays = value.replays;
+    }
 }

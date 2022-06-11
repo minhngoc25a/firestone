@@ -1,3 +1,3 @@
 export interface GameStateEvent {
-	readonly type: string;
+    readonly type: string;
 }

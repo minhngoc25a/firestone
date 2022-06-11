@@ -2,99 +2,101 @@
 @import '../../global/fonts';
 
 .achievement-set {
-	display: flex;
-	align-items: center;
-	flex-direction: column;
-	height: 100%;
-	background: rgba(255, 255, 255, 0.08);
-	position: relative;
-	padding-top: 20px;
-	padding-bottom: 20px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  position: relative;
+  padding-top: 20px;
+  padding-bottom: 20px;
 
-	&:hover {
-		background: rgba(255, 255, 255, 0.12);
-	}
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
 
-	.set-name {
-		@extend %achievements-category-name;
-		text-align: center;
-		position: relative;
-		margin: auto;
-		flex-grow: 0;
-		flex-shrink: 0;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		margin-right: 20px;
-		margin-left: 20px;
-		max-width: calc(100% - 40px);
-	}
+  .set-name {
+    @extend %achievements-category-name;
+    text-align: center;
+    position: relative;
+    margin: auto;
+    flex-grow: 0;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 20px;
+    margin-left: 20px;
+    max-width: calc(100% - 40px);
+  }
 
-	.logo {
-		height: 100px;
-		width: 101px;
-		flex-grow: 0;
-		flex-shrink: 0;
-		margin-bottom: 5px;
-		color: #ffb948;
-		--icon-color: #ffb948;
-	}
+  .logo {
+    height: 100px;
+    width: 101px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    margin-bottom: 5px;
+    color: #ffb948;
+    --icon-color: #ffb948;
+  }
 
-	achievement-progress-bar {
-		margin-bottom: 15px;
-	}
+  achievement-progress-bar {
+    margin-bottom: 15px;
+  }
 
-	&.empty {
-		.set-name {
-			color: #cb9fd7;
-		}
-		.logo {
-			color: #cb9fd7;
-			--icon-color: #cb9fd7;
-		}
-		::ng-deep achievement-progress-bar .achieved {
-			color: #a276af;
-		}
-	}
+  &.empty {
+    .set-name {
+      color: #cb9fd7;
+    }
 
-	.frame {
-		position: absolute;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-		pointer-events: none;
+    .logo {
+      color: #cb9fd7;
+      --icon-color: #cb9fd7;
+    }
 
-		&.complete-simple {
-			border: 1px solid #84725f;
+    ::ng-deep achievement-progress-bar .achieved {
+      color: #a276af;
+    }
+  }
 
-			.corner {
-				position: absolute;
+  .frame {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
 
-				&.bottom-left {
-					bottom: 0;
-					left: 0;
-					transform: rotate(0);
-				}
+    &.complete-simple {
+      border: 1px solid #84725f;
 
-				&.top-left {
-					top: 0;
-					left: 0;
-					transform: rotate(90deg);
-				}
+      .corner {
+        position: absolute;
 
-				&.top-right {
-					top: 0;
-					right: 0;
-					transform: rotate(180deg);
-				}
+        &.bottom-left {
+          bottom: 0;
+          left: 0;
+          transform: rotate(0);
+        }
 
-				&.bottom-right {
-					bottom: 0;
-					right: 0;
-					transform: rotate(270deg);
-				}
-			}
-		}
-	}
+        &.top-left {
+          top: 0;
+          left: 0;
+          transform: rotate(90deg);
+        }
+
+        &.top-right {
+          top: 0;
+          right: 0;
+          transform: rotate(180deg);
+        }
+
+        &.bottom-right {
+          bottom: 0;
+          right: 0;
+          transform: rotate(270deg);
+        }
+      }
+    }
+  }
 }

@@ -1,73 +1,73 @@
 .entry {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	height: 14%;
-	min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 14%;
+  min-height: 60px;
 }
 
 .cell {
-	display: flex;
-	position: relative;
+  display: flex;
+  position: relative;
 
-	.filler {
-		flex-grow: 1;
-	}
+  .filler {
+    flex-grow: 1;
+  }
 
-	.value {
-		color: var(--default-text-color);
-	}
+  .value {
+    color: var(--default-text-color);
+  }
 
-	.record-icon {
-		display: none;
-		width: 40px;
-		height: 40px;
-		position: relative;
-		top: -5px;
-	}
+  .record-icon {
+    display: none;
+    width: 40px;
+    height: 40px;
+    position: relative;
+    top: -5px;
+  }
 
-	&.new-record .record-icon {
-		display: inline-block;
-	}
+  &.new-record .record-icon {
+    display: inline-block;
+  }
 
-	.hero {
-		height: 100%;
-		height: 60px;
-		margin-right: 15px;
+  .hero {
+    height: 100%;
+    height: 60px;
+    margin-right: 15px;
 
-		.portrait {
-			height: 100%;
-		}
-	}
+    .portrait {
+      height: 100%;
+    }
+  }
 }
 
 .replay {
-	display: flex;
-	font-family: Open Sans;
-	font-style: normal;
-	font-weight: normal;
-	font-size: 13px;
-	line-height: 18px;
-	color: var(--default-text-color);
-	--icon-color: var(--default-text-color);
-	align-items: center;
-	flex-grow: 0;
-	justify-content: flex-end;
-	margin-left: auto;
-	width: 35px;
-	height: 30px;
+  display: flex;
+  font-family: Open Sans;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--default-text-color);
+  --icon-color: var(--default-text-color);
+  align-items: center;
+  flex-grow: 0;
+  justify-content: flex-end;
+  margin-left: auto;
+  width: 35px;
+  height: 30px;
 
-	.watch {
-		margin-right: 10px;
-	}
+  .watch {
+    margin-right: 10px;
+  }
 
-	.watch-icon {
-		height: 100%;
-	}
+  .watch-icon {
+    height: 100%;
+  }
 
-	&:hover,
-	&:hover svg {
-		color: var(--on-menu-selection-color);
-		--icon-color: var(--on-menu-selection-color);
-	}
+  &:hover,
+  &:hover svg {
+    color: var(--on-menu-selection-color);
+    --icon-color: var(--on-menu-selection-color);
+  }
 }

@@ -1,32 +1,32 @@
-import { PackResult } from '@firestone-hs/user-packs';
-import { Card } from '../card';
-import { CardBack } from '../card-back';
-import { CardHistory } from '../card-history';
-import { Coin } from '../coin';
-import { PackInfo } from '../collection/pack-info';
-import { Set, SetCard } from '../set';
+import {PackResult} from '@firestone-hs/user-packs';
+import {Card} from '../card';
+import {CardBack} from '../card-back';
+import {CardHistory} from '../card-history';
+import {Coin} from '../coin';
+import {PackInfo} from '../collection/pack-info';
+import {Set, SetCard} from '../set';
 
 export class BinderState {
-	readonly collection: readonly Card[] = [];
-	readonly ownedBgsHeroSkins: readonly number[] = [];
-	readonly packs: readonly PackInfo[] = [];
-	readonly packStats: readonly PackResult[] = [];
-	readonly allSets: readonly Set[] = [];
-	readonly cardBacks: readonly CardBack[] = [];
-	readonly coins: readonly Coin[] = [];
-	readonly cardHistory: readonly CardHistory[] = [];
-	readonly totalHistoryLength: number;
-	readonly isLoading: boolean = true;
+    readonly collection: readonly Card[] = [];
+    readonly ownedBgsHeroSkins: readonly number[] = [];
+    readonly packs: readonly PackInfo[] = [];
+    readonly packStats: readonly PackResult[] = [];
+    readonly allSets: readonly Set[] = [];
+    readonly cardBacks: readonly CardBack[] = [];
+    readonly coins: readonly Coin[] = [];
+    readonly cardHistory: readonly CardHistory[] = [];
+    readonly totalHistoryLength: number;
+    readonly isLoading: boolean = true;
 
-	public update(base: BinderState): BinderState {
-		return Object.assign(new BinderState(), this, base);
-	}
+    public update(base: BinderState): BinderState {
+        return Object.assign(new BinderState(), this, base);
+    }
 
-	public getCard(cardId: string): SetCard {
-		return this.allSets.map((set) => set.getCard(cardId)).find((card) => card);
-	}
+    public getCard(cardId: string): SetCard {
+        return this.allSets.map((set) => set.getCard(cardId)).find((card) => card);
+    }
 
-	public getAllCards(): readonly SetCard[] {
-		return this.allSets.map((set) => set.allCards).reduce((a, b) => a.concat(b), []);
-	}
+    public getAllCards(): readonly SetCard[] {
+        return this.allSets.map((set) => set.allCards).reduce((a, b) => a.concat(b), []);
+    }
 }

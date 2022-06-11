@@ -1,32 +1,42 @@
 import {
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
-	Input,
-	ViewRef,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    ViewRef,
 } from '@angular/core';
-import { LocalizationFacadeService } from '@services/localization-facade.service';
-import { DuelsDeletePersonalDeckSummaryEvent } from '@services/mainwindow/store/events/duels/duels-delete-personal-deck-summary-event';
-import { DuelsDeckSummary } from '../../../models/duels/duels-personal-deck';
-import { DuelsHidePersonalDeckSummaryEvent } from '../../../services/mainwindow/store/events/duels/duels-hide-personal-deck-summary-event';
-import { DuelsPersonalDeckRenameEvent } from '../../../services/mainwindow/store/events/duels/duels-personal-deck-rename-event';
-import { DuelsRestorePersonalDeckSummaryEvent } from '../../../services/mainwindow/store/events/duels/duels-restore-personal-deck-summary-event';
-import { DuelsViewPersonalDeckDetailsEvent } from '../../../services/mainwindow/store/events/duels/duels-view-personal-deck-details-event';
-import { MainWindowStoreEvent } from '../../../services/mainwindow/store/events/main-window-store-event';
-import { OverwolfService } from '../../../services/overwolf.service';
+import {LocalizationFacadeService} from '@services/localization-facade.service';
+import {
+    DuelsDeletePersonalDeckSummaryEvent
+} from '@services/mainwindow/store/events/duels/duels-delete-personal-deck-summary-event';
+import {DuelsDeckSummary} from '../../../models/duels/duels-personal-deck';
+import {
+    DuelsHidePersonalDeckSummaryEvent
+} from '../../../services/mainwindow/store/events/duels/duels-hide-personal-deck-summary-event';
+import {
+    DuelsPersonalDeckRenameEvent
+} from '../../../services/mainwindow/store/events/duels/duels-personal-deck-rename-event';
+import {
+    DuelsRestorePersonalDeckSummaryEvent
+} from '../../../services/mainwindow/store/events/duels/duels-restore-personal-deck-summary-event';
+import {
+    DuelsViewPersonalDeckDetailsEvent
+} from '../../../services/mainwindow/store/events/duels/duels-view-personal-deck-details-event';
+import {MainWindowStoreEvent} from '../../../services/mainwindow/store/events/main-window-store-event';
+import {OverwolfService} from '../../../services/overwolf.service';
 
 @Component({
-	selector: 'duels-personal-deck-vignette',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/controls/controls.scss`,
-		`../../../../css/component/controls/control-close.component.scss`,
-		`../../../../css/global/menu.scss`,
-		`../../../../css/component/duels/desktop/duels-personal-deck-vignette.component.scss`,
-	],
-	template: `
+    selector: 'duels-personal-deck-vignette',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/controls/controls.scss`,
+        `../../../../css/component/controls/control-close.component.scss`,
+        `../../../../css/global/menu.scss`,
+        `../../../../css/component/duels/desktop/duels-personal-deck-vignette.component.scss`,
+    ],
+    template: `
 		<div class="duels-personal-deck-vignette" [ngClass]="{ 'hidden': hidden, 'has-details': deckstring != null }">
 			<div class="container" (click)="viewDetails($event)">
 				<div class="deck-name-container" *ngIf="!renaming">
@@ -85,91 +95,91 @@ import { OverwolfService } from '../../../services/overwolf.service';
 			></button>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DuelsPersonalDecksVignetteComponent implements AfterViewInit {
-	@Input() set deck(value: DuelsDeckSummary) {
-		this._deck = value;
-		// const heroCardName = this.allCards.getCard(value.heroCardId)?.name;
-		this.deckName = value.deckName;
-		this.skin = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.heroCardId}.jpg`;
-		this.totalRuns = value.global?.totalRunsPlayed ?? 0;
-		this.avgWins = value.global?.averageWinsPerRun ?? 0;
-		this.deckstring = value.initialDeckList;
-		this.hidden = value.hidden;
-		this.archiveDeckTooltip = !this.totalRuns
-			? this.i18n.translateString('app.duels.deck-stat.delete-deck-tooltip')
-			: this.i18n.translateString('app.duels.deck-stat.archive-deck-tooltip');
-	}
+    deckName: string;
+    skin: string;
+    totalRuns: number;
+    avgWins: number;
+    deckstring: string;
+    hidden: boolean;
+    archiveDeckTooltip: string;
+    renaming: boolean;
+    private stateUpdater: EventEmitter<MainWindowStoreEvent>;
 
-	_deck: DuelsDeckSummary;
-	deckName: string;
-	skin: string;
-	totalRuns: number;
-	avgWins: number;
-	deckstring: string;
-	hidden: boolean;
-	archiveDeckTooltip: string;
+    constructor(
+        private readonly ow: OverwolfService,
+        private readonly cdr: ChangeDetectorRef,
+        private readonly i18n: LocalizationFacadeService,
+    ) {
+    }
 
-	renaming: boolean;
+    _deck: DuelsDeckSummary;
 
-	private stateUpdater: EventEmitter<MainWindowStoreEvent>;
+    @Input() set deck(value: DuelsDeckSummary) {
+        this._deck = value;
+        // const heroCardName = this.allCards.getCard(value.heroCardId)?.name;
+        this.deckName = value.deckName;
+        this.skin = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.heroCardId}.jpg`;
+        this.totalRuns = value.global?.totalRunsPlayed ?? 0;
+        this.avgWins = value.global?.averageWinsPerRun ?? 0;
+        this.deckstring = value.initialDeckList;
+        this.hidden = value.hidden;
+        this.archiveDeckTooltip = !this.totalRuns
+            ? this.i18n.translateString('app.duels.deck-stat.delete-deck-tooltip')
+            : this.i18n.translateString('app.duels.deck-stat.archive-deck-tooltip');
+    }
 
-	constructor(
-		private readonly ow: OverwolfService,
-		private readonly cdr: ChangeDetectorRef,
-		private readonly i18n: LocalizationFacadeService,
-	) {}
+    ngAfterViewInit() {
+        this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
+    }
 
-	ngAfterViewInit() {
-		this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
-	}
+    hideDeck(event: MouseEvent) {
+        event.stopPropagation();
+        event.preventDefault();
+        !this.totalRuns
+            ? this.stateUpdater.next(new DuelsDeletePersonalDeckSummaryEvent(this.deckstring))
+            : this.stateUpdater.next(new DuelsHidePersonalDeckSummaryEvent(this.deckstring));
+    }
 
-	hideDeck(event: MouseEvent) {
-		event.stopPropagation();
-		event.preventDefault();
-		!this.totalRuns
-			? this.stateUpdater.next(new DuelsDeletePersonalDeckSummaryEvent(this.deckstring))
-			: this.stateUpdater.next(new DuelsHidePersonalDeckSummaryEvent(this.deckstring));
-	}
+    restoreDeck(event: MouseEvent) {
+        event.stopPropagation();
+        event.preventDefault();
+        this.stateUpdater.next(new DuelsRestorePersonalDeckSummaryEvent(this.deckstring));
+    }
 
-	restoreDeck(event: MouseEvent) {
-		event.stopPropagation();
-		event.preventDefault();
-		this.stateUpdater.next(new DuelsRestorePersonalDeckSummaryEvent(this.deckstring));
-	}
+    viewDetails(event: MouseEvent) {
+        event.stopPropagation();
+        event.preventDefault();
+        if (
+            (event.target as any)?.tagName?.toLowerCase() === 'button' ||
+            (event.target as any)?.tagName?.toLowerCase() === 'input' ||
+            (event.target as any)?.tagName?.toLowerCase() === 'svg'
+        ) {
+            return;
+        }
+        this.stateUpdater.next(new DuelsViewPersonalDeckDetailsEvent(this.deckstring));
+    }
 
-	viewDetails(event: MouseEvent) {
-		event.stopPropagation();
-		event.preventDefault();
-		if (
-			(event.target as any)?.tagName?.toLowerCase() === 'button' ||
-			(event.target as any)?.tagName?.toLowerCase() === 'input' ||
-			(event.target as any)?.tagName?.toLowerCase() === 'svg'
-		) {
-			return;
-		}
-		this.stateUpdater.next(new DuelsViewPersonalDeckDetailsEvent(this.deckstring));
-	}
+    preventDrag(event: MouseEvent) {
+        event.stopPropagation();
+    }
 
-	preventDrag(event: MouseEvent) {
-		event.stopPropagation();
-	}
+    startDeckRename(event: MouseEvent) {
+        event.stopPropagation();
+        event.preventDefault();
+        this.renaming = true;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	startDeckRename(event: MouseEvent) {
-		event.stopPropagation();
-		event.preventDefault();
-		this.renaming = true;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
-
-	doRename() {
-		this.stateUpdater.next(new DuelsPersonalDeckRenameEvent(this.deckstring, this.deckName));
-		this.renaming = false;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    doRename() {
+        this.stateUpdater.next(new DuelsPersonalDeckRenameEvent(this.deckstring, this.deckName));
+        this.renaming = false;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 }

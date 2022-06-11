@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 
 @Component({
-	selector: 'settings-general',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/settings/general/settings-general.component.scss`,
-	],
-	template: `
+    selector: 'settings-general',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/settings/general/settings-general.component.scss`,
+    ],
+    template: `
 		<ul class="general">
 			<settings-general-menu [selectedMenu]="_selectedMenu" (onMenuSelected)="onMenuSelected($event)">
 			</settings-general-menu>
@@ -20,15 +20,15 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 			</ng-container>
 		</ul>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsGeneralComponent {
-	_selectedMenu: string;
-	@Input() set selectedMenu(value: string) {
-		this._selectedMenu = value || 'launch';
-	}
+    _selectedMenu: string;
+    @Input() set selectedMenu(value: string) {
+        this._selectedMenu = value || 'launch';
+    }
 
-	onMenuSelected(selectedMenuItem) {
-		this.selectedMenu = selectedMenuItem;
-	}
+    onMenuSelected(selectedMenuItem) {
+        this.selectedMenu = selectedMenuItem;
+    }
 }

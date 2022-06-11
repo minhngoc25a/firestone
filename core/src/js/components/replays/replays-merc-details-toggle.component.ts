@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 @Component({
-	selector: 'replays-merc-details-toggle',
-	styleUrls: [`../../../css/component/replays/replays-icon-toggle.component.scss`],
-	template: `
+    selector: 'replays-merc-details-toggle',
+    styleUrls: [`../../../css/component/replays/replays-icon-toggle.component.scss`],
+    template: `
 		<preference-toggle
 			class="replays-icon-toggle"
 			field="replaysShowMercDetails"
@@ -11,6 +11,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 			[helpTooltip]="'app.replays.merc-details-toggle.tooltip' | owTranslate"
 		></preference-toggle>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReplayMercDetailsToggleComponent {}
+export class ReplayMercDetailsToggleComponent {
+}

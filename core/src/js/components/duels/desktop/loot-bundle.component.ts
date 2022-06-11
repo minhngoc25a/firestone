@@ -1,16 +1,16 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { CardsFacadeService } from '@services/cards-facade.service';
-import { VisualDeckCard } from '../../../models/decktracker/visual-deck-card';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
-import { Option } from './option';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {CardsFacadeService} from '@services/cards-facade.service';
+import {VisualDeckCard} from '../../../models/decktracker/visual-deck-card';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
+import {Option} from './option';
 
 @Component({
-	selector: 'loot-bundle',
-	styleUrls: [
-		`../../../../css/global/menu.scss`,
-		`../../../../css/component/duels/desktop/loot-bundle.component.scss`,
-	],
-	template: `
+    selector: 'loot-bundle',
+    styleUrls: [
+        `../../../../css/global/menu.scss`,
+        `../../../../css/component/duels/desktop/loot-bundle.component.scss`,
+    ],
+    template: `
 		<div class="loot-bundle">
 			<div class="cards">
 				<li class="card-container" *ngFor="let card of cards">
@@ -20,29 +20,30 @@ import { Option } from './option';
 			<div class="header">{{ bundleName }}</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LootBundleComponent {
-	@Input() set option(value: Option) {
-		if (!value) {
-			return;
-		}
+    bundleName: string;
+    cards: readonly VisualDeckCard[];
 
-		this.bundleName = this.allCards.getCard(value.cardId)?.name;
-		this.cards = value.contents.map((cardId) => {
-			const card = this.allCards.getCard(cardId);
-			return cardId == '0'
-				? null
-				: VisualDeckCard.create({
-						cardId: cardId,
-						cardName: this.i18n.getCardName(card.id),
-						manaCost: card.cost,
-				  } as VisualDeckCard);
-		});
-	}
+    constructor(private readonly allCards: CardsFacadeService, private readonly i18n: LocalizationFacadeService) {
+    }
 
-	bundleName: string;
-	cards: readonly VisualDeckCard[];
+    @Input() set option(value: Option) {
+        if (!value) {
+            return;
+        }
 
-	constructor(private readonly allCards: CardsFacadeService, private readonly i18n: LocalizationFacadeService) {}
+        this.bundleName = this.allCards.getCard(value.cardId)?.name;
+        this.cards = value.contents.map((cardId) => {
+            const card = this.allCards.getCard(cardId);
+            return cardId == '0'
+                ? null
+                : VisualDeckCard.create({
+                    cardId: cardId,
+                    cardName: this.i18n.getCardName(card.id),
+                    manaCost: card.cost,
+                } as VisualDeckCard);
+        });
+    }
 }

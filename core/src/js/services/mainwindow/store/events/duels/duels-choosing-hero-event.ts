@@ -1,21 +1,22 @@
-import { MainWindowStoreEvent } from '../main-window-store-event';
+import {MainWindowStoreEvent} from '../main-window-store-event';
 
 export class DuelsChoosingHeroEvent implements MainWindowStoreEvent {
-	public static eventName(): string {
-		return 'DuelsChoosingHeroEvent';
-	}
+    constructor(public readonly value: boolean) {
+    }
 
-	constructor(public readonly value: boolean) {}
+    public static eventName(): string {
+        return 'DuelsChoosingHeroEvent';
+    }
 
-	public eventName(): string {
-		return 'DuelsChoosingHeroEvent';
-	}
+    public eventName(): string {
+        return 'DuelsChoosingHeroEvent';
+    }
 
-	public isNavigationEvent(): boolean {
-		return false;
-	}
+    public isNavigationEvent(): boolean {
+        return false;
+    }
 
-	public isResetHistoryEvent(): boolean {
-		return false;
-	}
+    public isResetHistoryEvent(): boolean {
+        return false;
+    }
 }

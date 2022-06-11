@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 
 @Component({
-	selector: 'control-share',
-	styleUrls: [
-		`../../../css/global/components-global.scss`,
-		`../../../css/component/controls/controls.scss`,
-		`../../../css/component/controls/control-share.component.scss`,
-	],
-	template: `
+    selector: 'control-share',
+    styleUrls: [
+        `../../../css/global/components-global.scss`,
+        `../../../css/component/controls/controls.scss`,
+        `../../../css/component/controls/control-share.component.scss`,
+    ],
+    template: `
 		<!-- TODO: remove -1 tabindex once the menu is converted to using ngIf instead of CSS -->
 		<button class="button-container" tabindex="-1" [attr.aria-label]="'Social share'">
 			<div class="icon" inlineSVG="assets/svg/social/share.svg"></div>
@@ -22,9 +22,9 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 			</div>
 		</button>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ControlShareComponent {
-	@Input() onSocialClick: (copyToCliboard: boolean) => Promise<[string, any]>;
-	@Input() page = 'bgs-post-match-stats';
+    @Input() onSocialClick: (copyToCliboard: boolean) => Promise<[string, any]>;
+    @Input() page = 'bgs-post-match-stats';
 }

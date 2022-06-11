@@ -1,17 +1,17 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Entity } from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
-import { CardsFacadeService } from '@services/cards-facade.service';
-import { BgsPlayer } from '../../../models/battlegrounds/bgs-player';
-import { BgsTavernUpgrade } from '../../../models/battlegrounds/in-game/bgs-tavern-upgrade';
-import { BgsTriple } from '../../../models/battlegrounds/in-game/bgs-triple';
+import {AfterViewInit, ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {Entity} from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
+import {CardsFacadeService} from '@services/cards-facade.service';
+import {BgsPlayer} from '../../../models/battlegrounds/bgs-player';
+import {BgsTavernUpgrade} from '../../../models/battlegrounds/in-game/bgs-tavern-upgrade';
+import {BgsTriple} from '../../../models/battlegrounds/in-game/bgs-triple';
 
 @Component({
-	selector: 'bgs-opponent-overview',
-	styleUrls: [
-		`../../../../css/global/reset-styles.scss`,
-		`../../../../css/component/battlegrounds/in-game/bgs-opponent-overview.component.scss`,
-	],
-	template: `
+    selector: 'bgs-opponent-overview',
+    styleUrls: [
+        `../../../../css/global/reset-styles.scss`,
+        `../../../../css/component/battlegrounds/in-game/bgs-opponent-overview.component.scss`,
+    ],
+    template: `
 		<div class="opponent-overview">
 			<div class="portrait">
 				<bgs-hero-portrait
@@ -63,61 +63,62 @@ import { BgsTriple } from '../../../models/battlegrounds/in-game/bgs-triple';
 			></div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsOpponentOverviewComponent implements AfterViewInit {
-	heroCardId: string;
-	health: number;
-	maxHealth: number;
-	heroPowerCardId: string;
-	name: string;
-	tavernTier: number;
-	boardMinions: readonly Entity[];
-	boardTurn: number;
-	tavernUpgrades: BgsTavernUpgrade[];
-	triples: readonly BgsTriple[];
-	debug = false;
-	// buddies: readonly number[];
+    heroCardId: string;
+    health: number;
+    maxHealth: number;
+    heroPowerCardId: string;
+    name: string;
+    tavernTier: number;
+    boardMinions: readonly Entity[];
+    boardTurn: number;
+    tavernUpgrades: BgsTavernUpgrade[];
+    triples: readonly BgsTriple[];
+    debug = false;
+    // buddies: readonly number[];
 
-	@Input() showLastOpponentIcon: boolean;
+    @Input() showLastOpponentIcon: boolean;
 
-	@Input() currentTurn: number;
+    @Input() currentTurn: number;
 
-	@Input() set opponent(value: BgsPlayer) {
-		if (value === this._opponent) {
-			return;
-		}
-		this.debug = false; //value.cardId === 'TB_BaconShop_HERO_01';
-		if (this.debug) {
-		}
-		this._opponent = value;
-		if (!value) {
-			console.warn('[opponent-overview] setting empty value');
-			return;
-		}
-		this.heroCardId = value.getDisplayCardId();
-		this.health = value.initialHealth - value.damageTaken;
-		this.maxHealth = value.initialHealth;
-		this.heroPowerCardId = value.getDisplayHeroPowerCardId(this.allCards);
-		this.name = value.name;
-		this.tavernTier = value.getCurrentTavernTier();
-		this.boardMinions = value.getLastKnownBoardState();
-		this.boardTurn = value.getLastBoardStateTurn();
-		this.tavernUpgrades = [...value.tavernUpgradeHistory].reverse();
-		this.triples = value.tripleHistory;
-		// this.buddies = value.buddyTurns;
-	}
+    constructor(private readonly allCards: CardsFacadeService) {
+    }
 
-	private _opponent: BgsPlayer;
+    private _opponent: BgsPlayer;
 
-	constructor(private readonly allCards: CardsFacadeService) {}
+    @Input() set opponent(value: BgsPlayer) {
+        if (value === this._opponent) {
+            return;
+        }
+        this.debug = false; //value.cardId === 'TB_BaconShop_HERO_01';
+        if (this.debug) {
+        }
+        this._opponent = value;
+        if (!value) {
+            console.warn('[opponent-overview] setting empty value');
+            return;
+        }
+        this.heroCardId = value.getDisplayCardId();
+        this.health = value.initialHealth - value.damageTaken;
+        this.maxHealth = value.initialHealth;
+        this.heroPowerCardId = value.getDisplayHeroPowerCardId(this.allCards);
+        this.name = value.name;
+        this.tavernTier = value.getCurrentTavernTier();
+        this.boardMinions = value.getLastKnownBoardState();
+        this.boardTurn = value.getLastBoardStateTurn();
+        this.tavernUpgrades = [...value.tavernUpgradeHistory].reverse();
+        this.triples = value.tripleHistory;
+        // this.buddies = value.buddyTurns;
+    }
 
-	ngAfterViewInit() {
-		if (this.debug) {
-		}
-	}
+    ngAfterViewInit() {
+        if (this.debug) {
+        }
+    }
 
-	trackByUpgradeFn(index, item: BgsTavernUpgrade) {
-		return item.tavernTier;
-	}
+    trackByUpgradeFn(index, item: BgsTavernUpgrade) {
+        return item.tavernTier;
+    }
 }

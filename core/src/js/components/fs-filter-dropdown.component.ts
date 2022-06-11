@@ -1,20 +1,20 @@
 import {
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
-	Input,
-	Output,
-	ViewRef,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    Output,
+    ViewRef,
 } from '@angular/core';
-import { IOption } from 'ng-select';
-import { MainWindowState } from '../models/mainwindow/main-window-state';
-import { NavigationState } from '../models/mainwindow/navigation/navigation-state';
+import {IOption} from 'ng-select';
+import {MainWindowState} from '../models/mainwindow/main-window-state';
+import {NavigationState} from '../models/mainwindow/navigation/navigation-state';
 
 @Component({
-	selector: 'fs-filter-dropdown',
-	styleUrls: [`../../css/component/fs-filter-dropdown.component.scss`],
-	template: `
+    selector: 'fs-filter-dropdown',
+    styleUrls: [`../../css/component/fs-filter-dropdown.component.scss`],
+    template: `
 		<filter-dropdown
 			class="hero-sort-filter"
 			[ngClass]="{ 'visible': visible }"
@@ -25,71 +25,75 @@ import { NavigationState } from '../models/mainwindow/navigation/navigation-stat
 			(onOptionSelected)="onSelected($event)"
 		></filter-dropdown>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FsFilterDropdownComponent {
-	@Output() onOptionSelected: EventEmitter<IOption> = new EventEmitter<IOption>();
+    @Output() onOptionSelected: EventEmitter<IOption> = new EventEmitter<IOption>();
 
-	@Input() filter: string;
-	@Input() placeholder: string;
+    @Input() filter: string;
+    @Input() placeholder: string;
+    visible: boolean;
 
-	@Input() set checkVisibleHandler(value: (navigation: NavigationState, state: MainWindowState) => boolean) {
-		this._checkVisibleHandler = value;
-		this.doSetValues();
-	}
+    constructor(private readonly cdr: ChangeDetectorRef) {
+    }
 
-	@Input() set optionsBuilder(value: (navigation: NavigationState, state: MainWindowState) => readonly IOption[]) {
-		// this._options = undefined;
-		this._optionsBuilder = value;
-		this.doSetValues();
-	}
+    _state: any;
 
-	@Input() set options(value: readonly IOption[]) {
-		this._options = value;
-		this.doSetValues();
-	}
+    @Input() set state(value: any) {
+        this._state = value;
+        this.doSetValues();
+    }
 
-	@Input() set state(value: any) {
-		this._state = value;
-		this.doSetValues();
-	}
+    _navigation: NavigationState;
 
-	@Input() set navigation(value: NavigationState) {
-		this._navigation = value;
-		this.doSetValues();
-	}
+    @Input() set navigation(value: NavigationState) {
+        this._navigation = value;
+        this.doSetValues();
+    }
 
-	_state: any;
-	_navigation: NavigationState;
-	// Can be init directly, or through the builder
-	_options: readonly IOption[] = [];
-	_optionsBuilder: (navigation: NavigationState, state: any) => readonly IOption[];
-	_checkVisibleHandler: (navigation: NavigationState, state: any) => boolean;
+    // Can be init directly, or through the builder
+    _options: readonly IOption[] = [];
 
-	visible: boolean;
+    @Input() set options(value: readonly IOption[]) {
+        this._options = value;
+        this.doSetValues();
+    }
 
-	constructor(private readonly cdr: ChangeDetectorRef) {}
+    _optionsBuilder: (navigation: NavigationState, state: any) => readonly IOption[];
 
-	onSelected(option: IOption) {
-		this.onOptionSelected.next(option);
-	}
+    @Input() set optionsBuilder(value: (navigation: NavigationState, state: MainWindowState) => readonly IOption[]) {
+        // this._options = undefined;
+        this._optionsBuilder = value;
+        this.doSetValues();
+    }
 
-	private doSetValues() {
-		this.visible = this._checkVisibleHandler ? this._checkVisibleHandler(this._navigation, this._state) : true;
-		if (!this.visible) {
-			return;
-		}
+    _checkVisibleHandler: (navigation: NavigationState, state: any) => boolean;
 
-		// We want to rebuild it in case the option contents change (eg the last patch number is retrieved,
-		// or in case the options values depend on another selection)
-		this._options = this._optionsBuilder ? this._optionsBuilder(this._navigation, this._state) : this._options;
-		const placeholder =
-			this._options && this._options.length > 0 && this.filter
-				? this._options.find((option) => option.value === this.filter)?.label
-				: this.placeholder;
-		this.placeholder = placeholder ?? this.placeholder;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    @Input() set checkVisibleHandler(value: (navigation: NavigationState, state: MainWindowState) => boolean) {
+        this._checkVisibleHandler = value;
+        this.doSetValues();
+    }
+
+    onSelected(option: IOption) {
+        this.onOptionSelected.next(option);
+    }
+
+    private doSetValues() {
+        this.visible = this._checkVisibleHandler ? this._checkVisibleHandler(this._navigation, this._state) : true;
+        if (!this.visible) {
+            return;
+        }
+
+        // We want to rebuild it in case the option contents change (eg the last patch number is retrieved,
+        // or in case the options values depend on another selection)
+        this._options = this._optionsBuilder ? this._optionsBuilder(this._navigation, this._state) : this._options;
+        const placeholder =
+            this._options && this._options.length > 0 && this.filter
+                ? this._options.find((option) => option.value === this.filter)?.label
+                : this.placeholder;
+        this.placeholder = placeholder ?? this.placeholder;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 }

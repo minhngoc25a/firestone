@@ -1,26 +1,26 @@
 import {
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	Input,
-	ViewChild,
-	ViewRef,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    Input,
+    ViewChild,
+    ViewRef,
 } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { TwitterUserInfo } from '../../../models/mainwindow/twitter-user-info';
-import { OverwolfService } from '../../../services/overwolf.service';
-import { ShareInfoComponent } from '../share-info.component';
+import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
+import {TwitterUserInfo} from '../../../models/mainwindow/twitter-user-info';
+import {OverwolfService} from '../../../services/overwolf.service';
+import {ShareInfoComponent} from '../share-info.component';
 
 @Component({
-	selector: 'twitter-share-modal',
-	styleUrls: [
-		`../../../../css/global/scrollbar.scss`,
-		`../../../../css/component/controls/controls.scss`,
-		`../../../../css/component/controls/control-close.component.scss`,
-		`../../../../css/component/sharing/twitter/twitter-share-modal.component.scss`,
-	],
-	template: `
+    selector: 'twitter-share-modal',
+    styleUrls: [
+        `../../../../css/global/scrollbar.scss`,
+        `../../../../css/component/controls/controls.scss`,
+        `../../../../css/component/controls/control-close.component.scss`,
+        `../../../../css/component/sharing/twitter/twitter-share-modal.component.scss`,
+    ],
+    template: `
 		<social-share-modal
 			[socialUserInfo]="_socialUserInfo"
 			[closeHandler]="closeHandler"
@@ -40,71 +40,73 @@ import { ShareInfoComponent } from '../share-info.component';
 			</share-info>
 		</social-share-modal>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TwitterShareModalComponent implements AfterViewInit {
-	@ViewChild('shareInfo', { static: false }) shareInfo: ShareInfoComponent;
+    @ViewChild('shareInfo', {static: false}) shareInfo: ShareInfoComponent;
 
-	@Input() fileLocation: string;
-	@Input() closeHandler: () => void;
-	imagePath: SafeResourceUrl;
-	sharing: boolean;
-	_socialUserInfo: TwitterUserInfo;
-	dataValid: boolean;
+    @Input() fileLocation: string;
+    @Input() closeHandler: () => void;
+    imagePath: SafeResourceUrl;
+    sharing: boolean;
+    dataValid: boolean;
 
-	@Input() set socialUserInfo(value: TwitterUserInfo) {
-		this._socialUserInfo = value;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    constructor(
+        private readonly sanitizer: DomSanitizer,
+        private readonly ow: OverwolfService,
+        private readonly cdr: ChangeDetectorRef,
+    ) {
+    }
 
-	@Input() set base64Image(value: string) {
-		this.imagePath = this.sanitizer.bypassSecurityTrustResourceUrl(`data:image/jpg;base64,${value}`);
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    _socialUserInfo: TwitterUserInfo;
 
-	constructor(
-		private readonly sanitizer: DomSanitizer,
-		private readonly ow: OverwolfService,
-		private readonly cdr: ChangeDetectorRef,
-	) {}
+    @Input() set socialUserInfo(value: TwitterUserInfo) {
+        this._socialUserInfo = value;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	ngAfterViewInit() {
-		this.ow.addTwitterLoginStateChangedListener(async (info) => {
-			this._socialUserInfo = await this.ow.getTwitterUserInfo();
-			if (!(this.cdr as ViewRef)?.destroyed) {
-				this.cdr.detectChanges();
-			}
-		});
-	}
+    @Input() set base64Image(value: string) {
+        this.imagePath = this.sanitizer.bypassSecurityTrustResourceUrl(`data:image/jpg;base64,${value}`);
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	async handleValid(isValid: boolean) {
-		this.dataValid = isValid;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    ngAfterViewInit() {
+        this.ow.addTwitterLoginStateChangedListener(async (info) => {
+            this._socialUserInfo = await this.ow.getTwitterUserInfo();
+            if (!(this.cdr as ViewRef)?.destroyed) {
+                this.cdr.detectChanges();
+            }
+        });
+    }
 
-	async handleShare() {
-		this.sharing = true;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-		await this.ow.twitterShare(this.fileLocation, this.shareInfo.textValue);
-		this.sharing = false;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    async handleValid(isValid: boolean) {
+        this.dataValid = isValid;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	handleLoginRequest() {
-		this.ow.twitterLogin();
-	}
+    async handleShare() {
+        this.sharing = true;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+        await this.ow.twitterShare(this.fileLocation, this.shareInfo.textValue);
+        this.sharing = false;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	handleLogoutRequest() {
-		this.ow.twitterLogout();
-	}
+    handleLoginRequest() {
+        this.ow.twitterLogin();
+    }
+
+    handleLogoutRequest() {
+        this.ow.twitterLogout();
+    }
 }

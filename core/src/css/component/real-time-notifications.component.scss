@@ -1,33 +1,33 @@
 @import '../global/fonts';
 
 .real-time-notifications {
-	@extend %app-status;
+  @extend %app-status;
+  display: flex;
+  align-items: center;
+
+  .warning-icon {
+    display: none;
+    margin-right: 6px;
+  }
+
+  &.warning .warning-icon {
+    display: inherit;
+  }
+
+  span {
     display: flex;
     align-items: center;
 
-	.warning-icon {
-		display: none;
-		margin-right: 6px;
-	}
+    a, a:active {
+      text-decoration: none;
+      color: #D9C3AB;
+      width: auto;
+      margin-left: 5px;
+    }
 
-	&.warning .warning-icon {
-		display: inherit;
-	}
-
-	span {
-        display: flex;
-        align-items: center;
-
-		a, a:active {
-			text-decoration: none;
-            color: #D9C3AB ;
-            width: auto;
-            margin-left: 5px;
-		}
-
-		a:hover {
-			text-decoration: none;
-			color: #FFB948;
-		}
-	}
+    a:hover {
+      text-decoration: none;
+      color: #FFB948;
+    }
+  }
 }

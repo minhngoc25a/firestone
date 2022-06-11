@@ -1,16 +1,16 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef } from '@angular/core';
-import { BattleResultHistory } from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
-import { NumericTurnInfo } from '../../../models/battlegrounds/post-match/numeric-turn-info';
-import { BgsHeroStat } from '../../../models/battlegrounds/stats/bgs-hero-stat';
-import { areDeepEqual } from '../../../services/utils';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef} from '@angular/core';
+import {BattleResultHistory} from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
+import {NumericTurnInfo} from '../../../models/battlegrounds/post-match/numeric-turn-info';
+import {BgsHeroStat} from '../../../models/battlegrounds/stats/bgs-hero-stat';
+import {areDeepEqual} from '../../../services/utils';
 
 @Component({
-	selector: 'bgs-winrate-chart',
-	styleUrls: [
-		`../../../../css/global/reset-styles.scss`,
-		`../../../../css/component/battlegrounds/post-match/bgs-winrate-chart.component.scss`,
-	],
-	template: `
+    selector: 'bgs-winrate-chart',
+    styleUrls: [
+        `../../../../css/global/reset-styles.scss`,
+        `../../../../css/component/battlegrounds/post-match/bgs-winrate-chart.component.scss`,
+    ],
+    template: `
 		<graph-with-comparison-new
 			[id]="id"
 			[communityLabel]="'battlegrounds.post-match-stats.warband-stats.community-label' | owTranslate"
@@ -27,59 +27,60 @@ import { areDeepEqual } from '../../../services/utils';
 		>
 		</graph-with-comparison-new>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsWinrateChartComponent {
-	communityValues: readonly NumericTurnInfo[];
-	yourValues: readonly NumericTurnInfo[];
-	id: string;
+    communityValues: readonly NumericTurnInfo[];
+    yourValues: readonly NumericTurnInfo[];
+    id: string;
 
-	@Input() showYAxis = true;
+    @Input() showYAxis = true;
 
-	@Input() set heroStat(value: BgsHeroStat) {
-		if (!value) {
-			return;
-		}
-		const communityValues = value.combatWinrate
-			?.filter((stat) => stat.turn > 0)
-			.filter((stat) => stat.turn <= 13)
-			.map((stat) => {
-				return {
-					turn: stat.turn,
-					value: Math.round(stat.winrate),
-				} as NumericTurnInfo;
-			})
-			.filter((stat) => stat)
-			.slice(0, 15);
-		if (areDeepEqual(this.communityValues, communityValues)) {
-			return;
-		}
-		this.id = value.id;
-		this.communityValues = communityValues;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr?.detectChanges();
-		}
-	}
+    constructor(private readonly cdr: ChangeDetectorRef) {
+    }
 
-	@Input() set battleResultHistory(value: readonly BattleResultHistory[]) {
-		if (!value?.length) {
-			return;
-		}
-		const yourValues = value.map(
-			(turnInfo) =>
-				({
-					turn: turnInfo.turn,
-					value: turnInfo.simulationResult?.wonPercent || 0,
-				} as NumericTurnInfo),
-		);
-		if (areDeepEqual(this.yourValues, yourValues)) {
-			return;
-		}
-		this.yourValues = yourValues;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr?.detectChanges();
-		}
-	}
+    @Input() set heroStat(value: BgsHeroStat) {
+        if (!value) {
+            return;
+        }
+        const communityValues = value.combatWinrate
+            ?.filter((stat) => stat.turn > 0)
+            .filter((stat) => stat.turn <= 13)
+            .map((stat) => {
+                return {
+                    turn: stat.turn,
+                    value: Math.round(stat.winrate),
+                } as NumericTurnInfo;
+            })
+            .filter((stat) => stat)
+            .slice(0, 15);
+        if (areDeepEqual(this.communityValues, communityValues)) {
+            return;
+        }
+        this.id = value.id;
+        this.communityValues = communityValues;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr?.detectChanges();
+        }
+    }
 
-	constructor(private readonly cdr: ChangeDetectorRef) {}
+    @Input() set battleResultHistory(value: readonly BattleResultHistory[]) {
+        if (!value?.length) {
+            return;
+        }
+        const yourValues = value.map(
+            (turnInfo) =>
+                ({
+                    turn: turnInfo.turn,
+                    value: turnInfo.simulationResult?.wonPercent || 0,
+                } as NumericTurnInfo),
+        );
+        if (areDeepEqual(this.yourValues, yourValues)) {
+            return;
+        }
+        this.yourValues = yourValues;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr?.detectChanges();
+        }
+    }
 }

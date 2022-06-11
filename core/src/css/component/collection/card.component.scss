@@ -2,140 +2,142 @@
 @import '../../global/fonts';
 
 .card-container {
-	position: relative;
-	width: 100%;
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
-	.real-card {
-		width: 100%;
-		position: relative;
-		opacity: 0.9;
-		transition: transform 0.2s;
-	}
+  .real-card {
+    width: 100%;
+    position: relative;
+    opacity: 0.9;
+    transition: transform 0.2s;
+  }
 
-	.placeholder {
-		position: absolute;
-		margin: auto;
-		top: -2%;
-		width: 95%;
-		left: 2%;
-		opacity: 0;
-	}
+  .placeholder {
+    position: absolute;
+    margin: auto;
+    top: -2%;
+    width: 95%;
+    left: 2%;
+    opacity: 0;
+  }
 
-	.perspective-wrapper {
-		width: 100%;
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-	}
+  .perspective-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
 
-	&.showing-placeholder {
-		.real-card {
-			opacity: 0;
-		}
-		.placeholder {
-			opacity: 1;
-		}
-	}
+  &.showing-placeholder {
+    .real-card {
+      opacity: 0;
+    }
 
-	.count {
-		position: relative;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		top: -13px;
-		width: 100%;
-		padding-left: 16%;
-		padding-right: 11%;
-		zoom: 1.1; // Because of the 0.8 scale
+    .placeholder {
+      opacity: 1;
+    }
+  }
 
-		.non-premium,
-		.premium,
-		.diamond {
-			@extend %dust-number;
-			// font-size: 1.7vh;
-			border: 1px solid;
-			border-top: none;
-			padding: 0 5px 2px 5px;
-			display: flex;
-			align-items: center;
+  .count {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: -13px;
+    width: 100%;
+    padding-left: 16%;
+    padding-right: 11%;
+    zoom: 1.1; // Because of the 0.8 scale
 
-			span:before {
-				content: 'x';
-			}
-		}
+    .non-premium,
+    .premium,
+    .diamond {
+      @extend %dust-number;
+      // font-size: 1.7vh;
+      border: 1px solid;
+      border-top: none;
+      padding: 0 5px 2px 5px;
+      display: flex;
+      align-items: center;
 
-		.premium,
-		.diamond {
-			border-color: $yellow03;
-			position: relative;
-			width: 44px;
-			justify-content: center;
+      span:before {
+        content: 'x';
+      }
+    }
 
-			i {
-				width: 14px;
-				height: 16px;
-				margin-bottom: -4px;
-				position: absolute;
-			}
+    .premium,
+    .diamond {
+      border-color: $yellow03;
+      position: relative;
+      width: 44px;
+      justify-content: center;
 
-			span {
-				margin: 0 1px 0 0;
-			}
+      i {
+        width: 14px;
+        height: 16px;
+        margin-bottom: -4px;
+        position: absolute;
+      }
 
-			.left {
-				left: 0;
-			}
+      span {
+        margin: 0 1px 0 0;
+      }
 
-			.right {
-				transform: scale(-1, 1);
-				right: 0;
-			}
-		}
+      .left {
+        left: 0;
+      }
 
-		.diamond {
-			border-color: silver;
+      .right {
+        transform: scale(-1, 1);
+        right: 0;
+      }
+    }
 
-			.gold-theme {
-				--icon-color: silver;
-			}
-		}
+    .diamond {
+      border-color: silver;
 
-		div:nth-child(2),
-		div:nth-child(3) {
-			margin-left: 5px;
-		}
-	}
+      .gold-theme {
+        --icon-color: silver;
+      }
+    }
 
-	.full-size {
-		width: 300px;
-	}
+    div:nth-child(2),
+    div:nth-child(3) {
+      margin-left: 5px;
+    }
+  }
 
-	.overlay {
-		display: none;
-	}
+  .full-size {
+    width: 300px;
+  }
 
-	&.missing {
-		.real-card {
-			opacity: 0.4;
-		}
-	}
+  .overlay {
+    display: none;
+  }
 
-	&:hover {
-		.real-card {
-			opacity: 1;
-			// transform: scale3d(1.035, 1.035, 1.035);
-		}
-		.count {
-			// top: -2px;
-		}
-	}
+  &.missing {
+    .real-card {
+      opacity: 0.4;
+    }
+  }
 
-	&.high-res {
-		margin-bottom: -40px;
-	}
+  &:hover {
+    .real-card {
+      opacity: 1;
+      // transform: scale3d(1.035, 1.035, 1.035);
+    }
+
+    .count {
+      // top: -2px;
+    }
+  }
+
+  &.high-res {
+    margin-bottom: -40px;
+  }
 }

@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { BgsHeroStat, BgsHeroTier } from '../../../models/battlegrounds/stats/bgs-hero-stat';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {BgsHeroStat, BgsHeroTier} from '../../../models/battlegrounds/stats/bgs-hero-stat';
 
 @Component({
-	selector: 'bgs-hero-tier',
-	styleUrls: [
-		`../../../../css/global/reset-styles.scss`,
-		`../../../../css/component/battlegrounds/hero-selection/bgs-hero-tier.component.scss`,
-	],
-	template: `
+    selector: 'bgs-hero-tier',
+    styleUrls: [
+        `../../../../css/global/reset-styles.scss`,
+        `../../../../css/component/battlegrounds/hero-selection/bgs-hero-tier.component.scss`,
+    ],
+    template: `
 		<div class="bgs-hero-tier {{ _tier?.toLowerCase() }}">
 			<div class="tier {{ _tier?.toLowerCase() }}">
 				{{ _tier }}
@@ -17,18 +17,19 @@ import { BgsHeroStat, BgsHeroTier } from '../../../models/battlegrounds/stats/bg
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsHeroTierComponent {
-	_tier: BgsHeroTier;
-	heroes: readonly BgsHeroStat[];
+    heroes: readonly BgsHeroStat[];
 
-	@Input() set tier(value: { tier: BgsHeroTier; heroes: readonly BgsHeroStat[] }) {
-		this._tier = value.tier;
-		this.heroes = value.heroes;
-	}
+    _tier: BgsHeroTier;
 
-	trackByHeroFn(index, item: BgsHeroStat) {
-		return item.id;
-	}
+    @Input() set tier(value: { tier: BgsHeroTier; heroes: readonly BgsHeroStat[] }) {
+        this._tier = value.tier;
+        this.heroes = value.heroes;
+    }
+
+    trackByHeroFn(index, item: BgsHeroStat) {
+        return item.id;
+    }
 }

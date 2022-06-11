@@ -1,24 +1,25 @@
-import { MainWindowStoreEvent } from '../main-window-store-event';
+import {MainWindowStoreEvent} from '../main-window-store-event';
 
 export class ShowCardDetailsEvent implements MainWindowStoreEvent {
-	constructor(cardId: string) {
-		this.cardId = cardId;
-	}
-	readonly cardId: string;
+    readonly cardId: string;
 
-	public static eventName(): string {
-		return 'ShowCardDetailsEvent';
-	}
+    constructor(cardId: string) {
+        this.cardId = cardId;
+    }
 
-	public eventName(): string {
-		return 'ShowCardDetailsEvent';
-	}
+    public static eventName(): string {
+        return 'ShowCardDetailsEvent';
+    }
 
-	public isNavigationEvent(): boolean {
-		return true;
-	}
+    public eventName(): string {
+        return 'ShowCardDetailsEvent';
+    }
 
-	public isResetHistoryEvent(): boolean {
-		return false;
-	}
+    public isNavigationEvent(): boolean {
+        return true;
+    }
+
+    public isResetHistoryEvent(): boolean {
+        return false;
+    }
 }

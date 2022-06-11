@@ -1,40 +1,40 @@
 :host() {
-	pointer-events: none;
+  pointer-events: none;
 }
 
 .container {
-	position: relative;
+  position: relative;
 
-	&.hidden {
-		display: none;
-	}
+  &.hidden {
+    display: none;
+  }
 
-	.card {
-		width: 256px;
-	}
+  .card {
+    width: 256px;
+  }
 
-	::ng-deep card-stats {
-		.card-stats {
-			top: 81%;
+  ::ng-deep card-stats {
+    .card-stats {
+      top: 81%;
 
-			.stat {
-				width: 27%;
-				top: -25%;
-			}
+      .stat {
+        width: 27%;
+        top: -25%;
+      }
 
-			.attack {
-				left: 8%;
-			}
+      .attack {
+        left: 8%;
+      }
 
-			.health {
-				left: 40%;
-				width: 32%;
-				top: -27%;
-			}
+      .health {
+        left: 40%;
+        width: 32%;
+        top: -27%;
+      }
 
-			.stat-value {
-				font-size: 52px;
-			}
-		}
-	}
+      .stat-value {
+        font-size: 52px;
+      }
+    }
+  }
 }

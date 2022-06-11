@@ -1,51 +1,51 @@
 .control-bar {
-	background: #07081f;
-	width: 100%;
+  background: #07081f;
+  width: 100%;
 
-	.logo {
-		--icon-color: #9fb6d7;
-	}
+  .logo {
+    --icon-color: #9fb6d7;
+  }
 
-	.copy-deckstring {
-		width: 13px;
-		height: 16px;
-		--icon-color: #101530;
-		--icon-color-secondary: #9fb6d7;
-		margin-left: 10px;
-	}
+  .copy-deckstring {
+    width: 13px;
+    height: 16px;
+    --icon-color: #101530;
+    --icon-color-secondary: #9fb6d7;
+    margin-left: 10px;
+  }
 
-	.copy-text {
-		font-family: Open Sans;
-		font-style: normal;
-		font-weight: normal;
-		font-size: 11px;
-		color: #9fb6d7;
-		flex-grow: 1;
-		margin-left: 5px;
+  .copy-text {
+    font-family: Open Sans;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 11px;
+    color: #9fb6d7;
+    flex-grow: 1;
+    margin-left: 5px;
 
-		&.copied {
-			color: #1ecc02;
-		}
-	}
+    &.copied {
+      color: #1ecc02;
+    }
+  }
 
-	.close-button {
-		background: #1f2142;
-		color: #9fb6d7;
-		width: 30px;
-		height: 30px;
+  .close-button {
+    background: #1f2142;
+    color: #9fb6d7;
+    width: 30px;
+    height: 30px;
 
-		&:hover {
-			background: #9fb6d7;
-			color: #101530;
-		}
-	}
+    &:hover {
+      background: #9fb6d7;
+      color: #101530;
+    }
+  }
 }
 
 .deckstring-code {
-	overflow: hidden;
-	background: #1f2142;
-	color: #9fb6d7;
-	padding: 10px;
-	padding-top: 0;
-	height: 90px;
+  overflow: hidden;
+  background: #1f2142;
+  color: #9fb6d7;
+  padding: 10px;
+  padding-top: 0;
+  height: 90px;
 }

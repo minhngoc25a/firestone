@@ -1,6 +1,6 @@
-import { GameStat } from '../stats/game-stat';
+import {GameStat} from '../stats/game-stat';
 
 export class GroupedReplays {
-	readonly header: string;
-	readonly replays: readonly GameStat[];
+    readonly header: string;
+    readonly replays: readonly GameStat[];
 }

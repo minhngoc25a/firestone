@@ -1,23 +1,23 @@
 import {
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	HostListener,
-	Input,
-	OnDestroy,
-	ViewRef,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    HostListener,
+    Input,
+    OnDestroy,
+    ViewRef,
 } from '@angular/core';
-import { StatsRecap } from '../../../models/decktracker/stats-recap';
-import { formatClass } from '../../../services/hs-utils';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
+import {StatsRecap} from '../../../models/decktracker/stats-recap';
+import {formatClass} from '../../../services/hs-utils';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
 
 @Component({
-	selector: 'decktracker-winrate-recap',
-	styleUrls: [
-		'../../../../css/global/components-global.scss',
-		'../../../../css/component/decktracker/overlay/decktracker-winrate-recap.component.scss',
-	],
-	template: `
+    selector: 'decktracker-winrate-recap',
+    styleUrls: [
+        '../../../../css/global/components-global.scss',
+        '../../../../css/component/decktracker/overlay/decktracker-winrate-recap.component.scss',
+    ],
+    template: `
 		<div class="winrate-recap" *ngIf="wins + losses > 0">
 			<div class="recap text" [helpTooltip]="tooltip">
 				<div class="value">{{ text }}</div>
@@ -34,67 +34,69 @@ import { LocalizationFacadeService } from '../../../services/localization-facade
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeckTrackerWinrateRecapComponent implements OnDestroy {
-	text: string;
-	tooltip: string;
-	winrate: number;
-	wins: number;
-	losses: number;
+    text: string;
+    tooltip: string;
+    winrate: number;
+    wins: number;
+    losses: number;
 
-	private _stats: StatsRecap;
-	private _type: 'matchup' | 'deck';
+    constructor(private readonly cdr: ChangeDetectorRef, private readonly i18n: LocalizationFacadeService) {
+    }
 
-	@Input() set stats(value: StatsRecap) {
-		if (value === this._stats) {
-			return;
-		}
-		this._stats = value;
-		this.updateInfo();
-	}
+    private _stats: StatsRecap;
 
-	@Input() set type(value: 'matchup' | 'deck') {
-		if (value === this._type) {
-			return;
-		}
-		this._type = value;
-		this.updateInfo();
-	}
+    @Input() set stats(value: StatsRecap) {
+        if (value === this._stats) {
+            return;
+        }
+        this._stats = value;
+        this.updateInfo();
+    }
 
-	constructor(private readonly cdr: ChangeDetectorRef, private readonly i18n: LocalizationFacadeService) {}
+    private _type: 'matchup' | 'deck';
 
-	@HostListener('window:beforeunload')
-	ngOnDestroy(): void {
-		this._stats = null;
-	}
+    @Input() set type(value: 'matchup' | 'deck') {
+        if (value === this._type) {
+            return;
+        }
+        this._type = value;
+        this.updateInfo();
+    }
 
-	private updateInfo() {
-		if (!this._stats || !this._type) {
-			return;
-		}
+    @HostListener('window:beforeunload')
+    ngOnDestroy(): void {
+        this._stats = null;
+    }
 
-		this.winrate = this._stats.winratePercent;
-		this.wins = this._stats.totalWins || 0;
-		this.losses = this._stats.totalLosses || 0;
-		const dateFrom = new Intl.DateTimeFormat(this.i18n.formatCurrentLocale(), {
-			year: 'numeric',
-			month: 'short',
-			day: '2-digit',
-		}).format(this._stats.dateFrom);
-		if (this._type === 'deck') {
-			this.text = this.i18n.translateString('decktracker.stats.deck-winrate');
-			this.tooltip = this.i18n.translateString('decktracker.stats.deck-winrate-tooltip', { value: dateFrom });
-		} else {
-			const readableClass = formatClass(this._stats.opponentClass, this.i18n);
-			this.text = this.i18n.translateString('decktracker.stats.deck-winrate-vs-class', { value: readableClass });
-			this.text = this.i18n.translateString('decktracker.stats.deck-winrate-vs-class-tooltip', {
-				opponent: readableClass,
-				date: dateFrom,
-			});
-		}
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    private updateInfo() {
+        if (!this._stats || !this._type) {
+            return;
+        }
+
+        this.winrate = this._stats.winratePercent;
+        this.wins = this._stats.totalWins || 0;
+        this.losses = this._stats.totalLosses || 0;
+        const dateFrom = new Intl.DateTimeFormat(this.i18n.formatCurrentLocale(), {
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+        }).format(this._stats.dateFrom);
+        if (this._type === 'deck') {
+            this.text = this.i18n.translateString('decktracker.stats.deck-winrate');
+            this.tooltip = this.i18n.translateString('decktracker.stats.deck-winrate-tooltip', {value: dateFrom});
+        } else {
+            const readableClass = formatClass(this._stats.opponentClass, this.i18n);
+            this.text = this.i18n.translateString('decktracker.stats.deck-winrate-vs-class', {value: readableClass});
+            this.text = this.i18n.translateString('decktracker.stats.deck-winrate-vs-class-tooltip', {
+                opponent: readableClass,
+                date: dateFrom,
+            });
+        }
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 }

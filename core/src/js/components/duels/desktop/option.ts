@@ -1,6 +1,6 @@
 export interface Option {
-	cardId: string;
-	optionImage: string;
-	isPicked: boolean;
-	contents: readonly string[];
+    cardId: string;
+    optionImage: string;
+    isPicked: boolean;
+    contents: readonly string[];
 }

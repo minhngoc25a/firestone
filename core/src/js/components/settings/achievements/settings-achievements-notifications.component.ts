@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 @Component({
-	selector: 'settings-achievements-notifications',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/global/scrollbar-settings.scss`,
-		`../../../../css/global/forms.scss`,
-		`../../../../css/component/settings/settings-common.component.scss`,
-		`../../../../css/component/settings/achievements/settings-achievements-notifications.component.scss`,
-	],
-	template: `
+    selector: 'settings-achievements-notifications',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/global/scrollbar-settings.scss`,
+        `../../../../css/global/forms.scss`,
+        `../../../../css/component/settings/settings-common.component.scss`,
+        `../../../../css/component/settings/achievements/settings-achievements-notifications.component.scss`,
+    ],
+    template: `
 		<div class="settings-group achievements-notifications">
 			<h2 class="title" [owTranslate]="'settings.achievements.notifications.title'"></h2>
 			<section class="toggle-label">
@@ -37,12 +37,12 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 			</section>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsAchievementsNotificationsComponent {
-	isDev: boolean;
+    isDev: boolean;
 
-	constructor() {
-		this.isDev = process.env.NODE_ENV !== 'production';
-	}
+    constructor() {
+        this.isDev = process.env.NODE_ENV !== 'production';
+    }
 }

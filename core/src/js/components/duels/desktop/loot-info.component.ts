@@ -1,6 +1,6 @@
-import { Input } from '@angular/core';
-import { BundleType, DuelsRunInfo } from '@firestone-hs/retrieve-users-duels-runs/dist/duels-run-info';
-import { Option } from './option';
+import {Input} from '@angular/core';
+import {BundleType, DuelsRunInfo} from '@firestone-hs/retrieve-users-duels-runs/dist/duels-run-info';
+import {Option} from './option';
 
 // @Component({
 // 	selector: 'loot-info',
@@ -37,30 +37,30 @@ import { Option } from './option';
 // 	changeDetection: ChangeDetectionStrategy.OnPush,
 // })
 export class LootInfoComponent {
-	@Input() set loot(value: DuelsRunInfo) {
-		this.bundleType = value.bundleType;
-		this.options = [
-			{
-				cardId: value.option1,
-				isPicked: value.chosenOptionIndex === 1,
-				optionImage: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.option1}.jpg`,
-				contents: value.option1Contents || [],
-			},
-			{
-				cardId: value.option2,
-				isPicked: value.chosenOptionIndex === 2,
-				optionImage: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.option2}.jpg`,
-				contents: value.option2Contents || [],
-			},
-			{
-				cardId: value.option3,
-				isPicked: value.chosenOptionIndex === 3,
-				optionImage: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.option3}.jpg`,
-				contents: value.option3Contents || [],
-			},
-		];
-	}
+    bundleType: BundleType;
+    options: readonly Option[];
 
-	bundleType: BundleType;
-	options: readonly Option[];
+    @Input() set loot(value: DuelsRunInfo) {
+        this.bundleType = value.bundleType;
+        this.options = [
+            {
+                cardId: value.option1,
+                isPicked: value.chosenOptionIndex === 1,
+                optionImage: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.option1}.jpg`,
+                contents: value.option1Contents || [],
+            },
+            {
+                cardId: value.option2,
+                isPicked: value.chosenOptionIndex === 2,
+                optionImage: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.option2}.jpg`,
+                contents: value.option2Contents || [],
+            },
+            {
+                cardId: value.option3,
+                isPicked: value.chosenOptionIndex === 3,
+                optionImage: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.option3}.jpg`,
+                contents: value.option3Contents || [],
+            },
+        ];
+    }
 }

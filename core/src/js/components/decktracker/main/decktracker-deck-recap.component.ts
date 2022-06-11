@@ -1,20 +1,20 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { Observable } from 'rxjs';
-import { DeckSummary } from '../../../models/mainwindow/decktracker/deck-summary';
-import { FeatureFlags } from '../../../services/feature-flags';
-import { formatClass } from '../../../services/hs-utils';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
-import { ShowReplaysEvent } from '../../../services/mainwindow/store/events/replays/show-replays-event';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {Observable} from 'rxjs';
+import {DeckSummary} from '../../../models/mainwindow/decktracker/deck-summary';
+import {FeatureFlags} from '../../../services/feature-flags';
+import {formatClass} from '../../../services/hs-utils';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
+import {ShowReplaysEvent} from '../../../services/mainwindow/store/events/replays/show-replays-event';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
 
 @Component({
-	selector: 'decktracker-deck-recap',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/decktracker/main/decktracker-deck-recap.component.scss`,
-	],
-	template: `
+    selector: 'decktracker-deck-recap',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/decktracker/main/decktracker-deck-recap.component.scss`,
+    ],
+    template: `
 		<div class="decktracker-deck-recap" *ngIf="info$ | async as info">
 			<div class="title" [owTranslate]="'app.decktracker.deck-recap.overall-stats-header'"></div>
 
@@ -79,83 +79,83 @@ import { AbstractSubscriptionComponent } from '../../abstract-subscription.compo
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DecktrackerDeckRecapComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	enableArchetype: boolean = FeatureFlags.ENABLE_RANKED_ARCHETYPE;
+    enableArchetype: boolean = FeatureFlags.ENABLE_RANKED_ARCHETYPE;
 
-	info$: Observable<Info>;
+    info$: Observable<Info>;
 
-	private deck$: Observable<DeckSummary>;
-	private deckstring: string;
+    private deck$: Observable<DeckSummary>;
+    private deckstring: string;
 
-	constructor(
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-		private readonly i18n: LocalizationFacadeService,
-	) {
-		super(store, cdr);
-	}
+    constructor(
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+        private readonly i18n: LocalizationFacadeService,
+    ) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.deck$ = this.store
-			.listen$(
-				([main, nav, prefs]) => main.decktracker.decks,
-				([main, nav, prefs]) => nav.navigationDecktracker.selectedDeckstring,
-			)
-			.pipe(
-				this.mapData(([decks, selectedDeckstring]) =>
-					decks.find((deck) => deck?.deckstring === selectedDeckstring),
-				),
-			);
-		this.deck$.subscribe((deck) => (this.deckstring = deck?.deckstring));
-		this.info$ = this.deck$.pipe(
-			this.mapData((deck) => {
-				return {
-					skin: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${deck.skin}.jpg`,
-					deckName: deck.deckName,
-					deckArchetype: deck.deckArchetype,
-					deckstring: deck.deckstring,
-					winRatePercentage:
-						deck.winRatePercentage != null
-							? parseFloat('' + deck.winRatePercentage).toLocaleString('en-US', {
-									minimumIntegerDigits: 1,
-									maximumFractionDigits: 1,
-							  })
-							: '-',
-					games: deck.totalGames,
-					bestAgainsts: [...deck.matchupStats]
-						.filter((matchup) => matchup.totalWins > 0)
-						.sort((a, b) => b.totalWins / b.totalGames - a.totalWins / a.totalGames)
-						.slice(0, 3)
-						.map(
-							(matchUp) =>
-								({
-									icon: `assets/images/deck/classes/${matchUp.opponentClass.toLowerCase()}.png`,
-									playerClass: formatClass(matchUp.opponentClass, this.i18n),
-								} as BestAgainst),
-						),
-				};
-			}),
-		);
-	}
+    ngAfterContentInit() {
+        this.deck$ = this.store
+            .listen$(
+                ([main, nav, prefs]) => main.decktracker.decks,
+                ([main, nav, prefs]) => nav.navigationDecktracker.selectedDeckstring,
+            )
+            .pipe(
+                this.mapData(([decks, selectedDeckstring]) =>
+                    decks.find((deck) => deck?.deckstring === selectedDeckstring),
+                ),
+            );
+        this.deck$.subscribe((deck) => (this.deckstring = deck?.deckstring));
+        this.info$ = this.deck$.pipe(
+            this.mapData((deck) => {
+                return {
+                    skin: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${deck.skin}.jpg`,
+                    deckName: deck.deckName,
+                    deckArchetype: deck.deckArchetype,
+                    deckstring: deck.deckstring,
+                    winRatePercentage:
+                        deck.winRatePercentage != null
+                            ? parseFloat('' + deck.winRatePercentage).toLocaleString('en-US', {
+                                minimumIntegerDigits: 1,
+                                maximumFractionDigits: 1,
+                            })
+                            : '-',
+                    games: deck.totalGames,
+                    bestAgainsts: [...deck.matchupStats]
+                        .filter((matchup) => matchup.totalWins > 0)
+                        .sort((a, b) => b.totalWins / b.totalGames - a.totalWins / a.totalGames)
+                        .slice(0, 3)
+                        .map(
+                            (matchUp) =>
+                                ({
+                                    icon: `assets/images/deck/classes/${matchUp.opponentClass.toLowerCase()}.png`,
+                                    playerClass: formatClass(matchUp.opponentClass, this.i18n),
+                                } as BestAgainst),
+                        ),
+                };
+            }),
+        );
+    }
 
-	showReplays() {
-		this.store.send(new ShowReplaysEvent(this.deckstring, 'ranked'));
-	}
+    showReplays() {
+        this.store.send(new ShowReplaysEvent(this.deckstring, 'ranked'));
+    }
 }
 
 interface Info {
-	readonly skin: string;
-	readonly deckName: string;
-	readonly deckArchetype: string;
-	readonly deckstring: string;
-	readonly winRatePercentage: string;
-	readonly games: number;
-	readonly bestAgainsts: readonly BestAgainst[];
+    readonly skin: string;
+    readonly deckName: string;
+    readonly deckArchetype: string;
+    readonly deckstring: string;
+    readonly winRatePercentage: string;
+    readonly games: number;
+    readonly bestAgainsts: readonly BestAgainst[];
 }
 
 interface BestAgainst {
-	readonly icon: string;
-	readonly playerClass: string;
+    readonly icon: string;
+    readonly playerClass: string;
 }

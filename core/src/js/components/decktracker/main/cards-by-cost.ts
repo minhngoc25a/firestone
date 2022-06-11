@@ -1,5 +1,5 @@
 export interface CardsByCost {
-	cost: number;
-	quantity: number;
-	label: string;
+    cost: number;
+    quantity: number;
+    label: string;
 }

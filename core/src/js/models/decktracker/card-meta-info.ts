@@ -1,3 +1,3 @@
 export class CardMetaInfo {
-	readonly turnAtWhichCardEnteredCurrentZone: number | 'mulligan';
+    readonly turnAtWhichCardEnteredCurrentZone: number | 'mulligan';
 }

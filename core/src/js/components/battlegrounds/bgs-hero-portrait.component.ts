@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef } from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef} from '@angular/core';
 
 @Component({
-	selector: 'bgs-hero-portrait',
-	styleUrls: [`../../../css/component/battlegrounds/bgs-hero-portrait.component.scss`],
-	template: `
+    selector: 'bgs-hero-portrait',
+    styleUrls: [`../../../css/component/battlegrounds/bgs-hero-portrait.component.scss`],
+    template: `
 		<div class="hero-portrait">
 			<div class="hero-portrait-frame">
 				<img class="icon" [src]="heroIcon" />
@@ -22,56 +22,58 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef }
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsHeroPortraitComponent {
-	_health: number;
-	_maxHealth: number;
-	heroIcon: string;
+    heroIcon: string;
+    @Input() rating: number;
 
-	@Input() rating: number;
+    constructor(private readonly cdr: ChangeDetectorRef) {
+        // cdr.detach();
+    }
 
-	@Input() set heroCardId(value: string) {
-		this.heroIcon = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value}.jpg`;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    _health: number;
 
-	/** @deprecated */
-	_icon: string;
-	/** @deprecated */
-	@Input() set icon(value: string) {
-		if (value === this._icon) {
-			return;
-		}
-		this._icon = value;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    @Input() set health(value: number) {
+        if (value === this._health) {
+            return;
+        }
+        this._health = Math.max(value, 0);
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	@Input() set health(value: number) {
-		if (value === this._health) {
-			return;
-		}
-		this._health = Math.max(value, 0);
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    _maxHealth: number;
 
-	@Input() set maxHealth(value: number) {
-		if (value === this._maxHealth) {
-			return;
-		}
-		this._maxHealth = value;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    @Input() set maxHealth(value: number) {
+        if (value === this._maxHealth) {
+            return;
+        }
+        this._maxHealth = value;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	constructor(private readonly cdr: ChangeDetectorRef) {
-		// cdr.detach();
-	}
+    @Input() set heroCardId(value: string) {
+        this.heroIcon = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value}.jpg`;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
+
+    /** @deprecated */
+    _icon: string;
+
+    /** @deprecated */
+    @Input() set icon(value: string) {
+        if (value === this._icon) {
+            return;
+        }
+        this._icon = value;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 }

@@ -1,114 +1,115 @@
 .replay-info {
-	height: 60px;
+  height: 60px;
 
-	.mercenaries-player-images {
-		.images {
-			display: flex;
-			align-items: center;
-			width: 325px;
-		}
-		height: calc(100% + 20px);
-	}
+  .mercenaries-player-images {
+    .images {
+      display: flex;
+      align-items: center;
+      width: 325px;
+    }
 
-	&.show-merc-details {
-		.mercenaries-player-images .images {
-			width: 600px;
-		}
-	}
+    height: calc(100% + 20px);
+  }
 
-	::ng-deep replay-info-merc-player {
-		.merc-portrait {
-			flex-grow: 0;
-			flex-shrink: 0;
-			display: flex;
-			flex-direction: column;
-			width: 40px;
-			height: auto;
-			position: relative;
-			top: 0;
-			left: 0;
-			z-index: 9;
-			margin-top: 0;
-			margin-bottom: 0;
-			margin-right: -5px;
+  &.show-merc-details {
+    .mercenaries-player-images .images {
+      width: 600px;
+    }
+  }
 
-			.icon {
-				position: absolute;
-				top: 11%;
-				left: 13%;
-				width: 76%;
-				height: auto;
-				clip-path: ellipse(35% 44% at 50% 50%);
-			}
+  ::ng-deep replay-info-merc-player {
+    .merc-portrait {
+      flex-grow: 0;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      width: 40px;
+      height: auto;
+      position: relative;
+      top: 0;
+      left: 0;
+      z-index: 9;
+      margin-top: 0;
+      margin-bottom: 0;
+      margin-right: -5px;
 
-			.frame {
-				width: 100%;
-				z-index: 1;
-			}
+      .icon {
+        position: absolute;
+        top: 11%;
+        left: 13%;
+        width: 76%;
+        height: auto;
+        clip-path: ellipse(35% 44% at 50% 50%);
+      }
 
-			.equipment {
-				position: absolute;
-				width: 30px;
-				z-index: 9;
-				flex-grow: 0;
-				flex-shrink: 0;
-				display: flex;
-				flex-direction: column;
-				z-index: 9;
-				bottom: 0;
-				top: auto;
-				left: 14px;
-				display: none;
+      .frame {
+        width: 100%;
+        z-index: 1;
+      }
 
-				.icon {
-					position: absolute;
-					width: 85%;
-					height: auto;
-					top: 4%;
-					left: 4%;
-					clip-path: inset(10% 15% 15% 10%);
-				}
+      .equipment {
+        position: absolute;
+        width: 30px;
+        z-index: 9;
+        flex-grow: 0;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        z-index: 9;
+        bottom: 0;
+        top: auto;
+        left: 14px;
+        display: none;
 
-				.frame {
-					width: 100%;
-					z-index: 1;
-				}
-			}
-		}
+        .icon {
+          position: absolute;
+          width: 85%;
+          height: auto;
+          top: 4%;
+          left: 4%;
+          clip-path: inset(10% 15% 15% 10%);
+        }
 
-		.merc-portrait {
-			width: 60px;
-			margin-right: -15px;
+        .frame {
+          width: 100%;
+          z-index: 1;
+        }
+      }
+    }
 
-			.equipment {
-				display: flex;
-			}
-		}
-	}
+    .merc-portrait {
+      width: 60px;
+      margin-right: -15px;
 
-	.vs {
-		margin-left: 20px;
-	}
+      .equipment {
+        display: flex;
+      }
+    }
+  }
 
-	&.show-merc-details {
-		.portrait {
-			&.bench {
-				display: flex;
-			}
-		}
-	}
+  .vs {
+    margin-left: 20px;
+  }
+
+  &.show-merc-details {
+    .portrait {
+      &.bench {
+        display: flex;
+      }
+    }
+  }
 }
 
 .mercenaries-player-images {
-	.portrait {
-		&.bench {
-			opacity: 0.5;
-			display: none;
-		}
-	}
+  .portrait {
+    &.bench {
+      opacity: 0.5;
+      display: none;
+    }
+  }
 
-	.player-name {
-		margin-left: 15px;
-		width: auto;
-	}
+  .player-name {
+    margin-left: 15px;
+    width: auto;
+  }
 }

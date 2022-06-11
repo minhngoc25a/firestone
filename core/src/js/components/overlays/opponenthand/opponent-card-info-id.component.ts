@@ -1,16 +1,16 @@
-import { ChangeDetectorRef, Component, Input, ViewRef } from '@angular/core';
-import { CardIds } from '@firestone-hs/reference-data';
-import { CardsFacadeService } from '@services/cards-facade.service';
-import { DeckCard } from '../../../models/decktracker/deck-card';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
+import {ChangeDetectorRef, Component, Input, ViewRef} from '@angular/core';
+import {CardIds} from '@firestone-hs/reference-data';
+import {CardsFacadeService} from '@services/cards-facade.service';
+import {DeckCard} from '../../../models/decktracker/deck-card';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
 
 @Component({
-	selector: 'opponent-card-info-id',
-	styleUrls: [
-		'../../../../css/global/components-global.scss',
-		'../../../../css/component/overlays/opponenthand/opponent-card-info-id.component.scss',
-	],
-	template: `
+    selector: 'opponent-card-info-id',
+    styleUrls: [
+        '../../../../css/global/components-global.scss',
+        '../../../../css/component/overlays/opponenthand/opponent-card-info-id.component.scss',
+    ],
+    template: `
 		<div
 			class="opponent-card-info-id"
 			*ngIf="(hasBuffs && displayBuff) || (cardId && displayGuess)"
@@ -35,60 +35,62 @@ import { LocalizationFacadeService } from '../../../services/localization-facade
 	`,
 })
 export class OpponentCardInfoIdComponent {
-	cardId: string;
-	cardUrl: string;
-	createdBy: boolean;
-	hasBuffs: boolean;
-	_card: DeckCard;
+    cardId: string;
+    cardUrl: string;
+    createdBy: boolean;
+    hasBuffs: boolean;
+    @Input() displayGuess: boolean;
+    @Input() displayBuff: boolean;
 
-	@Input() displayGuess: boolean;
-	@Input() displayBuff: boolean;
+    constructor(
+        private readonly cdr: ChangeDetectorRef,
+        private readonly i18n: LocalizationFacadeService,
+        private readonly allCards: CardsFacadeService,
+    ) {
+    }
 
-	@Input() set card(value: DeckCard) {
-		this.cardId = this.normalizeEnchantment(value.cardId || value.creatorCardId || value.lastAffectedByCardId);
-		this._card = value.update({
-			cardId: this.cardId,
-			// We probably don't need to update the other fields, as they are not displayed
-			cardName: this.cardId === value.cardId ? value.cardName : this.i18n.getCardName(this.cardId),
-		} as DeckCard);
-		this.cardUrl = this.cardId
-			? `https://static.zerotoheroes.com/hearthstone/cardart/256x/${this.cardId}.jpg`
-			: undefined;
-		this.createdBy = (value.creatorCardId || value.lastAffectedByCardId) && !value.cardId;
-		this.hasBuffs = value.buffCardIds?.length > 0;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    _card: DeckCard;
 
-	constructor(
-		private readonly cdr: ChangeDetectorRef,
-		private readonly i18n: LocalizationFacadeService,
-		private readonly allCards: CardsFacadeService,
-	) {}
+    @Input() set card(value: DeckCard) {
+        this.cardId = this.normalizeEnchantment(value.cardId || value.creatorCardId || value.lastAffectedByCardId);
+        this._card = value.update({
+            cardId: this.cardId,
+            // We probably don't need to update the other fields, as they are not displayed
+            cardName: this.cardId === value.cardId ? value.cardName : this.i18n.getCardName(this.cardId),
+        } as DeckCard);
+        this.cardUrl = this.cardId
+            ? `https://static.zerotoheroes.com/hearthstone/cardart/256x/${this.cardId}.jpg`
+            : undefined;
+        this.createdBy = (value.creatorCardId || value.lastAffectedByCardId) && !value.cardId;
+        this.hasBuffs = value.buffCardIds?.length > 0;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	// In some cases, it's an enchantment that creates the card. And while we want to keep that
-	// info in our internal model that reflects the actual game state, it's better to show the
-	// user the actual card
-	private normalizeEnchantment(cardId: string): string {
-		const card = this.allCards.getCard(cardId);
-		if (card.type !== 'Enchantment') {
-			return cardId;
-		}
+    // In some cases, it's an enchantment that creates the card. And while we want to keep that
+    // info in our internal model that reflects the actual game state, it's better to show the
 
-		// Manual exceptions
-		switch (cardId) {
-			case CardIds.DrawOffensivePlayTavernBrawlEnchantment:
-				return CardIds.OffensivePlayTavernBrawl;
-		}
+    // user the actual card
+    private normalizeEnchantment(cardId: string): string {
+        const card = this.allCards.getCard(cardId);
+        if (card.type !== 'Enchantment') {
+            return cardId;
+        }
 
-		// The base case
-		const match = /(.*)e\d+?/.exec(cardId);
-		if (!!match) {
-			const rootCardId = match[1];
-			return rootCardId;
-		}
-		console.warn('unhandled enchantment', cardId);
-		return cardId;
-	}
+        // Manual exceptions
+        switch (cardId) {
+            case CardIds.DrawOffensivePlayTavernBrawlEnchantment:
+                return CardIds.OffensivePlayTavernBrawl;
+        }
+
+        // The base case
+        const match = /(.*)e\d+?/.exec(cardId);
+        if (!!match) {
+            const rootCardId = match[1];
+            return rootCardId;
+        }
+        console.warn('unhandled enchantment', cardId);
+        return cardId;
+    }
 }

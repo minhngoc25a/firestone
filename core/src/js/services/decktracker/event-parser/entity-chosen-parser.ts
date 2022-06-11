@@ -1,93 +1,94 @@
-import { CardIds } from '@firestone-hs/reference-data';
-import { DeckCard } from '../../../models/decktracker/deck-card';
-import { GameState } from '../../../models/decktracker/game-state';
-import { GameEvent } from '../../../models/game-event';
-import { DeckManipulationHelper } from './deck-manipulation-helper';
-import { EventParser } from './event-parser';
+import {CardIds} from '@firestone-hs/reference-data';
+import {DeckCard} from '../../../models/decktracker/deck-card';
+import {GameState} from '../../../models/decktracker/game-state';
+import {GameEvent} from '../../../models/game-event';
+import {DeckManipulationHelper} from './deck-manipulation-helper';
+import {EventParser} from './event-parser';
 
 const CARDS_THAT_PUT_ON_TOP = [CardIds.SightlessWatcherCore, CardIds.SightlessWatcherLegacy];
 
 export class EntityChosenParser implements EventParser {
-	constructor(private readonly helper: DeckManipulationHelper) {}
+    constructor(private readonly helper: DeckManipulationHelper) {
+    }
 
-	applies(gameEvent: GameEvent, state: GameState): boolean {
-		return state && gameEvent.type === GameEvent.ENTITY_CHOSEN;
-	}
+    applies(gameEvent: GameEvent, state: GameState): boolean {
+        return state && gameEvent.type === GameEvent.ENTITY_CHOSEN;
+    }
 
-	async parse(currentState: GameState, gameEvent: GameEvent): Promise<GameState> {
-		const originCreatorCardId = gameEvent.additionalData?.context?.creatorCardId;
-		if (CARDS_THAT_PUT_ON_TOP.includes(originCreatorCardId)) {
-			return this.handleCardOnTop(currentState, gameEvent);
-		} else if (originCreatorCardId === CardIds.NellieTheGreatThresher) {
-			// console.debug('handling nellie pirate crew');
-			return this.handleNelliePirateCrew(currentState, gameEvent);
-		}
-		return currentState;
-	}
+    async parse(currentState: GameState, gameEvent: GameEvent): Promise<GameState> {
+        const originCreatorCardId = gameEvent.additionalData?.context?.creatorCardId;
+        if (CARDS_THAT_PUT_ON_TOP.includes(originCreatorCardId)) {
+            return this.handleCardOnTop(currentState, gameEvent);
+        } else if (originCreatorCardId === CardIds.NellieTheGreatThresher) {
+            // console.debug('handling nellie pirate crew');
+            return this.handleNelliePirateCrew(currentState, gameEvent);
+        }
+        return currentState;
+    }
 
-	private handleNelliePirateCrew(currentState: GameState, gameEvent: GameEvent): GameState {
-		const [cardId, controllerId, localPlayer, entityId] = gameEvent.parse();
-		const isPlayer = controllerId === localPlayer.PlayerId;
-		const deck = isPlayer ? currentState.playerDeck : currentState.opponentDeck;
-		// console.debug('deck', deck, isPlayer);
-		// TODO: probably won't work if there are two pirates ships on the board at the same time
-		const pirateShipEntity = this.helper.findCardInZone(
-			deck.board,
-			CardIds.NellieTheGreatThresher_NelliesPirateShipToken,
-			null,
-		);
-		// console.debug('pirateShipEntity', pirateShipEntity);
-		const updatedShip = pirateShipEntity.update({
-			relatedCardIds: [...pirateShipEntity.relatedCardIds, cardId],
-		});
-		// console.debug('updatedShip', updatedShip);
-		const updatedBoard = this.helper.empiricReplaceCardInZone(deck.board, updatedShip, false);
-		// console.debug('updatedBoard', updatedBoard);
-		const newPlayerDeck = deck.update({
-			board: updatedBoard,
-		});
-		// console.debug('newPlayerDeck', newPlayerDeck);
-		return currentState.update({
-			[isPlayer ? 'playerDeck' : 'opponentDeck']: newPlayerDeck,
-		});
-	}
+    event(): string {
+        return GameEvent.ENTITY_CHOSEN;
+    }
 
-	private handleCardOnTop(currentState: GameState, gameEvent: GameEvent): GameState {
-		const [cardId, controllerId, localPlayer, entityId] = gameEvent.parse();
-		const isPlayer = controllerId === localPlayer.PlayerId;
-		const deck = isPlayer ? currentState.playerDeck : currentState.opponentDeck;
+    private handleNelliePirateCrew(currentState: GameState, gameEvent: GameEvent): GameState {
+        const [cardId, controllerId, localPlayer, entityId] = gameEvent.parse();
+        const isPlayer = controllerId === localPlayer.PlayerId;
+        const deck = isPlayer ? currentState.playerDeck : currentState.opponentDeck;
+        // console.debug('deck', deck, isPlayer);
+        // TODO: probably won't work if there are two pirates ships on the board at the same time
+        const pirateShipEntity = this.helper.findCardInZone(
+            deck.board,
+            CardIds.NellieTheGreatThresher_NelliesPirateShipToken,
+            null,
+        );
+        // console.debug('pirateShipEntity', pirateShipEntity);
+        const updatedShip = pirateShipEntity.update({
+            relatedCardIds: [...pirateShipEntity.relatedCardIds, cardId],
+        });
+        // console.debug('updatedShip', updatedShip);
+        const updatedBoard = this.helper.empiricReplaceCardInZone(deck.board, updatedShip, false);
+        // console.debug('updatedBoard', updatedBoard);
+        const newPlayerDeck = deck.update({
+            board: updatedBoard,
+        });
+        // console.debug('newPlayerDeck', newPlayerDeck);
+        return currentState.update({
+            [isPlayer ? 'playerDeck' : 'opponentDeck']: newPlayerDeck,
+        });
+    }
 
-		const cardInDeck = this.helper.findCardInZone(deck.deck, cardId, gameEvent.additionalData?.originalEntityId);
-		if (!cardInDeck) {
-			// console.debug(
-			// 	'[entity-chosen] card not found in deck',
-			// 	cardId,
-			// 	gameEvent.additionalData?.originalEntityId,
-			// 	deck.deck,
-			// );
-			return currentState;
-		}
+    private handleCardOnTop(currentState: GameState, gameEvent: GameEvent): GameState {
+        const [cardId, controllerId, localPlayer, entityId] = gameEvent.parse();
+        const isPlayer = controllerId === localPlayer.PlayerId;
+        const deck = isPlayer ? currentState.playerDeck : currentState.opponentDeck;
 
-		const newCard = cardInDeck.update({
-			positionFromTop: 0,
-		});
+        const cardInDeck = this.helper.findCardInZone(deck.deck, cardId, gameEvent.additionalData?.originalEntityId);
+        if (!cardInDeck) {
+            // console.debug(
+            // 	'[entity-chosen] card not found in deck',
+            // 	cardId,
+            // 	gameEvent.additionalData?.originalEntityId,
+            // 	deck.deck,
+            // );
+            return currentState;
+        }
 
-		const newDeck: readonly DeckCard[] = this.helper.empiricReplaceCardInZone(
-			deck.deck,
-			newCard,
-			deck.deckList.length === 0,
-		);
+        const newCard = cardInDeck.update({
+            positionFromTop: 0,
+        });
 
-		const newPlayerDeck = deck.update({
-			deck: newDeck,
-		});
+        const newDeck: readonly DeckCard[] = this.helper.empiricReplaceCardInZone(
+            deck.deck,
+            newCard,
+            deck.deckList.length === 0,
+        );
 
-		return currentState.update({
-			[isPlayer ? 'playerDeck' : 'opponentDeck']: newPlayerDeck,
-		});
-	}
+        const newPlayerDeck = deck.update({
+            deck: newDeck,
+        });
 
-	event(): string {
-		return GameEvent.ENTITY_CHOSEN;
-	}
+        return currentState.update({
+            [isPlayer ? 'playerDeck' : 'opponentDeck']: newPlayerDeck,
+        });
+    }
 }

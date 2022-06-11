@@ -1,20 +1,20 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input } from '@angular/core';
-import { CardsFacadeService } from '@services/cards-facade.service';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
-import { MainWindowStoreEvent } from '../../../services/mainwindow/store/events/main-window-store-event';
-import { ShowReplayEvent } from '../../../services/mainwindow/store/events/replays/show-replay-event';
-import { OverwolfService } from '../../../services/overwolf.service';
+import {AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input} from '@angular/core';
+import {CardsFacadeService} from '@services/cards-facade.service';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
+import {MainWindowStoreEvent} from '../../../services/mainwindow/store/events/main-window-store-event';
+import {ShowReplayEvent} from '../../../services/mainwindow/store/events/replays/show-replay-event';
+import {OverwolfService} from '../../../services/overwolf.service';
 
 declare let amplitude: any;
 
 @Component({
-	selector: 'stat-cell',
-	styleUrls: [
-		`../../../../css/global/reset-styles.scss`,
-		`../../../../css/component/battlegrounds/post-match/stat-cell.component.scss`,
-		`../../../../css/global/scrollbar.scss`,
-	],
-	template: `
+    selector: 'stat-cell',
+    styleUrls: [
+        `../../../../css/global/reset-styles.scss`,
+        `../../../../css/component/battlegrounds/post-match/stat-cell.component.scss`,
+        `../../../../css/global/scrollbar.scss`,
+    ],
+    template: `
 		<div class="entry cell" [ngClass]="{ 'new-record': isNewRecord }">
 			<div
 				class="record-icon"
@@ -55,42 +55,42 @@ declare let amplitude: any;
 			<div class="value">{{ value }}</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatCellComponent implements AfterViewInit {
-	@Input() label: string;
-	@Input() value: number;
-	@Input() isNewRecord: boolean;
-	@Input() tooltipText: string;
-	@Input() heroIcon: string;
-	@Input() reviewId: string;
+    @Input() label: string;
+    @Input() value: number;
+    @Input() isNewRecord: boolean;
+    @Input() tooltipText: string;
+    @Input() heroIcon: string;
+    @Input() reviewId: string;
+    heroImage: string;
+    private stateUpdater: EventEmitter<MainWindowStoreEvent>;
 
-	@Input() set heroCardId(value: string) {
-		this._heroCardId = value;
-		this.heroImage = this.i18n.getCardImage(this._heroCardId, { isBgs: true });
-	}
+    constructor(
+        private readonly ow: OverwolfService,
+        private readonly cards: CardsFacadeService,
+        private readonly i18n: LocalizationFacadeService,
+    ) {
+    }
 
-	_heroCardId: string;
-	heroImage: string;
+    _heroCardId: string;
 
-	private stateUpdater: EventEmitter<MainWindowStoreEvent>;
+    @Input() set heroCardId(value: string) {
+        this._heroCardId = value;
+        this.heroImage = this.i18n.getCardImage(this._heroCardId, {isBgs: true});
+    }
 
-	constructor(
-		private readonly ow: OverwolfService,
-		private readonly cards: CardsFacadeService,
-		private readonly i18n: LocalizationFacadeService,
-	) {}
+    ngAfterViewInit() {
+        this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
+    }
 
-	ngAfterViewInit() {
-		this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
-	}
+    showReplay() {
+        amplitude.getInstance().logEvent('click-on-record-broken-replay');
+        this.stateUpdater.next(new ShowReplayEvent(this.reviewId));
+    }
 
-	showReplay() {
-		amplitude.getInstance().logEvent('click-on-record-broken-replay');
-		this.stateUpdater.next(new ShowReplayEvent(this.reviewId));
-	}
-
-	getCardName(cardId: string): string {
-		return this.cards.getCard(cardId)?.name || 'this hero';
-	}
+    getCardName(cardId: string): string {
+        return this.cards.getCard(cardId)?.name || 'this hero';
+    }
 }

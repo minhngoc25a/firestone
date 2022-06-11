@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 @Component({
-	selector: 'control-discord',
-	styleUrls: [
-		`../../../css/global/components-global.scss`,
-		`../../../css/component/controls/controls.scss`,
-		`../../../css/component/controls/control-discord.component.scss`,
-	],
-	template: `
+    selector: 'control-discord',
+    styleUrls: [
+        `../../../css/global/components-global.scss`,
+        `../../../css/component/controls/controls.scss`,
+        `../../../css/component/controls/control-discord.component.scss`,
+    ],
+    template: `
 		<a
 			href="https://discord.gg/H4Hj7bC"
 			target="_blank"
@@ -24,14 +24,14 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 			</svg>
 		</a>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ControlDiscordComponent {
-	preventMiddleClick(event: MouseEvent) {
-		if (event.which === 2) {
-			event.stopPropagation();
-			event.preventDefault();
-			return false;
-		}
-	}
+    preventMiddleClick(event: MouseEvent) {
+        if (event.which === 2) {
+            event.stopPropagation();
+            event.preventDefault();
+            return false;
+        }
+    }
 }

@@ -1,21 +1,21 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { Observable } from 'rxjs';
-import { TwitchAuthService } from '../../../services/mainwindow/twitch-auth.service';
-import { OverwolfService } from '../../../services/overwolf.service';
-import { PreferencesService } from '../../../services/preferences.service';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {Observable} from 'rxjs';
+import {TwitchAuthService} from '../../../services/mainwindow/twitch-auth.service';
+import {OverwolfService} from '../../../services/overwolf.service';
+import {PreferencesService} from '../../../services/preferences.service';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
 
 @Component({
-	selector: 'settings-broadcast',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/global/scrollbar-settings.scss`,
-		`../../../../css/global/forms.scss`,
-		`../../../../css/component/settings/settings-common.component.scss`,
-		`../../../../css/component/settings/decktracker/settings-broadcast.component.scss`,
-	],
-	template: `
+    selector: 'settings-broadcast',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/global/scrollbar-settings.scss`,
+        `../../../../css/global/forms.scss`,
+        `../../../../css/component/settings/settings-common.component.scss`,
+        `../../../../css/component/settings/decktracker/settings-broadcast.component.scss`,
+    ],
+    template: `
 		<div
 			class="decktracker-broadcast"
 			*ngIf="{
@@ -99,50 +99,50 @@ import { AbstractSubscriptionComponent } from '../../abstract-subscription.compo
 			</section>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsBroadcastComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	twitchUserName$: Observable<string>;
+    twitchUserName$: Observable<string>;
 
-	twitchedLoggedIn: boolean;
-	twitchLoginUrl: string;
+    twitchedLoggedIn: boolean;
+    twitchLoginUrl: string;
 
-	constructor(
-		private readonly prefs: PreferencesService,
-		private readonly ow: OverwolfService,
-		private readonly twitch: TwitchAuthService,
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-	) {
-		super(store, cdr);
-	}
+    constructor(
+        private readonly prefs: PreferencesService,
+        private readonly ow: OverwolfService,
+        private readonly twitch: TwitchAuthService,
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+    ) {
+        super(store, cdr);
+    }
 
-	async ngAfterContentInit() {
-		this.twitchUserName$ = this.listenForBasicPref$((prefs) => prefs.twitchUserName);
-		this.store
-			.listenPrefs$((prefs) => prefs.twitchAccessToken)
-			.pipe(this.mapData(([pref]) => pref))
-			.subscribe(async (token) => {
-				this.twitchedLoggedIn = await this.twitch.isLoggedIn();
-				this.twitchLoginUrl = this.twitch.buildLoginUrl();
-				this.cdr?.detectChanges();
-			});
-	}
+    async ngAfterContentInit() {
+        this.twitchUserName$ = this.listenForBasicPref$((prefs) => prefs.twitchUserName);
+        this.store
+            .listenPrefs$((prefs) => prefs.twitchAccessToken)
+            .pipe(this.mapData(([pref]) => pref))
+            .subscribe(async (token) => {
+                this.twitchedLoggedIn = await this.twitch.isLoggedIn();
+                this.twitchLoginUrl = this.twitch.buildLoginUrl();
+                this.cdr?.detectChanges();
+            });
+    }
 
-	connect() {
-		this.ow.openUrlInDefaultBrowser(this.twitchLoginUrl);
-	}
+    connect() {
+        this.ow.openUrlInDefaultBrowser(this.twitchLoginUrl);
+    }
 
-	disconnect() {
-		console.log('disconnecting twitch');
-		this.prefs?.disconnectTwitch();
-	}
+    disconnect() {
+        console.log('disconnecting twitch');
+        this.prefs?.disconnectTwitch();
+    }
 
-	preventMiddleClick(event: MouseEvent) {
-		if (event.which === 2) {
-			event.stopPropagation();
-			event.preventDefault();
-			return false;
-		}
-	}
+    preventMiddleClick(event: MouseEvent) {
+        if (event.which === 2) {
+            event.stopPropagation();
+            event.preventDefault();
+            return false;
+        }
+    }
 }

@@ -1,178 +1,178 @@
 :host() {
-	flex-grow: 1;
-	display: flex;
-	justify-content: space-around;
-	--winrate-matrix-min-width: 430px;
+  flex-grow: 1;
+  display: flex;
+  justify-content: space-around;
+  --winrate-matrix-min-width: 430px;
 }
 
 .opponents-popularity {
-	width: calc(100% - var(--winrate-matrix-min-width));
-	max-width: 500px;
-	display: flex;
-	flex-direction: column;
-	font-family: Open Sans;
+  width: calc(100% - var(--winrate-matrix-min-width));
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  font-family: Open Sans;
 
-	.title {
-		color: var(--default-title-color);
-		font-size: 20px;
-		text-align: center;
-		position: relative;
-		top: 50px;
-	}
+  .title {
+    color: var(--default-title-color);
+    font-size: 20px;
+    text-align: center;
+    position: relative;
+    top: 50px;
+  }
 
-	.opponents-popularity-chart {
-		width: 100%;
-	}
+  .opponents-popularity-chart {
+    width: 100%;
+  }
 }
 
 .deck-winrate-matrix {
-	color: var(--default-text-color);
-	font-family: Open Sans;
-	font-style: normal;
-	font-weight: normal;
-	font-size: 13px;
-	flex-grow: 1;
-	max-width: 500px;
-	min-width: var(--winrate-matrix-min-width);
+  color: var(--default-text-color);
+  font-family: Open Sans;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+  flex-grow: 1;
+  max-width: 500px;
+  min-width: var(--winrate-matrix-min-width);
 
-	.header {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		height: 40px;
-	}
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+  }
 
-	.cell {
-		min-width: 80px;
-		width: 80px;
-		flex-grow: 0;
-		flex-shrink: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+  .cell {
+    min-width: 80px;
+    width: 80px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-		&.class {
-			flex-grow: 1;
-		}
+    &.class {
+      flex-grow: 1;
+    }
 
-		&.total-games {
-			min-width: 90px;
-			width: 90px;
-		}
-	}
+    &.total-games {
+      min-width: 90px;
+      width: 90px;
+    }
+  }
 }
 
 ::ng-deep {
-	.cell {
-		min-width: 80px;
-		width: 80px;
-		flex-grow: 0;
-		flex-shrink: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+  .cell {
+    min-width: 80px;
+    width: 80px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-		&.class {
-			flex-grow: 1;
-			display: flex;
-			justify-content: flex-end;
-			padding-right: 30px;
-		}
+    &.class {
+      flex-grow: 1;
+      display: flex;
+      justify-content: flex-end;
+      padding-right: 30px;
+    }
 
-		&.total-games {
-			min-width: 90px;
-			width: 90px;
-		}
-	}
+    &.total-games {
+      min-width: 90px;
+      width: 90px;
+    }
+  }
 }
 
 deck-matchup-info {
-	margin-bottom: 5px;
+  margin-bottom: 5px;
 
-	&.no-data {
-		opacity: 0.5;
-	}
+  &.no-data {
+    opacity: 0.5;
+  }
 }
 
 .controls {
-	display: flex;
-	margin-top: 10px;
+  display: flex;
+  margin-top: 10px;
 
-	.percentage-toggle ::ng-deep .settings-p.settings-p.settings-p {
-		width: 100px;
-	}
+  .percentage-toggle ::ng-deep .settings-p.settings-p.settings-p {
+    width: 100px;
+  }
 
-	.reset-container,
-	.delete-container {
-		color: #d9c3ab;
-		display: flex;
-		flex-direction: column;
-		align-items: flex-end;
-		// Position it at the bottom right of the winrate chart
-		// margin-top: -60px;
-		margin-bottom: 20px;
-		// padding-right: 20px;
-		margin-left: auto;
-		// margin-right: 240px;
+  .reset-container,
+  .delete-container {
+    color: #d9c3ab;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    // Position it at the bottom right of the winrate chart
+    // margin-top: -60px;
+    margin-bottom: 20px;
+    // padding-right: 20px;
+    margin-left: auto;
+    // margin-right: 240px;
 
-		button {
-			border: 1px solid #d9c3ab;
-			padding: 15px;
-			width: 140px;
-			display: flex;
-			justify-content: center;
-			align-items: center;
+    button {
+      border: 1px solid #d9c3ab;
+      padding: 15px;
+      width: 140px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
-			span {
-				color: #d9c3ab;
-			}
+      span {
+        color: #d9c3ab;
+      }
 
-			div {
-				display: flex;
-			}
+      div {
+        display: flex;
+      }
 
-			&:hover {
-				background: #ffb948;
-				border: 1px solid #ffb948;
+      &:hover {
+        background: #ffb948;
+        border: 1px solid #ffb948;
 
-				span {
-					color: #2f0d0d;
-				}
-			}
-		}
+        span {
+          color: #2f0d0d;
+        }
+      }
+    }
 
-		.confirmation {
-			margin-top: 5px;
-			font-size: 12px;
-		}
-	}
+    .confirmation {
+      margin-top: 5px;
+      font-size: 12px;
+    }
+  }
 
-	.delete-container {
-		color: #d73524;
+  .delete-container {
+    color: #d73524;
 
-		button {
-			border-color: #d73524;
+    button {
+      border-color: #d73524;
 
-			span {
-				color: #d73524;
-			}
-		}
+      span {
+        color: #d73524;
+      }
+    }
 
-		button {
-			&:hover {
-				background: #d73524;
-				border-color: #d73524;
+    button {
+      &:hover {
+        background: #d73524;
+        border-color: #d73524;
 
-				span {
-					color: white;
-				}
-			}
-		}
-	}
+        span {
+          color: white;
+        }
+      }
+    }
+  }
 }
 
 @media (max-width: 1500px) {
-	.opponents-popularity {
-		display: none;
-	}
+  .opponents-popularity {
+    display: none;
+  }
 }

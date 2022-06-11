@@ -1,19 +1,19 @@
 .hero-portrait {
-	img {
-		width: 100%;
-	}
+  img {
+    width: 100%;
+  }
 
-	.perspective-wrapper {
-		backface-visibility: hidden;
-		transform-style: preserve-3d;
-		width: 100%;
-	}
+  .perspective-wrapper {
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    width: 100%;
+  }
 
-	&.missing {
-		opacity: 0.4;
-	}
+  &.missing {
+    opacity: 0.4;
+  }
 
-	&:hover {
-		opacity: 1;
-	}
+  &:hover {
+    opacity: 1;
+  }
 }

@@ -2,208 +2,209 @@
 @import '../../global/fonts';
 
 .match-stats-message-container {
-	display: flex;
-	align-items: center;
-	background-image: url('/Files/assets/images/backgrounds/replays-notif-bg.png');
-	background-size: 100%;
-	background-position: center center;
-	outline: 1px solid #472406;
-	width: 350px;
-	height: 80px;
-	box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.9);
-	padding: 15px;
-	font-family: Open Sans;
+  display: flex;
+  align-items: center;
+  background-image: url('/Files/assets/images/backgrounds/replays-notif-bg.png');
+  background-size: 100%;
+  background-position: center center;
+  outline: 1px solid #472406;
+  width: 350px;
+  height: 80px;
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.9);
+  padding: 15px;
+  font-family: Open Sans;
 
-	.loading-icon {
-		height: 50px;
-		width: 45px;
-		margin-right: 10px;
-		--icon-color: #ffb948;
-		color: #ffb948;
-		animation-name: spin;
-		animation-duration: 2000ms;
-		animation-iteration-count: 50; // In case something goes wrong, we don't hog the CPU all the time
-		animation-timing-function: linear;
-		transform: translateZ(
-			0
-		); // https://stackoverflow.com/questions/13176746/css-keyframe-animation-cpu-usage-is-high-should-it-be-this-way
-	}
+  .loading-icon {
+    height: 50px;
+    width: 45px;
+    margin-right: 10px;
+    --icon-color: #ffb948;
+    color: #ffb948;
+    animation-name: spin;
+    animation-duration: 2000ms;
+    animation-iteration-count: 50; // In case something goes wrong, we don't hog the CPU all the time
+    animation-timing-function: linear;
+    transform: translateZ(
+                    0
+    ); // https://stackoverflow.com/questions/13176746/css-keyframe-animation-cpu-usage-is-high-should-it-be-this-way
+  }
 
-	.message {
-		display: flex;
-		flex-direction: column;
+  .message {
+    display: flex;
+    flex-direction: column;
 
-		.title {
-			@extend %achievement-name;
-			display: flex;
-			align-items: center;
-			margin-bottom: 3px;
+    .title {
+      @extend %achievement-name;
+      display: flex;
+      align-items: center;
+      margin-bottom: 3px;
 
-			i {
-				--icon-color: #ffb948;
-				margin-right: 10px;
-			}
-		}
+      i {
+        --icon-color: #ffb948;
+        margin-right: 10px;
+      }
+    }
 
-		.text {
-			@extend %achievements-notification-text;
-			// margin-top: 3px;
-		}
+    .text {
+      @extend %achievements-notification-text;
+      // margin-top: 3px;
+    }
 
-		.recap-text {
-			@extend %achievements-recap-text;
-			margin-top: 5px;
-			position: relative;
-			color: #a89782;
-		}
-	}
+    .recap-text {
+      @extend %achievements-recap-text;
+      margin-top: 5px;
+      position: relative;
+      color: #a89782;
+    }
+  }
 
-	.close-button {
-		position: absolute;
-		top: 0;
-		right: 0;
-		width: 30px;
-		height: 30px;
-		--icon-color: #d9c3ab;
+  .close-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    --icon-color: #d9c3ab;
 
-		&:hover {
-			color: #190505;
-			--icon-color: #190505;
-			background: #d9c3ab;
-		}
-	}
+    &:hover {
+      color: #190505;
+      --icon-color: #190505;
+      background: #d9c3ab;
+    }
+  }
 
-	.active {
-		position: absolute;
-		top: 0;
-		left: 0;
-	}
+  .active {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
 }
 
 .mode {
-	display: flex;
-	height: 100%;
-	padding-right: 10px;
-	margin-right: 10px;
-	align-items: center;
-	justify-content: center;
-	position: relative;
-	// top: -10%;
+  display: flex;
+  height: 100%;
+  padding-right: 10px;
+  margin-right: 10px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  // top: -10%;
 
-	.rank-image {
-		width: 30px;
-		height: 30px;
-		margin-right: 5px;
-	}
+  .rank-image {
+    width: 30px;
+    height: 30px;
+    margin-right: 5px;
+  }
 
-	.rank-icon {
-		height: 100%;
-	}
+  .rank-icon {
+    height: 100%;
+  }
 
-	.art {
-		position: absolute;
-		height: 70%;
-		left: 15%;
-		top: 12%;
-		clip-path: ellipse(50% 50% at 50% 50%);
-	}
+  .art {
+    position: absolute;
+    height: 70%;
+    left: 15%;
+    top: 12%;
+    clip-path: ellipse(50% 50% at 50% 50%);
+  }
 
-	.frame {
-		height: 100%;
-		position: relative;
-	}
+  .frame {
+    height: 100%;
+    position: relative;
+  }
 
-	.rank-text {
-		position: absolute;
-		bottom: -9%;
-		text-shadow: -2px -2px 0 #000, 0px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0px 2px 0 #000, 2px 2px 0 #000;
-		color: white;
-		font-size: 12px;
-		width: 100%;
-		text-align: center;
-	}
+  .rank-text {
+    position: absolute;
+    bottom: -9%;
+    text-shadow: -2px -2px 0 #000, 0px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0px 2px 0 #000, 2px 2px 0 #000;
+    color: white;
+    font-size: 12px;
+    width: 100%;
+    text-align: center;
+  }
 }
 
 .xp-text,
 .xp-bonus {
-	display: flex;
-	width: 100%;
-	align-items: center;
-	flex-wrap: wrap;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  flex-wrap: wrap;
 
-	&.bonus {
-		color: #61ff47;
-	}
+  &.bonus {
+    color: #61ff47;
+  }
 }
 
 .value {
-	margin-left: 5px;
-	margin-right: 5px;
-	font-size: 13px;
-	position: relative;
-	font-family: Open Sans;
+  margin-left: 5px;
+  margin-right: 5px;
+  font-size: 13px;
+  position: relative;
+  font-family: Open Sans;
 }
 
 .progress {
-	margin-left: 5px;
-	font-size: 13px;
-	flex-grow: 1;
-	display: flex;
+  margin-left: 5px;
+  font-size: 13px;
+  flex-grow: 1;
+  display: flex;
 
-	.item {
-		margin-right: 1px;
-	}
+  .item {
+    margin-right: 1px;
+  }
 }
 
 .tooltip {
-	visibility: hidden;
-	width: 120px;
-	padding: 5px;
-	background-color: #9fb6d7;
-	color: #1f2142;
-	text-align: center;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-family: Open Sans;
-	font-style: normal;
+  visibility: hidden;
+  width: 120px;
+  padding: 5px;
+  background-color: #9fb6d7;
+  color: #1f2142;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Open Sans;
+  font-style: normal;
 
-	/* Position the tooltip text */
-	position: absolute;
-	z-index: 1;
-	bottom: 125%;
-	left: 50%;
-	margin-left: -60px;
+  /* Position the tooltip text */
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
 
-	/* Fade in tooltip */
-	opacity: 0;
-	transition: opacity 0.3s;
+  /* Fade in tooltip */
+  opacity: 0;
+  transition: opacity 0.3s;
 
-	&::after {
-		content: '';
-		position: absolute;
-		top: 100%;
-		left: 50%;
-		margin-left: -5px;
-		border-width: 5px;
-		border-style: solid;
-		border-color: #9fb6d7 transparent transparent transparent;
-	}
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #9fb6d7 transparent transparent transparent;
+  }
 }
 
 .has-tooltip {
-	position: relative;
-	&:hover .tooltip {
-		visibility: visible;
-		opacity: 1;
-	}
+  position: relative;
+
+  &:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
 }
 
 @keyframes spin {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(-360deg);
-	}
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
 }

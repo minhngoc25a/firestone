@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { GameEvent } from '../../../models/game-event';
-import { OverwolfService } from '../../../services/overwolf.service';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {GameEvent} from '../../../models/game-event';
+import {OverwolfService} from '../../../services/overwolf.service';
 
 @Component({
-	selector: 'decktracker-control-bar',
-	styleUrls: [
-		'../../../../css/global/components-global.scss',
-		`../../../../css/component/controls/controls.scss`,
-		'../../../../css/component/decktracker/overlay/decktracker-control-bar.component.scss',
-	],
-	template: `
+    selector: 'decktracker-control-bar',
+    styleUrls: [
+        '../../../../css/global/components-global.scss',
+        `../../../../css/component/controls/controls.scss`,
+        '../../../../css/component/decktracker/overlay/decktracker-control-bar.component.scss',
+    ],
+    template: `
 		<div class="control-bar">
 			<i class="logo">
 				<svg class="svg-icon-fill">
@@ -36,37 +36,36 @@ import { OverwolfService } from '../../../services/overwolf.service';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeckTrackerControlBarComponent {
-	settingsSection = 'your-deck';
+    settingsSection = 'your-deck';
 
-	@Output() onMinimize: EventEmitter<void> = new EventEmitter<void>();
+    @Output() onMinimize: EventEmitter<void> = new EventEmitter<void>();
 
-	@Input() closeEvent: string;
-	@Input() set settingsCategory(value: string) {
-		if (value === 'opponent') {
-			this.settingsSection = 'opponent-deck';
-		} else {
-			this.settingsSection = 'your-deck';
-		}
-	}
+    @Input() closeEvent: string;
+    closeHandler: () => void;
+    private deckUpdater: EventEmitter<GameEvent>;
 
-	closeHandler: () => void;
+    constructor(private readonly ow: OverwolfService) {
+        this.deckUpdater = this.ow.getMainWindow().deckUpdater;
+        this.closeHandler = () =>
+            this.deckUpdater.next(
+                Object.assign(new GameEvent(), {
+                    type: this.closeEvent,
+                } as GameEvent),
+            );
+    }
 
-	private deckUpdater: EventEmitter<GameEvent>;
+    @Input() set settingsCategory(value: string) {
+        if (value === 'opponent') {
+            this.settingsSection = 'opponent-deck';
+        } else {
+            this.settingsSection = 'your-deck';
+        }
+    }
 
-	constructor(private readonly ow: OverwolfService) {
-		this.deckUpdater = this.ow.getMainWindow().deckUpdater;
-		this.closeHandler = () =>
-			this.deckUpdater.next(
-				Object.assign(new GameEvent(), {
-					type: this.closeEvent,
-				} as GameEvent),
-			);
-	}
-
-	minimize() {
-		this.onMinimize.next();
-	}
+    minimize() {
+        this.onMinimize.next();
+    }
 }

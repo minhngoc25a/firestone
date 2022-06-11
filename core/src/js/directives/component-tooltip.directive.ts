@@ -1,251 +1,252 @@
-import { ConnectedPosition, Overlay, OverlayPositionBuilder, OverlayRef, PositionStrategy } from '@angular/cdk/overlay';
-import { ComponentPortal, ComponentType } from '@angular/cdk/portal';
+import {ConnectedPosition, Overlay, OverlayPositionBuilder, OverlayRef, PositionStrategy} from '@angular/cdk/overlay';
+import {ComponentPortal, ComponentType} from '@angular/cdk/portal';
 import {
-	AfterViewInit,
-	ChangeDetectorRef,
-	Directive,
-	ElementRef,
-	HostListener,
-	Input,
-	OnDestroy,
-	ViewRef,
+    AfterViewInit,
+    ChangeDetectorRef,
+    Directive,
+    ElementRef,
+    HostListener,
+    Input,
+    OnDestroy,
+    ViewRef,
 } from '@angular/core';
 
 @Directive({
-	selector: '[componentTooltip]',
+    selector: '[componentTooltip]',
 })
 // See https://blog.angularindepth.com/building-tooltips-for-angular-3cdaac16d138
 export class ComponentTooltipDirective implements AfterViewInit, OnDestroy {
-	private _componentInput: any;
-	private _componentType: ComponentType<any>;
-	private viewInit = false;
+    @Input() componentTooltipBackdropClass: string;
+    private viewInit = false;
+    private tooltipPortal;
+    private overlayRef: OverlayRef;
+    private positionStrategy: PositionStrategy;
+    private hideTimeout;
 
-	@Input() set componentType(value: ComponentType<any>) {
-		this._componentType = value;
+    constructor(
+        private overlayPositionBuilder: OverlayPositionBuilder,
+        private elementRef: ElementRef,
+        private overlay: Overlay,
+        private cdr: ChangeDetectorRef,
+    ) {
+    }
 
-		if (value && value !== this._componentType) {
-			this.updatePositionStrategy();
-		}
-	}
+    private _componentInput: any;
 
-	@Input() set componentInput(value: any) {
-		this._componentInput = value;
+    @Input() set componentInput(value: any) {
+        this._componentInput = value;
 
-		if (value && value !== this._componentInput) {
-			this.updatePositionStrategy();
-		}
-	}
+        if (value && value !== this._componentInput) {
+            this.updatePositionStrategy();
+        }
+    }
 
-	@Input() componentTooltipBackdropClass: string;
+    private _componentType: ComponentType<any>;
 
-	@Input('componentTooltipPosition') set position(
-		value:
-			| 'bottom'
-			| 'right'
-			| 'left'
-			| 'top'
-			| 'auto'
-			| 'global-top-center'
-			| 'global-top-left'
-			| 'global-bottom-left',
-	) {
-		if (value === this._position) {
-			return;
-		}
-		this._position = value;
-		this.updatePositionStrategy();
-	}
+    @Input() set componentType(value: ComponentType<any>) {
+        this._componentType = value;
 
-	private _position:
-		| 'bottom'
-		| 'right'
-		| 'left'
-		| 'top'
-		| 'global-top-center'
-		| 'global-top-left'
-		| 'global-bottom-left'
-		| 'auto' = 'right';
-	private tooltipPortal;
-	private overlayRef: OverlayRef;
-	private positionStrategy: PositionStrategy;
+        if (value && value !== this._componentType) {
+            this.updatePositionStrategy();
+        }
+    }
 
-	constructor(
-		private overlayPositionBuilder: OverlayPositionBuilder,
-		private elementRef: ElementRef,
-		private overlay: Overlay,
-		private cdr: ChangeDetectorRef,
-	) {}
+    private _position:
+        | 'bottom'
+        | 'right'
+        | 'left'
+        | 'top'
+        | 'global-top-center'
+        | 'global-top-left'
+        | 'global-bottom-left'
+        | 'auto' = 'right';
 
-	ngAfterViewInit() {
-		this.viewInit = true;
-		this.updatePositionStrategy();
-	}
+    @Input('componentTooltipPosition') set position(
+        value:
+            | 'bottom'
+            | 'right'
+            | 'left'
+            | 'top'
+            | 'auto'
+            | 'global-top-center'
+            | 'global-top-left'
+            | 'global-bottom-left',
+    ) {
+        if (value === this._position) {
+            return;
+        }
+        this._position = value;
+        this.updatePositionStrategy();
+    }
 
-	private updatePositionStrategy() {
-		if (!this.viewInit) {
-			return;
-		}
-		if (this.overlayRef) {
-			this.overlayRef.detach();
-			this.overlayRef.dispose();
-		}
-		const positions: ConnectedPosition[] = this.buildPositions();
+    ngAfterViewInit() {
+        this.viewInit = true;
+        this.updatePositionStrategy();
+    }
 
-		if (this._position === 'global-top-center') {
-			this.positionStrategy = this.overlayPositionBuilder.global().centerHorizontally().top();
-		} else if (this._position === 'global-top-left') {
-			this.positionStrategy = this.overlayPositionBuilder.global().left().top();
-		} else if (this._position === 'global-bottom-left') {
-			this.positionStrategy = this.overlayPositionBuilder.global().left().bottom();
-		} else {
-			this.positionStrategy = this.overlayPositionBuilder
-				// Create position attached to the elementRef
-				.flexibleConnectedTo(this.elementRef)
-				// Describe how to connect overlay to the elementRef
-				.withPositions(positions);
-		}
+    @HostListener('window:beforeunload')
+    ngOnDestroy() {
+        this.onMouseLeave(true);
+    }
 
-		// Connect position strategy
-		this.overlayRef = this.overlay.create({
-			positionStrategy: this.positionStrategy,
-			backdropClass: this.componentTooltipBackdropClass,
-			hasBackdrop: !!this.componentTooltipBackdropClass,
-		});
+    @HostListener('mouseenter')
+    onMouseEnter() {
+        if (this.hideTimeout) {
+            clearTimeout(this.hideTimeout);
+        }
+        // Create tooltip portal
+        this.tooltipPortal = new ComponentPortal(this._componentType);
 
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+        // Attach tooltip portal to overlay
+        const tooltipRef = this.overlayRef.attach(this.tooltipPortal);
 
-	@HostListener('window:beforeunload')
-	ngOnDestroy() {
-		this.onMouseLeave(true);
-	}
+        // Pass content to tooltip component instance
+        tooltipRef.instance.config = this._componentInput;
 
-	private hideTimeout;
+        this.positionStrategy.apply();
 
-	@HostListener('mouseenter')
-	onMouseEnter() {
-		if (this.hideTimeout) {
-			clearTimeout(this.hideTimeout);
-		}
-		// Create tooltip portal
-		this.tooltipPortal = new ComponentPortal(this._componentType);
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
 
-		// Attach tooltip portal to overlay
-		const tooltipRef = this.overlayRef.attach(this.tooltipPortal);
+        // FIXME: I haven't been able to reproduce the issue, but for some users it happens that the card gets stuck
+        // on screen.
+        // So we add a timeout to hide the card automatically after a while
+        this.hideTimeout = setTimeout(() => {
+            this.onMouseLeave();
+        }, 15_000);
+    }
 
-		// Pass content to tooltip component instance
-		tooltipRef.instance.config = this._componentInput;
+    @HostListener('mouseleave')
+    onMouseLeave(willBeDestroyed = false) {
+        if (this.hideTimeout) {
+            clearTimeout(this.hideTimeout);
+        }
 
-		this.positionStrategy.apply();
+        if (this.overlayRef) {
+            this.overlayRef.detach();
+            if (!willBeDestroyed) {
+                if (!(this.cdr as ViewRef)?.destroyed) {
+                    this.cdr.detectChanges();
+                }
+            }
+        }
+    }
 
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
+    private updatePositionStrategy() {
+        if (!this.viewInit) {
+            return;
+        }
+        if (this.overlayRef) {
+            this.overlayRef.detach();
+            this.overlayRef.dispose();
+        }
+        const positions: ConnectedPosition[] = this.buildPositions();
 
-		// FIXME: I haven't been able to reproduce the issue, but for some users it happens that the card gets stuck
-		// on screen.
-		// So we add a timeout to hide the card automatically after a while
-		this.hideTimeout = setTimeout(() => {
-			this.onMouseLeave();
-		}, 15_000);
-	}
+        if (this._position === 'global-top-center') {
+            this.positionStrategy = this.overlayPositionBuilder.global().centerHorizontally().top();
+        } else if (this._position === 'global-top-left') {
+            this.positionStrategy = this.overlayPositionBuilder.global().left().top();
+        } else if (this._position === 'global-bottom-left') {
+            this.positionStrategy = this.overlayPositionBuilder.global().left().bottom();
+        } else {
+            this.positionStrategy = this.overlayPositionBuilder
+                // Create position attached to the elementRef
+                .flexibleConnectedTo(this.elementRef)
+                // Describe how to connect overlay to the elementRef
+                .withPositions(positions);
+        }
 
-	@HostListener('mouseleave')
-	onMouseLeave(willBeDestroyed = false) {
-		if (this.hideTimeout) {
-			clearTimeout(this.hideTimeout);
-		}
+        // Connect position strategy
+        this.overlayRef = this.overlay.create({
+            positionStrategy: this.positionStrategy,
+            backdropClass: this.componentTooltipBackdropClass,
+            hasBackdrop: !!this.componentTooltipBackdropClass,
+        });
 
-		if (this.overlayRef) {
-			this.overlayRef.detach();
-			if (!willBeDestroyed) {
-				if (!(this.cdr as ViewRef)?.destroyed) {
-					this.cdr.detectChanges();
-				}
-			}
-		}
-	}
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	private buildPositions(): ConnectedPosition[] {
-		switch (this._position) {
-			case 'right':
-				return [
-					{
-						originX: 'end',
-						originY: 'center',
-						overlayX: 'start',
-						overlayY: 'center',
-					},
-				];
-			case 'left':
-				return [
-					{
-						originX: 'start',
-						originY: 'center',
-						overlayX: 'end',
-						overlayY: 'center',
-					},
-				];
-			case 'top':
-				return [
-					{
-						originX: 'center',
-						originY: 'top',
-						overlayX: 'center',
-						overlayY: 'bottom',
-					},
-				];
-			case 'bottom':
-				return [
-					{
-						originX: 'center',
-						originY: 'bottom',
-						overlayX: 'center',
-						overlayY: 'top',
-					},
-				];
-			case 'auto':
-			default:
-				return [
-					{
-						originX: 'center',
-						originY: 'top',
-						overlayX: 'center',
-						overlayY: 'bottom',
-					},
-					{
-						originX: 'end',
-						originY: 'top',
-						overlayX: 'start',
-						overlayY: 'bottom',
-					},
-					{
-						originX: 'start',
-						originY: 'top',
-						overlayX: 'end',
-						overlayY: 'bottom',
-					},
-					{
-						originX: 'start',
-						originY: 'center',
-						overlayX: 'end',
-						overlayY: 'center',
-					},
-					{
-						originX: 'end',
-						originY: 'center',
-						overlayX: 'start',
-						overlayY: 'center',
-					},
-					{
-						originX: 'center',
-						originY: 'bottom',
-						overlayX: 'center',
-						overlayY: 'top',
-					},
-				];
-		}
-	}
+    private buildPositions(): ConnectedPosition[] {
+        switch (this._position) {
+            case 'right':
+                return [
+                    {
+                        originX: 'end',
+                        originY: 'center',
+                        overlayX: 'start',
+                        overlayY: 'center',
+                    },
+                ];
+            case 'left':
+                return [
+                    {
+                        originX: 'start',
+                        originY: 'center',
+                        overlayX: 'end',
+                        overlayY: 'center',
+                    },
+                ];
+            case 'top':
+                return [
+                    {
+                        originX: 'center',
+                        originY: 'top',
+                        overlayX: 'center',
+                        overlayY: 'bottom',
+                    },
+                ];
+            case 'bottom':
+                return [
+                    {
+                        originX: 'center',
+                        originY: 'bottom',
+                        overlayX: 'center',
+                        overlayY: 'top',
+                    },
+                ];
+            case 'auto':
+            default:
+                return [
+                    {
+                        originX: 'center',
+                        originY: 'top',
+                        overlayX: 'center',
+                        overlayY: 'bottom',
+                    },
+                    {
+                        originX: 'end',
+                        originY: 'top',
+                        overlayX: 'start',
+                        overlayY: 'bottom',
+                    },
+                    {
+                        originX: 'start',
+                        originY: 'top',
+                        overlayX: 'end',
+                        overlayY: 'bottom',
+                    },
+                    {
+                        originX: 'start',
+                        originY: 'center',
+                        overlayX: 'end',
+                        overlayY: 'center',
+                    },
+                    {
+                        originX: 'end',
+                        originY: 'center',
+                        overlayX: 'start',
+                        overlayY: 'center',
+                    },
+                    {
+                        originX: 'center',
+                        originY: 'bottom',
+                        overlayX: 'center',
+                        overlayY: 'top',
+                    },
+                ];
+        }
+    }
 }

@@ -1,27 +1,27 @@
 .ngx-charts-tooltip-content.ngx-charts-tooltip-content.ngx-charts-tooltip-content {
-	background: var(--color-2);
-	padding-right: 10px;
-	z-index: 9999999999;
+  background: var(--color-2);
+  padding-right: 10px;
+  z-index: 9999999999;
 
-	.tooltip-caret {
-		&.position-left {
-			border-left-color: var(--color-2);
-		}
+  .tooltip-caret {
+    &.position-left {
+      border-left-color: var(--color-2);
+    }
 
-		&.position-top {
-			border-top-color: var(--color-2);
-		}
+    &.position-top {
+      border-top-color: var(--color-2);
+    }
 
-		&.position-right {
-			border-right-color: var(--color-2);
-		}
+    &.position-right {
+      border-right-color: var(--color-2);
+    }
 
-		&.position-bottom {
-			border-bottom-color: var(--color-2);
-		}
-	}
+    &.position-bottom {
+      border-bottom-color: var(--color-2);
+    }
+  }
 
-	.bgs-tribe-composition-tooltip {
-		display: flex;
-	}
+  .bgs-tribe-composition-tooltip {
+    display: flex;
+  }
 }

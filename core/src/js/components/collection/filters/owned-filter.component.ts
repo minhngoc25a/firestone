@@ -1,14 +1,14 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
-import { IOption } from 'ng-select';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
+import {AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Output} from '@angular/core';
+import {IOption} from 'ng-select';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
 
 @Component({
-	selector: 'collection-owned-filter',
-	styleUrls: [
-		`../../../../css/global/scrollbar.scss`,
-		`../../../../css/component/collection/filters/owned-filter.component.scss`,
-	],
-	template: `
+    selector: 'collection-owned-filter',
+    styleUrls: [
+        `../../../../css/global/scrollbar.scss`,
+        `../../../../css/component/collection/filters/owned-filter.component.scss`,
+    ],
+    template: `
 		<div>
 			<fs-filter-dropdown
 				class="owned-filter"
@@ -18,30 +18,31 @@ import { LocalizationFacadeService } from '../../../services/localization-facade
 			></fs-filter-dropdown>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OwnedFilterComponent implements AfterViewInit {
-	@Output() onOptionSelected: EventEmitter<IOption> = new EventEmitter<IOption>();
+    @Output() onOptionSelected: EventEmitter<IOption> = new EventEmitter<IOption>();
 
-	readonly FILTER_OWN = 'own';
-	readonly FILTER_DONT_OWN = 'dontown';
-	readonly FILTER_ALL = 'all';
+    readonly FILTER_OWN = 'own';
+    readonly FILTER_DONT_OWN = 'dontown';
+    readonly FILTER_ALL = 'all';
 
-	cardsOwnedSelectOptions: IOption[] = [
-		{ label: this.i18n.translateString('app.collection.filters.owned.own'), value: this.FILTER_OWN },
-		{ label: this.i18n.translateString('app.collection.filters.owned.dontown'), value: this.FILTER_DONT_OWN },
-		{ label: this.i18n.translateString('app.collection.filters.owned.all'), value: this.FILTER_ALL },
-	];
-	cardsOwnedActiveFilter = this.FILTER_ALL;
+    cardsOwnedSelectOptions: IOption[] = [
+        {label: this.i18n.translateString('app.collection.filters.owned.own'), value: this.FILTER_OWN},
+        {label: this.i18n.translateString('app.collection.filters.owned.dontown'), value: this.FILTER_DONT_OWN},
+        {label: this.i18n.translateString('app.collection.filters.owned.all'), value: this.FILTER_ALL},
+    ];
+    cardsOwnedActiveFilter = this.FILTER_ALL;
 
-	constructor(private readonly i18n: LocalizationFacadeService) {}
+    constructor(private readonly i18n: LocalizationFacadeService) {
+    }
 
-	ngAfterViewInit() {
-		this.onOptionSelected.next(this.cardsOwnedSelectOptions.find((option) => option.value === this.FILTER_ALL));
-	}
+    ngAfterViewInit() {
+        this.onOptionSelected.next(this.cardsOwnedSelectOptions.find((option) => option.value === this.FILTER_ALL));
+    }
 
-	selectCardsOwnedFilter(option: IOption) {
-		this.cardsOwnedActiveFilter = option.value;
-		this.onOptionSelected.next(option);
-	}
+    selectCardsOwnedFilter(option: IOption) {
+        this.cardsOwnedActiveFilter = option.value;
+        this.onOptionSelected.next(option);
+    }
 }

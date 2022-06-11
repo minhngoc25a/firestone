@@ -1,8 +1,8 @@
 :host() {
-	flex-grow: 1;
-	display: flex;
-	flex-direction: column;
-	padding-bottom: 0 !important;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0 !important;
 }
 
 // .container {
@@ -12,8 +12,8 @@
 // }
 
 .container-1 {
-	flex-grow: 1;
-	transform: none;
-	position: relative;
-	min-height: 0;
+  flex-grow: 1;
+  transform: none;
+  position: relative;
+  min-height: 0;
 }

@@ -1,21 +1,22 @@
-import { MainWindowStoreEvent } from '../main-window-store-event';
+import {MainWindowStoreEvent} from '../main-window-store-event';
 
 export class DuelsSignatureTreasureFilterSelectedEvent implements MainWindowStoreEvent {
-	public static eventName(): string {
-		return 'DuelsSignatureTreasureFilterSelectedEvent';
-	}
+    constructor(public readonly value: string) {
+    }
 
-	constructor(public readonly value: string) {}
+    public static eventName(): string {
+        return 'DuelsSignatureTreasureFilterSelectedEvent';
+    }
 
-	public eventName(): string {
-		return 'DuelsSignatureTreasureFilterSelectedEvent';
-	}
+    public eventName(): string {
+        return 'DuelsSignatureTreasureFilterSelectedEvent';
+    }
 
-	public isNavigationEvent(): boolean {
-		return false;
-	}
+    public isNavigationEvent(): boolean {
+        return false;
+    }
 
-	public isResetHistoryEvent(): boolean {
-		return false;
-	}
+    public isResetHistoryEvent(): boolean {
+        return false;
+    }
 }

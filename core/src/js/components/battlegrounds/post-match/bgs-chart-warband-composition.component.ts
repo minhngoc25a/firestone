@@ -1,29 +1,29 @@
 import {
-	ApplicationRef,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	ElementRef,
-	HostListener,
-	Input,
-	ViewRef,
+    ApplicationRef,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    HostListener,
+    Input,
+    ViewRef,
 } from '@angular/core';
-import { Entity } from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
-import { Race } from '@firestone-hs/reference-data';
-import { Entity as ParserEntity } from '@firestone-hs/replay-parser';
-import { CardsFacadeService } from '@services/cards-facade.service';
-import { BgsBoard } from '../../../models/battlegrounds/in-game/bgs-board';
-import { BgsPostMatchStats } from '../../../models/battlegrounds/post-match/bgs-post-match-stats';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
+import {Entity} from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
+import {Race} from '@firestone-hs/reference-data';
+import {Entity as ParserEntity} from '@firestone-hs/replay-parser';
+import {CardsFacadeService} from '@services/cards-facade.service';
+import {BgsBoard} from '../../../models/battlegrounds/in-game/bgs-board';
+import {BgsPostMatchStats} from '../../../models/battlegrounds/post-match/bgs-post-match-stats';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
 
 @Component({
-	selector: 'bgs-chart-warband-composition',
-	styleUrls: [
-		`../../../../css/global/reset-styles.scss`,
-		`../../../../css/component/battlegrounds/post-match/bgs-common-chart.scss`,
-		`../../../../css/component/battlegrounds/post-match/bgs-chart-warband-composition.component.scss`,
-	],
-	template: `
+    selector: 'bgs-chart-warband-composition',
+    styleUrls: [
+        `../../../../css/global/reset-styles.scss`,
+        `../../../../css/component/battlegrounds/post-match/bgs-common-chart.scss`,
+        `../../../../css/component/battlegrounds/post-match/bgs-chart-warband-composition.component.scss`,
+    ],
+    template: `
 		<div class="legend" *ngIf="chartData?.length">
 			<div class="item beast" *ngIf="isTribe('beast')">
 				<div class="node"></div>
@@ -106,227 +106,230 @@ import { LocalizationFacadeService } from '../../../services/localization-facade
 			</span>
 		</div>
 	`,
-	// changeDetection: ChangeDetectionStrategy.OnPush,
-	changeDetection: ChangeDetectionStrategy.Default,
+    // changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.Default,
 })
 export class BgsChartWarbandCompositionComponent {
-	dimensions: number[];
-	chartData: any[];
-	colorScheme = {
-		domain: [
-			'#26a024',
-			'#404ED3',
-			'#E9A943',
-			'#A276AF',
-			'#9FB6D7',
-			'#43403d',
-			'#DE5959',
-			'#c56700',
-			'#13928c',
-			'#D9C3AB',
-			'#D9C3AB',
-		],
-	};
-	barPadding: number;
-	loaded = false;
+    dimensions: number[];
+    chartData: any[];
+    colorScheme = {
+        domain: [
+            '#26a024',
+            '#404ED3',
+            '#E9A943',
+            '#A276AF',
+            '#9FB6D7',
+            '#43403d',
+            '#DE5959',
+            '#c56700',
+            '#13928c',
+            '#D9C3AB',
+            '#D9C3AB',
+        ],
+    };
+    barPadding: number;
+    loaded = false;
 
-	@Input() invalidLimit: number;
+    @Input() invalidLimit: number;
+    private boardHistory: readonly ParserEntity[];
+    private _dirty = true;
 
-	@Input() set availableTribes(value: readonly Race[]) {
-		if (value === this._availableTribes) {
-			return;
-		}
+    constructor(
+        private readonly el: ElementRef,
+        private readonly cdr: ChangeDetectorRef,
+        private readonly allCards: CardsFacadeService,
+        private readonly appRef: ApplicationRef,
+        private readonly i18n: LocalizationFacadeService,
+    ) {
+    }
 
-		this._availableTribes = value;
-		this.updateValues();
-	}
+    private _stats: BgsPostMatchStats;
 
-	@Input() set stats(value: BgsPostMatchStats) {
-		if (value === this._stats) {
-			return;
-		}
-		if (!value?.boardHistory) {
-			return;
-		}
+    @Input() set stats(value: BgsPostMatchStats) {
+        if (value === this._stats) {
+            return;
+        }
+        if (!value?.boardHistory) {
+            return;
+        }
 
-		this._stats = value;
-		this.updateValues();
-	}
+        this._stats = value;
+        this.updateValues();
+    }
 
-	@Input() set visible(value: boolean) {
-		if (value === this._visible) {
-			return;
-		}
-		this._visible = value;
-		if (this._visible) {
-			setTimeout(() => {
-				this._dirty = true;
-				if (!(this.cdr as ViewRef)?.destroyed) {
-					this.cdr.detectChanges();
-				}
-				setTimeout(() => {
-					this.doResize();
-				});
-			}, 1000);
-		} else {
-		}
-	}
+    private _availableTribes: readonly Race[];
 
-	private _stats: BgsPostMatchStats;
-	private _availableTribes: readonly Race[];
-	private boardHistory: readonly ParserEntity[];
-	private _visible: boolean;
-	private _dirty = true;
+    @Input() set availableTribes(value: readonly Race[]) {
+        if (value === this._availableTribes) {
+            return;
+        }
 
-	constructor(
-		private readonly el: ElementRef,
-		private readonly cdr: ChangeDetectorRef,
-		private readonly allCards: CardsFacadeService,
-		private readonly appRef: ApplicationRef,
-		private readonly i18n: LocalizationFacadeService,
-	) {}
+        this._availableTribes = value;
+        this.updateValues();
+    }
 
-	isTribe(tribe: string): boolean {
-		if (!this._availableTribes?.length) {
-			return true;
-		}
+    private _visible: boolean;
 
-		return this._availableTribes.includes(Race[tribe.toUpperCase()]);
-	}
+    @Input() set visible(value: boolean) {
+        if (value === this._visible) {
+            return;
+        }
+        this._visible = value;
+        if (this._visible) {
+            setTimeout(() => {
+                this._dirty = true;
+                if (!(this.cdr as ViewRef)?.destroyed) {
+                    this.cdr.detectChanges();
+                }
+                setTimeout(() => {
+                    this.doResize();
+                });
+            }, 1000);
+        } else {
+        }
+    }
 
-	onActivate(event) {
-		setTimeout(() => {
-			this.appRef.tick();
-		}, 200);
-	}
+    isTribe(tribe: string): boolean {
+        if (!this._availableTribes?.length) {
+            return true;
+        }
 
-	onDeactivate(event) {
-		setTimeout(() => {
-			this.appRef.tick();
-		}, 200);
-	}
+        return this._availableTribes.includes(Race[tribe.toUpperCase()]);
+    }
 
-	@HostListener('window:resize')
-	onResize() {
-		this._dirty = true;
-		this.doResize();
-	}
+    onActivate(event) {
+        setTimeout(() => {
+            this.appRef.tick();
+        }, 200);
+    }
 
-	private doResize() {
-		if (!this._visible) {
-			this._dirty = true;
-			return;
-		}
-		if (!this._dirty) {
-			return;
-		}
-		setTimeout(() => {
-			const chartContainer = this.el.nativeElement.querySelector('.chart-container');
-			const rect = chartContainer?.getBoundingClientRect();
-			if (!rect?.width || !rect?.height) {
-				setTimeout(() => {
-					this.doResize();
-				}, 500);
-				return;
-			}
-			this._dirty = false;
-			this.dimensions = [rect.width, rect.height - 15];
-			this.barPadding = Math.max(25 - this.chartData.length, Math.min(40, 40 - 2 * this.chartData.length));
-			this.loaded = this.dimensions?.length > 0 && this.chartData?.length > 0;
+    onDeactivate(event) {
+        setTimeout(() => {
+            this.appRef.tick();
+        }, 200);
+    }
 
-			if (!(this.cdr as ViewRef)?.destroyed) {
-				this.cdr.detectChanges();
-			}
-		});
-	}
+    @HostListener('window:resize')
+    onResize() {
+        this._dirty = true;
+        this.doResize();
+    }
 
-	axisTickFormatter(text: string): string {
-		return parseInt(text).toFixed(0);
-	}
+    axisTickFormatter(text: string): string {
+        return parseInt(text).toFixed(0);
+    }
 
-	private async updateValues() {
-		if (!this._stats || !this._stats.boardHistory) {
-			return;
-		}
+    private doResize() {
+        if (!this._visible) {
+            this._dirty = true;
+            return;
+        }
+        if (!this._dirty) {
+            return;
+        }
+        setTimeout(() => {
+            const chartContainer = this.el.nativeElement.querySelector('.chart-container');
+            const rect = chartContainer?.getBoundingClientRect();
+            if (!rect?.width || !rect?.height) {
+                setTimeout(() => {
+                    this.doResize();
+                }, 500);
+                return;
+            }
+            this._dirty = false;
+            this.dimensions = [rect.width, rect.height - 15];
+            this.barPadding = Math.max(25 - this.chartData.length, Math.min(40, 40 - 2 * this.chartData.length));
+            this.loaded = this.dimensions?.length > 0 && this.chartData?.length > 0;
 
-		if (this.invalidLimit && this._stats.boardHistory.length <= this.invalidLimit) {
-			this.chartData = [];
-			this.loaded = false;
-			if (!(this.cdr as ViewRef)?.destroyed) {
-				this.cdr.detectChanges();
-			}
-			return;
-		}
+            if (!(this.cdr as ViewRef)?.destroyed) {
+                this.cdr.detectChanges();
+            }
+        });
+    }
 
-		setTimeout(() => {
-			this.chartData = this.buildChartData(this._stats);
-			this.loaded = this.dimensions?.length > 0 && this.chartData?.length > 0;
-			if (!(this.cdr as ViewRef)?.destroyed) {
-				this.cdr.detectChanges();
-			}
-		}, 200);
-	}
+    private async updateValues() {
+        if (!this._stats || !this._stats.boardHistory) {
+            return;
+        }
 
-	private buildChartData(value: BgsPostMatchStats): any[] {
-		if (!value || !value.boardHistory) {
-			return null;
-		}
-		const history = [...value.boardHistory];
-		if (history.length < 7) {
-			const length = history.length;
-			for (let i = length; i < 7; i++) {
-				history.push({
-					turn: i,
-					board: [],
-				});
-			}
-		}
-		return history
-			.filter((history) => history.turn > 0)
-			.map((history) => ({
-				name: history.turn,
-				series: [
-					this.buildSeries(this.i18n.translateString('global.tribe.beast'), 'beast', history),
-					this.buildSeries(this.i18n.translateString('global.tribe.mech'), 'mech', history),
-					this.buildSeries(this.i18n.translateString('global.tribe.dragon'), 'dragon', history),
-					this.buildSeries(this.i18n.translateString('global.tribe.demon'), 'demon', history),
-					this.buildSeries(this.i18n.translateString('global.tribe.murloc'), 'murloc', history),
-					this.buildSeries(this.i18n.translateString('global.tribe.pirate'), 'pirate', history),
-					this.buildSeries(this.i18n.translateString('global.tribe.elemental'), 'elemental', history),
-					this.buildSeries(this.i18n.translateString('global.tribe.quilboar'), 'quilboar', history),
-					this.buildSeries(this.i18n.translateString('global.tribe.naga'), 'naga', history),
-					this.buildSeries(this.i18n.translateString('global.tribe.all'), 'all', history),
-					this.buildSeries(this.i18n.translateString('global.tribe.blank'), null, history),
-				],
-			}));
-	}
+        if (this.invalidLimit && this._stats.boardHistory.length <= this.invalidLimit) {
+            this.chartData = [];
+            this.loaded = false;
+            if (!(this.cdr as ViewRef)?.destroyed) {
+                this.cdr.detectChanges();
+            }
+            return;
+        }
 
-	private buildSeries(tribeName: string, tribeCode: string, history: BgsBoard) {
-		return {
-			name: tribeName,
-			tribeCode: tribeCode,
-			value: this.getTribe(tribeCode, history.board),
-			minions: this.getMinions(tribeCode, history.turn),
-		};
-	}
+        setTimeout(() => {
+            this.chartData = this.buildChartData(this._stats);
+            this.loaded = this.dimensions?.length > 0 && this.chartData?.length > 0;
+            if (!(this.cdr as ViewRef)?.destroyed) {
+                this.cdr.detectChanges();
+            }
+        }, 200);
+    }
 
-	private getTribe(tribe: string, board: readonly Entity[]): number {
-		// Don't use === because tribe can be null / undefined
-		return (
-			board?.filter((entity) => this.allCards.getCard(entity.cardID)?.race?.toLowerCase() == tribe)?.length ?? 0
-		);
-	}
+    private buildChartData(value: BgsPostMatchStats): any[] {
+        if (!value || !value.boardHistory) {
+            return null;
+        }
+        const history = [...value.boardHistory];
+        if (history.length < 7) {
+            const length = history.length;
+            for (let i = length; i < 7; i++) {
+                history.push({
+                    turn: i,
+                    board: [],
+                });
+            }
+        }
+        return history
+            .filter((history) => history.turn > 0)
+            .map((history) => ({
+                name: history.turn,
+                series: [
+                    this.buildSeries(this.i18n.translateString('global.tribe.beast'), 'beast', history),
+                    this.buildSeries(this.i18n.translateString('global.tribe.mech'), 'mech', history),
+                    this.buildSeries(this.i18n.translateString('global.tribe.dragon'), 'dragon', history),
+                    this.buildSeries(this.i18n.translateString('global.tribe.demon'), 'demon', history),
+                    this.buildSeries(this.i18n.translateString('global.tribe.murloc'), 'murloc', history),
+                    this.buildSeries(this.i18n.translateString('global.tribe.pirate'), 'pirate', history),
+                    this.buildSeries(this.i18n.translateString('global.tribe.elemental'), 'elemental', history),
+                    this.buildSeries(this.i18n.translateString('global.tribe.quilboar'), 'quilboar', history),
+                    this.buildSeries(this.i18n.translateString('global.tribe.naga'), 'naga', history),
+                    this.buildSeries(this.i18n.translateString('global.tribe.all'), 'all', history),
+                    this.buildSeries(this.i18n.translateString('global.tribe.blank'), null, history),
+                ],
+            }));
+    }
 
-	private getMinions(tribe: string, turn: number, model?): readonly ParserEntity[] {
-		return (
-			this._stats?.boardHistory
-				?.find((history) => history.turn === turn)
-				?.board?.map((entity) =>
-					entity.tags?.merge
-						? ParserEntity.create(entity as ParserEntity)
-						: ParserEntity.fromJS(entity as any),
-				)
-				?.filter((entity) => this.allCards.getCard(entity.cardID)?.race?.toLowerCase() == tribe) || []
-		);
-	}
+    private buildSeries(tribeName: string, tribeCode: string, history: BgsBoard) {
+        return {
+            name: tribeName,
+            tribeCode: tribeCode,
+            value: this.getTribe(tribeCode, history.board),
+            minions: this.getMinions(tribeCode, history.turn),
+        };
+    }
+
+    private getTribe(tribe: string, board: readonly Entity[]): number {
+        // Don't use === because tribe can be null / undefined
+        return (
+            board?.filter((entity) => this.allCards.getCard(entity.cardID)?.race?.toLowerCase() == tribe)?.length ?? 0
+        );
+    }
+
+    private getMinions(tribe: string, turn: number, model?): readonly ParserEntity[] {
+        return (
+            this._stats?.boardHistory
+                ?.find((history) => history.turn === turn)
+                ?.board?.map((entity) =>
+                entity.tags?.merge
+                    ? ParserEntity.create(entity as ParserEntity)
+                    : ParserEntity.fromJS(entity as any),
+            )
+                ?.filter((entity) => this.allCards.getCard(entity.cardID)?.race?.toLowerCase() == tribe) || []
+        );
+    }
 }

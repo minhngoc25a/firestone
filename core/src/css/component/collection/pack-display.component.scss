@@ -2,23 +2,23 @@
 @import '../../global/fonts';
 
 .pack-display {
-	height: 150px;
-	position: relative;
-	margin-top: 10px;
-	width: 100%;
+  height: 150px;
+  position: relative;
+  margin-top: 10px;
+  width: 100%;
 
-	.card {
-		position: absolute;
-		width: 100px;
+  .card {
+    position: absolute;
+    width: 100px;
 
-		img,
-		video {
-			width: 100%;
-		}
+    img,
+    video {
+      width: 100%;
+    }
 
-		&.golden {
-			width: 110px;
-			top: -10px;
-		}
-	}
+    &.golden {
+      width: 110px;
+      top: -10px;
+    }
+  }
 }

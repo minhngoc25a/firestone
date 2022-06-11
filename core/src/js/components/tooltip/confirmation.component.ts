@@ -1,18 +1,18 @@
 import {
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
-	Input,
-	Output,
-	ViewRef,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    Output,
+    ViewRef,
 } from '@angular/core';
-import { LocalizationFacadeService } from '@services/localization-facade.service';
+import {LocalizationFacadeService} from '@services/localization-facade.service';
 
 @Component({
-	selector: 'confirmation',
-	styleUrls: [`../../../css/component/tooltip/confirmation.component.scss`],
-	template: `
+    selector: 'confirmation',
+    styleUrls: [`../../../css/component/tooltip/confirmation.component.scss`],
+    template: `
 		<div class="confirmation">
 			<div class="title">{{ _confirmationTitle }}</div>
 			<div class="text">
@@ -32,60 +32,65 @@ import { LocalizationFacadeService } from '@services/localization-facade.service
 			</button>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmationComponent {
-	@Output() onConfirm: EventEmitter<boolean> = new EventEmitter<boolean>();
-	@Output() onCancel: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() onConfirm: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() onCancel: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-	@Input() set confirmationTitle(value: string) {
-		this._confirmationTitle = value;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    constructor(private readonly cdr: ChangeDetectorRef, private readonly i18n: LocalizationFacadeService) {
+    }
 
-	@Input() set confirmationText(value: string) {
-		this._confirmationText = value;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    _confirmationTitle = this.i18n.translateString('app.global.controls.default-confirmation-title');
 
-	@Input() set validButtonText(value: string) {
-		this._validButtonText = value;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    @Input() set confirmationTitle(value: string) {
+        this._confirmationTitle = value;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	@Input() set cancelButtonText(value: string) {
-		this._cancelButtonText = value;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    _confirmationText = this.i18n.translateString('app.global.controls.default-confirmation-text');
 
-	@Input() set showOk(value: boolean) {
-		this._showOk = value;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    @Input() set confirmationText(value: string) {
+        this._confirmationText = value;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	_confirmationTitle = this.i18n.translateString('app.global.controls.default-confirmation-title');
-	_confirmationText = this.i18n.translateString('app.global.controls.default-confirmation-text');
-	_validButtonText = this.i18n.translateString('app.global.controls.default-validation-button');
-	_cancelButtonText = this.i18n.translateString('app.global.controls.default-cancel-button');
-	_showOk = true;
+    _validButtonText = this.i18n.translateString('app.global.controls.default-validation-button');
 
-	constructor(private readonly cdr: ChangeDetectorRef, private readonly i18n: LocalizationFacadeService) {}
+    @Input() set validButtonText(value: string) {
+        this._validButtonText = value;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	ok() {
-		this.onConfirm.next(true);
-	}
+    _cancelButtonText = this.i18n.translateString('app.global.controls.default-cancel-button');
 
-	cancel() {
-		this.onCancel.next(true);
-	}
+    @Input() set cancelButtonText(value: string) {
+        this._cancelButtonText = value;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
+
+    _showOk = true;
+
+    @Input() set showOk(value: boolean) {
+        this._showOk = value;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
+
+    ok() {
+        this.onConfirm.next(true);
+    }
+
+    cancel() {
+        this.onCancel.next(true);
+    }
 }

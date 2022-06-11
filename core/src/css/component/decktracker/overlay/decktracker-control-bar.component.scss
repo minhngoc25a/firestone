@@ -1,59 +1,59 @@
 .control-bar {
-	height: 30px;
-	display: flex;
-	align-items: center;
+  height: 30px;
+  display: flex;
+  align-items: center;
 
-	.logo {
-		width: 73px;
-		height: 20px;
-		margin-left: 10px;
-		// --icon-color: #ffb948;
-		--icon-color: var(--color-1);
-	}
+  .logo {
+    width: 73px;
+    height: 20px;
+    margin-left: 10px;
+    // --icon-color: #ffb948;
+    --icon-color: var(--color-1);
+  }
 
-	.controls {
-		display: flex;
-		margin-left: auto;
-		z-index: 1;
+  .controls {
+    display: flex;
+    margin-left: auto;
+    z-index: 1;
 
-		.import-container {
-			height: 30px;
-			width: 30px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
+    .import-container {
+      height: 30px;
+      width: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-			&:hover {
-				background-color: #303352;
-			}
+      &:hover {
+        background-color: #303352;
+      }
 
-			.import-deckstring {
-				width: 13px;
-				height: 16px;
-				--icon-color: #101530;
-				--icon-color-secondary: #9fb6d7;
+      .import-deckstring {
+        width: 13px;
+        height: 16px;
+        --icon-color: #101530;
+        --icon-color-secondary: #9fb6d7;
 
-				&:hover {
-					--icon-color: #9fb6d7;
-				}
-			}
-		}
+        &:hover {
+          --icon-color: #9fb6d7;
+        }
+      }
+    }
 
-		::ng-deep button {
-			--icon-color: #9fb6d7;
-			color: #9fb6d7;
+    ::ng-deep button {
+      --icon-color: #9fb6d7;
+      color: #9fb6d7;
 
-			&:hover {
-				background: #303352;
-			}
-		}
+      &:hover {
+        background: #303352;
+      }
+    }
 
-		::ng-deep control-close button {
-			&:hover {
-				--icon-color: #101530;
-				color: #101530;
-				background: #9fb6d7;
-			}
-		}
-	}
+    ::ng-deep control-close button {
+      &:hover {
+        --icon-color: #101530;
+        color: #101530;
+        background: #9fb6d7;
+      }
+    }
+  }
 }

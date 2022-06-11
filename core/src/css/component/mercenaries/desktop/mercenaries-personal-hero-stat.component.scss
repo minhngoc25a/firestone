@@ -1,314 +1,316 @@
 .mercenaries-personal-hero-stat {
-	display: flex;
-	align-items: center;
-	width: 100%;
-	height: 100%;
-	flex-grow: 0;
-	flex-shrink: 0;
-	padding: 10px;
-	position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  flex-grow: 0;
+  flex-shrink: 0;
+  padding: 10px;
+  position: relative;
 
-	background: rgba(255, 255, 255, 0.08);
-	// border: 1px solid;
-	// border-image: linear-gradient(-45deg, rgba(159, 182, 215, 0), var(--color-1)) 1;
+  background: rgba(255, 255, 255, 0.08);
+  // border: 1px solid;
+  // border-image: linear-gradient(-45deg, rgba(159, 182, 215, 0), var(--color-1)) 1;
 
-	&.missing {
-		opacity: 0.5;
-	}
+  &.missing {
+    opacity: 0.5;
+  }
 
-	&.fully-upgraded {
-		border: 2px solid;
-		// border-image: linear-gradient(-45deg, rgba(159, 182, 215, 0), var(--color-1)) 1;
-		border-image: linear-gradient(-45deg, rgba(159, 182, 215, 0), #ffb948) 1;
-	}
+  &.fully-upgraded {
+    border: 2px solid;
+    // border-image: linear-gradient(-45deg, rgba(159, 182, 215, 0), var(--color-1)) 1;
+    border-image: linear-gradient(-45deg, rgba(159, 182, 215, 0), #ffb948) 1;
+  }
 
-	&:hover {
-		// background: rgba(255, 255, 255, 0.12);
-	}
+  &:hover {
+    // background: rgba(255, 255, 255, 0.12);
+  }
 
-	.rarity-level {
-		position: relative;
-		width: 25px;
-		top: 5px;
-		padding-left: 2px;
-		padding-right: 3px;
-		flex-shrink: 0;
+  .rarity-level {
+    position: relative;
+    width: 25px;
+    top: 5px;
+    padding-left: 2px;
+    padding-right: 3px;
+    flex-shrink: 0;
 
-		.rarity {
-			width: 100%;
-		}
+    .rarity {
+      width: 100%;
+    }
 
-		.level {
-			position: absolute;
-			top: -5px;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
+    .level {
+      position: absolute;
+      top: -5px;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-			span {
-				font-family: Sumana;
-				font-weight: 700;
-				font-size: 14px;
-				color: white;
-				text-shadow: -1px -1px 0 var(--color-7), 0px -1px 0 var(--color-7), 1px -1px 0 var(--color-7),
-					-1px 1px 0 var(--color-7), 0px 1px 0 var(--color-7), 1px 1px 0 var(--color-7);
-			}
-		}
-	}
+      span {
+        font-family: Sumana;
+        font-weight: 700;
+        font-size: 14px;
+        color: white;
+        text-shadow: -1px -1px 0 var(--color-7), 0px -1px 0 var(--color-7), 1px -1px 0 var(--color-7),
+        -1px 1px 0 var(--color-7), 0px 1px 0 var(--color-7), 1px 1px 0 var(--color-7);
+      }
+    }
+  }
 
-	.portrait {
-		flex-grow: 0;
-		flex-shrink: 0;
-		display: flex;
-		flex-direction: column;
-		width: 55px;
-		position: relative;
-		top: 0;
-		left: 0;
-		z-index: 9;
-		margin-top: 0;
-		margin-bottom: 0;
+  .portrait {
+    flex-grow: 0;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    width: 55px;
+    position: relative;
+    top: 0;
+    left: 0;
+    z-index: 9;
+    margin-top: 0;
+    margin-bottom: 0;
 
-		.icon {
-			position: absolute;
-			top: 11%;
-			left: 13%;
-			width: 76%;
-			clip-path: ellipse(40% 44% at 50% 50%);
-		}
+    .icon {
+      position: absolute;
+      top: 11%;
+      left: 13%;
+      width: 76%;
+      clip-path: ellipse(40% 44% at 50% 50%);
+    }
 
-		.frame {
-			width: 100%;
-			z-index: 1;
-		}
-	}
+    .frame {
+      width: 100%;
+      z-index: 1;
+    }
+  }
 
-	.name {
-		color: var(--default-title-color);
-		width: 80px;
-		font-size: 13px;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		margin-right: 15px;
-		flex-shrink: 0;
-		flex-grow: 1;
-		max-width: 200px;
-		padding-left: 10px;
-	}
+  .name {
+    color: var(--default-title-color);
+    width: 80px;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 15px;
+    flex-shrink: 0;
+    flex-grow: 1;
+    max-width: 200px;
+    padding-left: 10px;
+  }
 
-	.xp {
-		width: 60px;
-		margin-right: 20px;
-		flex-shrink: 0;
+  .xp {
+    width: 60px;
+    margin-right: 20px;
+    flex-shrink: 0;
 
-		::ng-deep progress-bar {
-			.current {
-				font-size: 11px;
-			}
-			.progress-bar-content {
-				width: 60px;
-			}
-		}
-	}
+    ::ng-deep progress-bar {
+      .current {
+        font-size: 11px;
+      }
 
-	.coins {
-		flex-grow: 0;
-		flex-shrink: 0;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		width: 50px;
-		position: relative;
-		top: -5px;
-		left: 0;
-		z-index: 9;
-		margin-top: 0;
-		margin-bottom: 0;
+      .progress-bar-content {
+        width: 60px;
+      }
+    }
+  }
 
-		&.left {
-			display: none;
-		}
+  .coins {
+    flex-grow: 0;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    position: relative;
+    top: -5px;
+    left: 0;
+    z-index: 9;
+    margin-top: 0;
+    margin-bottom: 0;
 
-		&.to-farm {
-			display: none;
-		}
+    &.left {
+      display: none;
+    }
 
-		.coin-container {
-			display: flex;
-			position: relative;
-			width: 35px;
-		}
+    &.to-farm {
+      display: none;
+    }
 
-		.icon {
-			width: 100%;
-			clip-path: ellipse(40% 44% at 50% 50%);
-			filter: grayscale(1);
-		}
+    .coin-container {
+      display: flex;
+      position: relative;
+      width: 35px;
+    }
 
-		.frame {
-			width: 100%;
-			z-index: 1;
-			position: absolute;
-			left: 0;
-			top: 0;
-		}
+    .icon {
+      width: 100%;
+      clip-path: ellipse(40% 44% at 50% 50%);
+      filter: grayscale(1);
+    }
 
-		.amount {
-			color: var(--default-title-color);
-			position: absolute;
-			bottom: -12px;
-			width: 100%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			font-size: 11px;
-		}
-	}
+    .frame {
+      width: 100%;
+      z-index: 1;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
 
-	.current-task {
-		color: var(--default-title-color);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 12px;
-		width: 80px;
-		flex-shrink: 0;
-	}
+    .amount {
+      color: var(--default-title-color);
+      position: absolute;
+      bottom: -12px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+  }
 
-	.abilities,
-	.equipments {
-		display: flex;
-		flex-shrink: 0;
-		flex-grow: 1;
-		max-width: 180px;
-		justify-content: center;
+  .current-task {
+    color: var(--default-title-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    width: 80px;
+    flex-shrink: 0;
+  }
 
-		.item {
-			width: 40px;
-			height: 40px;
-			margin-right: 10px;
-			position: relative;
+  .abilities,
+  .equipments {
+    display: flex;
+    flex-shrink: 0;
+    flex-grow: 1;
+    max-width: 180px;
+    justify-content: center;
 
-			&.missing {
-				opacity: 0.5;
-			}
+    .item {
+      width: 40px;
+      height: 40px;
+      margin-right: 10px;
+      position: relative;
 
-			.item-icon {
-				flex-grow: 0;
-				flex-shrink: 0;
-				display: flex;
-				flex-direction: column;
-				width: 100%;
-				position: relative;
-				top: 0;
-				left: 0;
-				z-index: 9;
+      &.missing {
+        opacity: 0.5;
+      }
 
-				.icon {
-					position: absolute;
-					top: 11%;
-					left: 13%;
-					width: 76%;
-					clip-path: ellipse(40% 44% at 50% 50%);
-				}
+      .item-icon {
+        flex-grow: 0;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        position: relative;
+        top: 0;
+        left: 0;
+        z-index: 9;
 
-				.frame {
-					width: 100%;
-					z-index: 1;
-				}
+        .icon {
+          position: absolute;
+          top: 11%;
+          left: 13%;
+          width: 76%;
+          clip-path: ellipse(40% 44% at 50% 50%);
+        }
 
-				.speed,
-				.cooldown {
-					position: absolute;
-					display: flex;
-					z-index: 1;
-					bottom: 0;
-					height: 20px;
-					align-items: center;
-					justify-content: center;
-					right: 55%;
+        .frame {
+          width: 100%;
+          z-index: 1;
+        }
 
-					.value {
-						font-family: Sumana;
-						font-weight: 700;
-						font-size: 14px;
-						color: white;
-						text-shadow: -1px -1px 0 var(--color-7), 0px -1px 0 var(--color-7), 1px -1px 0 var(--color-7),
-							-1px 1px 0 var(--color-7), 0px 1px 0 var(--color-7), 1px 1px 0 var(--color-7);
-					}
-				}
+        .speed,
+        .cooldown {
+          position: absolute;
+          display: flex;
+          z-index: 1;
+          bottom: 0;
+          height: 20px;
+          align-items: center;
+          justify-content: center;
+          right: 55%;
 
-				.cooldown {
-					top: -6px;
-					bottom: auto;
-					right: -10px;
-					left: auto;
-					height: auto;
+          .value {
+            font-family: Sumana;
+            font-weight: 700;
+            font-size: 14px;
+            color: white;
+            text-shadow: -1px -1px 0 var(--color-7), 0px -1px 0 var(--color-7), 1px -1px 0 var(--color-7),
+            -1px 1px 0 var(--color-7), 0px 1px 0 var(--color-7), 1px 1px 0 var(--color-7);
+          }
+        }
 
-					.cooldown-icon {
-						width: 25px;
-					}
-					.value {
-						position: absolute;
-						top: -12px;
-					}
-				}
-			}
+        .cooldown {
+          top: -6px;
+          bottom: auto;
+          right: -10px;
+          left: auto;
+          height: auto;
 
-			.tier {
-				position: absolute;
-				display: flex;
-				z-index: 9;
-				align-items: center;
-				justify-content: center;
-				pointer-events: none;
-				top: -15px;
-				left: 0;
-				width: 100%;
-				height: 100%;
+          .cooldown-icon {
+            width: 25px;
+          }
 
-				.value {
-					font-family: Sumana;
-					font-weight: 700;
-					font-size: 16px;
-					color: white;
-					text-shadow: -2px -2px 0 var(--color-7), 0px -2px 0 var(--color-7), 2px -2px 0 var(--color-7),
-						-2px 2px 0 var(--color-7), 0px 2px 0 var(--color-7), 2px 2px 0 var(--color-7);
-					display: flex;
-					max-height: 100%;
-					align-items: center;
-					position: relative;
-					top: -3px;
-				}
-			}
-		}
-	}
+          .value {
+            position: absolute;
+            top: -12px;
+          }
+        }
+      }
 
-	.abilities {
-		margin-right: 10px;
-	}
+      .tier {
+        position: absolute;
+        display: flex;
+        z-index: 9;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        top: -15px;
+        left: 0;
+        width: 100%;
+        height: 100%;
 
-	// TODO: find a better way to show what equipment is equipped
-	// .equipments {
-	// 	.item:not(.missing):not(.equipped) {
-	// 		opacity: 0.8;
-	// 	}
-	// }
+        .value {
+          font-family: Sumana;
+          font-weight: 700;
+          font-size: 16px;
+          color: white;
+          text-shadow: -2px -2px 0 var(--color-7), 0px -2px 0 var(--color-7), 2px -2px 0 var(--color-7),
+          -2px 2px 0 var(--color-7), 0px 2px 0 var(--color-7), 2px 2px 0 var(--color-7);
+          display: flex;
+          max-height: 100%;
+          align-items: center;
+          position: relative;
+          top: -3px;
+        }
+      }
+    }
+  }
+
+  .abilities {
+    margin-right: 10px;
+  }
+
+  // TODO: find a better way to show what equipment is equipped
+  // .equipments {
+  // 	.item:not(.missing):not(.equipped) {
+  // 		opacity: 0.8;
+  // 	}
+  // }
 }
 
 @media (min-width: 1420px) {
-	.mercenaries-personal-hero-stat .coins.left {
-		display: flex;
-	}
+  .mercenaries-personal-hero-stat .coins.left {
+    display: flex;
+  }
 }
 
 @media (min-width: 1470px) {
-	.mercenaries-personal-hero-stat .coins.to-farm {
-		display: flex;
-	}
+  .mercenaries-personal-hero-stat .coins.to-farm {
+    display: flex;
+  }
 }

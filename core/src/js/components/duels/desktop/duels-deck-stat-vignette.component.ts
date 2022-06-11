@@ -1,19 +1,19 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input } from '@angular/core';
-import { CardsFacadeService } from '@services/cards-facade.service';
-import { DuelsDeckStat } from '../../../models/duels/duels-player-stats';
-import { isPassive } from '../../../services/duels/duels-utils';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
-import { DuelsViewDeckDetailsEvent } from '../../../services/mainwindow/store/events/duels/duels-view-deck-details-event';
-import { MainWindowStoreEvent } from '../../../services/mainwindow/store/events/main-window-store-event';
-import { OverwolfService } from '../../../services/overwolf.service';
+import {AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input} from '@angular/core';
+import {CardsFacadeService} from '@services/cards-facade.service';
+import {DuelsDeckStat} from '../../../models/duels/duels-player-stats';
+import {isPassive} from '../../../services/duels/duels-utils';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
+import {DuelsViewDeckDetailsEvent} from '../../../services/mainwindow/store/events/duels/duels-view-deck-details-event';
+import {MainWindowStoreEvent} from '../../../services/mainwindow/store/events/main-window-store-event';
+import {OverwolfService} from '../../../services/overwolf.service';
 
 @Component({
-	selector: 'duels-deck-stat-vignette',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/duels/desktop/duels-deck-stat-vignette.component.scss`,
-	],
-	template: `
+    selector: 'duels-deck-stat-vignette',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/duels/desktop/duels-deck-stat-vignette.component.scss`,
+    ],
+    template: `
 		<div class="duels-deck-stat">
 			<div class="mode-color-code {{ gameMode }}"></div>
 
@@ -89,110 +89,105 @@ import { OverwolfService } from '../../../services/overwolf.service';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DuelsDeckStatVignetteComponent implements AfterViewInit {
-	@Input() set stat(value: DuelsDeckStat) {
-		if (!value || value === this._stat) {
-			return;
-		}
-		this._stat = value;
+    gameMode: 'duels' | 'paid-duels';
+    gameModeImage: string;
+    gameModeTooltip: string;
+    rankText: string;
+    wins: number;
+    losses: number;
+    playerCardId: string;
+    playerClassImage: string;
+    playerClassTooltip: string;
+    heroPowerCardId: string;
+    heroPowerImage: string;
+    heroPowerTooltip: string;
+    signatureTreasureCardId: string;
+    signatureTreasureImage: string;
+    signatureTreasureTooltip: string;
+    deckstring: string;
+    dustCost: number;
+    passives: readonly InternalPassive[];
+    private stateUpdater: EventEmitter<MainWindowStoreEvent>;
 
-		this.gameMode = this._stat.gameMode;
-		this.gameModeImage =
-			this._stat.gameMode === 'duels'
-				? 'assets/images/deck/ranks/casual_duels.png'
-				: 'assets/images/deck/ranks/heroic_duels.png';
-		this.gameModeTooltip =
-			this._stat.gameMode === 'duels'
-				? this.i18n.translateString('global.game-mode.casual-duels')
-				: this.i18n.translateString('global.game-mode.heroic-duels');
-		this.rankText = `${value.rating}`;
+    constructor(
+        private readonly ow: OverwolfService,
+        private readonly allCards: CardsFacadeService,
+        private readonly i18n: LocalizationFacadeService,
+    ) {
+    }
 
-		this.wins = this._stat.wins;
-		this.losses = this._stat.losses;
+    private _stat: DuelsDeckStat;
 
-		this.playerClassImage = this._stat.heroCardId
-			? `https://static.zerotoheroes.com/hearthstone/cardart/256x/${this._stat.heroCardId}.jpg`
-			: null;
-		this.playerCardId = this._stat.heroCardId;
-		const heroCard = this._stat.heroCardId ? this.allCards.getCard(this._stat.heroCardId) : null;
-		this.playerClassTooltip = heroCard ? `${heroCard.name} (${heroCard.playerClass})` : null;
+    @Input() set stat(value: DuelsDeckStat) {
+        if (!value || value === this._stat) {
+            return;
+        }
+        this._stat = value;
 
-		this.heroPowerCardId = this._stat.heroPowerCardId;
-		this.heroPowerImage = this._stat.heroPowerCardId
-			? `https://static.zerotoheroes.com/hearthstone/cardart/256x/${this._stat.heroPowerCardId}.jpg`
-			: null;
-		const heroPowerCard = this._stat.heroPowerCardId ? this.allCards.getCard(this._stat.heroPowerCardId) : null;
-		this.heroPowerTooltip = this._stat ? heroPowerCard.name : null;
+        this.gameMode = this._stat.gameMode;
+        this.gameModeImage =
+            this._stat.gameMode === 'duels'
+                ? 'assets/images/deck/ranks/casual_duels.png'
+                : 'assets/images/deck/ranks/heroic_duels.png';
+        this.gameModeTooltip =
+            this._stat.gameMode === 'duels'
+                ? this.i18n.translateString('global.game-mode.casual-duels')
+                : this.i18n.translateString('global.game-mode.heroic-duels');
+        this.rankText = `${value.rating}`;
 
-		this.signatureTreasureCardId = this._stat.signatureTreasureCardId;
-		this.signatureTreasureImage = this._stat.signatureTreasureCardId
-			? `https://static.zerotoheroes.com/hearthstone/cardart/256x/${this._stat.signatureTreasureCardId}.jpg`
-			: null;
-		const signatureTreasureCard = this._stat.signatureTreasureCardId
-			? this.allCards.getCard(this._stat.signatureTreasureCardId)
-			: null;
-		this.signatureTreasureTooltip = signatureTreasureCard ? signatureTreasureCard.name : null;
+        this.wins = this._stat.wins;
+        this.losses = this._stat.losses;
 
-		this.deckstring = value.decklist;
-		this.dustCost = value.dustCost;
-		this.passives = this.buildPassives(value);
-	}
+        this.playerClassImage = this._stat.heroCardId
+            ? `https://static.zerotoheroes.com/hearthstone/cardart/256x/${this._stat.heroCardId}.jpg`
+            : null;
+        this.playerCardId = this._stat.heroCardId;
+        const heroCard = this._stat.heroCardId ? this.allCards.getCard(this._stat.heroCardId) : null;
+        this.playerClassTooltip = heroCard ? `${heroCard.name} (${heroCard.playerClass})` : null;
 
-	gameMode: 'duels' | 'paid-duels';
-	gameModeImage: string;
-	gameModeTooltip: string;
-	rankText: string;
+        this.heroPowerCardId = this._stat.heroPowerCardId;
+        this.heroPowerImage = this._stat.heroPowerCardId
+            ? `https://static.zerotoheroes.com/hearthstone/cardart/256x/${this._stat.heroPowerCardId}.jpg`
+            : null;
+        const heroPowerCard = this._stat.heroPowerCardId ? this.allCards.getCard(this._stat.heroPowerCardId) : null;
+        this.heroPowerTooltip = this._stat ? heroPowerCard.name : null;
 
-	wins: number;
-	losses: number;
+        this.signatureTreasureCardId = this._stat.signatureTreasureCardId;
+        this.signatureTreasureImage = this._stat.signatureTreasureCardId
+            ? `https://static.zerotoheroes.com/hearthstone/cardart/256x/${this._stat.signatureTreasureCardId}.jpg`
+            : null;
+        const signatureTreasureCard = this._stat.signatureTreasureCardId
+            ? this.allCards.getCard(this._stat.signatureTreasureCardId)
+            : null;
+        this.signatureTreasureTooltip = signatureTreasureCard ? signatureTreasureCard.name : null;
 
-	playerCardId: string;
-	playerClassImage: string;
-	playerClassTooltip: string;
+        this.deckstring = value.decklist;
+        this.dustCost = value.dustCost;
+        this.passives = this.buildPassives(value);
+    }
 
-	heroPowerCardId: string;
-	heroPowerImage: string;
-	heroPowerTooltip: string;
+    ngAfterViewInit() {
+        this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
+    }
 
-	signatureTreasureCardId: string;
-	signatureTreasureImage: string;
-	signatureTreasureTooltip: string;
+    viewDetails() {
+        this.stateUpdater.next(new DuelsViewDeckDetailsEvent(this._stat.id));
+    }
 
-	deckstring: string;
-	dustCost: number;
-
-	passives: readonly InternalPassive[];
-
-	private _stat: DuelsDeckStat;
-	private stateUpdater: EventEmitter<MainWindowStoreEvent>;
-
-	constructor(
-		private readonly ow: OverwolfService,
-		private readonly allCards: CardsFacadeService,
-		private readonly i18n: LocalizationFacadeService,
-	) {}
-
-	ngAfterViewInit() {
-		this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
-	}
-
-	viewDetails() {
-		this.stateUpdater.next(new DuelsViewDeckDetailsEvent(this._stat.id));
-	}
-
-	buildPassives(deck: DuelsDeckStat): readonly InternalPassive[] {
-		return deck.treasuresCardIds
-			.filter((cardId) => isPassive(cardId, this.allCards))
-			.map((passiveCardId) => ({
-				cardId: passiveCardId,
-				image: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${passiveCardId}.jpg`,
-			}));
-	}
+    buildPassives(deck: DuelsDeckStat): readonly InternalPassive[] {
+        return deck.treasuresCardIds
+            .filter((cardId) => isPassive(cardId, this.allCards))
+            .map((passiveCardId) => ({
+                cardId: passiveCardId,
+                image: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${passiveCardId}.jpg`,
+            }));
+    }
 }
 
 interface InternalPassive {
-	image: string;
-	cardId: string;
+    image: string;
+    cardId: string;
 }

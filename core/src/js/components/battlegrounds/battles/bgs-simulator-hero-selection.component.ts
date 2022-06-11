@@ -1,32 +1,32 @@
 import {
-	AfterContentInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	HostListener,
-	Input,
-	OnDestroy,
-	ViewRef,
+    AfterContentInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    HostListener,
+    Input,
+    OnDestroy,
+    ViewRef,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { BehaviorSubject, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, takeUntil, tap } from 'rxjs/operators';
-import { getHeroPower } from '../../../services/battlegrounds/bgs-utils';
-import { CardsFacadeService } from '../../../services/cards-facade.service';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { sortByProperties } from '../../../services/utils';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
+import {FormControl} from '@angular/forms';
+import {BehaviorSubject, Subscription} from 'rxjs';
+import {debounceTime, distinctUntilChanged, map, takeUntil, tap} from 'rxjs/operators';
+import {getHeroPower} from '../../../services/battlegrounds/bgs-utils';
+import {CardsFacadeService} from '../../../services/cards-facade.service';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {sortByProperties} from '../../../services/utils';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
 
 @Component({
-	selector: 'bgs-simulator-hero-selection',
-	styleUrls: [
-		`../../../../css/global/scrollbar.scss`,
-		`../../../../css/component/controls/controls.scss`,
-		`../../../../css/component/controls/control-close.component.scss`,
-		`../../../../css/component/battlegrounds/battles/bgs-simulator-hero-selection.component.scss`,
-	],
-	template: `
+    selector: 'bgs-simulator-hero-selection',
+    styleUrls: [
+        `../../../../css/global/scrollbar.scss`,
+        `../../../../css/component/controls/controls.scss`,
+        `../../../../css/component/controls/control-close.component.scss`,
+        `../../../../css/component/battlegrounds/battles/bgs-simulator-hero-selection.component.scss`,
+    ],
+    template: `
 		<div class="container">
 			<button class="i-30 close-button" (mousedown)="close()">
 				<svg class="svg-icon-fill">
@@ -89,170 +89,167 @@ import { AbstractSubscriptionComponent } from '../../abstract-subscription.compo
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsSimulatorHeroSelectionComponent
-	extends AbstractSubscriptionComponent
-	implements AfterContentInit, OnDestroy {
-	@Input() closeHandler: () => void;
-	@Input() applyHandler: (newHeroCardId: string) => void;
+    extends AbstractSubscriptionComponent
+    implements AfterContentInit, OnDestroy {
+    @Input() closeHandler: () => void;
+    @Input() applyHandler: (newHeroCardId: string) => void;
+    searchForm = new FormControl();
+    allHeroes: readonly Hero[];
+    currentHeroId: string;
+    heroIcon: string;
+    heroName: string;
+    heroPowerText: string;
+    searchString = new BehaviorSubject<string>(null);
+    private subscription: Subscription;
 
-	@Input() set currentHero(heroCardId: string) {
-		this.currentHeroId = heroCardId;
-		if (!!heroCardId) {
-			this.heroIcon = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${heroCardId}.jpg`;
-			this.heroName = this.allCards.getCard(heroCardId)?.name;
-			const heroPower = getHeroPower(heroCardId, this.allCards);
-			this.heroPowerText = this.sanitizeText(this.allCards.getCard(heroPower)?.text);
-		} else {
-			this.heroIcon = null;
-			this.heroName = this.i18n.translateString('battlegrounds.sim.select-hero-placeholder');
-			this.heroPowerText = null;
-		}
+    constructor(
+        private readonly allCards: CardsFacadeService,
+        private readonly i18n: LocalizationFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+        protected readonly store: AppUiStoreFacadeService,
+    ) {
+        super(store, cdr);
+        this.cdr.detach();
+    }
 
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    @Input() set currentHero(heroCardId: string) {
+        this.currentHeroId = heroCardId;
+        if (!!heroCardId) {
+            this.heroIcon = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${heroCardId}.jpg`;
+            this.heroName = this.allCards.getCard(heroCardId)?.name;
+            const heroPower = getHeroPower(heroCardId, this.allCards);
+            this.heroPowerText = this.sanitizeText(this.allCards.getCard(heroPower)?.text);
+        } else {
+            this.heroIcon = null;
+            this.heroName = this.i18n.translateString('battlegrounds.sim.select-hero-placeholder');
+            this.heroPowerText = null;
+        }
 
-	searchForm = new FormControl();
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	allHeroes: readonly Hero[];
-	currentHeroId: string;
-	heroIcon: string;
-	heroName: string;
-	heroPowerText: string;
-	searchString = new BehaviorSubject<string>(null);
+    ngAfterContentInit(): void {
+        this.searchString
+            .asObservable()
+            .pipe(
+                debounceTime(200),
+                distinctUntilChanged(),
+                map((searchString) =>
+                    this.allCards
+                        .getCards()
+                        .filter((card) => card.battlegroundsHero)
+                        .filter(
+                            (card) =>
+                                !searchString?.length || card.name.toLowerCase().includes(searchString.toLowerCase()),
+                        )
+                        .map((card) => ({
+                            id: card.id,
+                            icon: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${card.id}.jpg`,
+                            name: card.name,
+                            heroPower: {
+                                id: getHeroPower(card.id, this.allCards),
+                                text: this.sanitizeText(
+                                    this.allCards.getCard(getHeroPower(card.id, this.allCards))?.text,
+                                ),
+                            },
+                        }))
+                        .sort(sortByProperties((hero: Hero) => [hero.name])),
+                ),
+                // startWith([]),
+                // FIXME
+                tap((filter) => setTimeout(() => this.cdr.detectChanges(), 0)),
+                tap((heroes) => console.debug('heroes', heroes)),
+                takeUntil(this.destroyed$),
+            )
+            .subscribe((heroes) => {
+                this.allHeroes = [];
+                if (!(this.cdr as ViewRef)?.destroyed) {
+                    this.cdr.detectChanges();
+                }
+                setTimeout(() => {
+                    this.allHeroes = heroes;
+                    if (!(this.cdr as ViewRef)?.destroyed) {
+                        this.cdr.detectChanges();
+                    }
+                });
+            });
+        this.subscription = this.searchForm.valueChanges
+            .pipe(debounceTime(200), distinctUntilChanged(), takeUntil(this.destroyed$))
+            .subscribe((data) => {
+                this.searchString.next(data);
+            });
+        // To bind the async pipes
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	private subscription: Subscription;
+    @HostListener('window:beforeunload')
+    ngOnDestroy() {
+        super.ngOnDestroy();
+        this.subscription.unsubscribe();
+    }
 
-	constructor(
-		private readonly allCards: CardsFacadeService,
-		private readonly i18n: LocalizationFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-		protected readonly store: AppUiStoreFacadeService,
-	) {
-		super(store, cdr);
-		this.cdr.detach();
-	}
+    @HostListener('document:keyup', ['$event'])
+    handleKeyboardControl(event: KeyboardEvent) {
+        if (event.key === 'Enter' && (event.ctrlKey || event.shiftKey || event.altKey)) {
+            this.validate();
+        } else if (event.key === 'Enter' && !!this.allHeroes?.length) {
+            this.selectHero(this.allHeroes[0]);
+        } else if (event.key === 'Escape') {
+            this.close();
+        }
+    }
 
-	ngAfterContentInit(): void {
-		this.searchString
-			.asObservable()
-			.pipe(
-				debounceTime(200),
-				distinctUntilChanged(),
-				map((searchString) =>
-					this.allCards
-						.getCards()
-						.filter((card) => card.battlegroundsHero)
-						.filter(
-							(card) =>
-								!searchString?.length || card.name.toLowerCase().includes(searchString.toLowerCase()),
-						)
-						.map((card) => ({
-							id: card.id,
-							icon: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${card.id}.jpg`,
-							name: card.name,
-							heroPower: {
-								id: getHeroPower(card.id, this.allCards),
-								text: this.sanitizeText(
-									this.allCards.getCard(getHeroPower(card.id, this.allCards))?.text,
-								),
-							},
-						}))
-						.sort(sortByProperties((hero: Hero) => [hero.name])),
-				),
-				// startWith([]),
-				// FIXME
-				tap((filter) => setTimeout(() => this.cdr.detectChanges(), 0)),
-				tap((heroes) => console.debug('heroes', heroes)),
-				takeUntil(this.destroyed$),
-			)
-			.subscribe((heroes) => {
-				this.allHeroes = [];
-				if (!(this.cdr as ViewRef)?.destroyed) {
-					this.cdr.detectChanges();
-				}
-				setTimeout(() => {
-					this.allHeroes = heroes;
-					if (!(this.cdr as ViewRef)?.destroyed) {
-						this.cdr.detectChanges();
-					}
-				});
-			});
-		this.subscription = this.searchForm.valueChanges
-			.pipe(debounceTime(200), distinctUntilChanged(), takeUntil(this.destroyed$))
-			.subscribe((data) => {
-				this.searchString.next(data);
-			});
-		// To bind the async pipes
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    selectHero(hero: Hero) {
+        this.currentHeroId = hero.id;
+        this.heroIcon = hero.icon;
+        this.heroName = hero.name;
+        this.heroPowerText = hero.heroPower.text;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	@HostListener('window:beforeunload')
-	ngOnDestroy() {
-		super.ngOnDestroy();
-		this.subscription.unsubscribe();
-	}
+    close() {
+        this.closeHandler();
+    }
 
-	@HostListener('document:keyup', ['$event'])
-	handleKeyboardControl(event: KeyboardEvent) {
-		if (event.key === 'Enter' && (event.ctrlKey || event.shiftKey || event.altKey)) {
-			this.validate();
-		} else if (event.key === 'Enter' && !!this.allHeroes?.length) {
-			this.selectHero(this.allHeroes[0]);
-		} else if (event.key === 'Escape') {
-			this.close();
-		}
-	}
+    validate() {
+        this.applyHandler(this.currentHeroId);
+    }
 
-	selectHero(hero: Hero) {
-		this.currentHeroId = hero.id;
-		this.heroIcon = hero.icon;
-		this.heroName = hero.name;
-		this.heroPowerText = hero.heroPower.text;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    onMouseDown(event: Event) {
+        event.stopPropagation();
+    }
 
-	close() {
-		this.closeHandler();
-	}
-
-	validate() {
-		this.applyHandler(this.currentHeroId);
-	}
-
-	onMouseDown(event: Event) {
-		event.stopPropagation();
-	}
-
-	private sanitizeText(text: string): string {
-		return text
-			? text
-					.replace(/\[x\]/g, '')
-					.replace(/<b>/g, '')
-					.replace(/<\/b>/g, '')
-					.replace(/<i>/g, '')
-					.replace(/<\/i>/g, '')
-					.replace(/<br>/g, '')
-					.replace(/Passive\. /g, '')
-					.replace(/Passive /g, '')
-					.replace(/Passive/g, '')
-			: text;
-	}
+    private sanitizeText(text: string): string {
+        return text
+            ? text
+                .replace(/\[x\]/g, '')
+                .replace(/<b>/g, '')
+                .replace(/<\/b>/g, '')
+                .replace(/<i>/g, '')
+                .replace(/<\/i>/g, '')
+                .replace(/<br>/g, '')
+                .replace(/Passive\. /g, '')
+                .replace(/Passive /g, '')
+                .replace(/Passive/g, '')
+            : text;
+    }
 }
 
 interface Hero {
-	id: string;
-	icon: string;
-	name: string;
-	heroPower: {
-		id: string;
-		text: string;
-	};
+    id: string;
+    icon: string;
+    name: string;
+    heroPower: {
+        id: string;
+        text: string;
+    };
 }

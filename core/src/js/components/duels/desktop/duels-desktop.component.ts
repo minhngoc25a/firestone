@@ -1,31 +1,31 @@
 import {
-	AfterContentInit,
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
+    AfterContentInit,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
 } from '@angular/core';
-import { Observable } from 'rxjs';
-import { distinctUntilChanged, filter, map, takeUntil, tap } from 'rxjs/operators';
-import { DuelsCategory } from '../../../models/mainwindow/duels/duels-category';
-import { DuelsCategoryType } from '../../../models/mainwindow/duels/duels-category.type';
-import { DuelsSelectCategoryEvent } from '../../../services/mainwindow/store/events/duels/duels-select-category-event';
-import { MainWindowStoreEvent } from '../../../services/mainwindow/store/events/main-window-store-event';
-import { OverwolfService } from '../../../services/overwolf.service';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { cdLog } from '../../../services/ui-store/app-ui-store.service';
-import { arraysEqual } from '../../../services/utils';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
+import {Observable} from 'rxjs';
+import {distinctUntilChanged, filter, map, takeUntil, tap} from 'rxjs/operators';
+import {DuelsCategory} from '../../../models/mainwindow/duels/duels-category';
+import {DuelsCategoryType} from '../../../models/mainwindow/duels/duels-category.type';
+import {DuelsSelectCategoryEvent} from '../../../services/mainwindow/store/events/duels/duels-select-category-event';
+import {MainWindowStoreEvent} from '../../../services/mainwindow/store/events/main-window-store-event';
+import {OverwolfService} from '../../../services/overwolf.service';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {cdLog} from '../../../services/ui-store/app-ui-store.service';
+import {arraysEqual} from '../../../services/utils';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
 
 @Component({
-	selector: 'duels-desktop',
-	styleUrls: [
-		`../../../../css/component/app-section.component.scss`,
-		`../../../../css/component/menu-selection.component.scss`,
-		`../../../../css/component/duels/desktop/duels-desktop.component.scss`,
-	],
-	template: `
+    selector: 'duels-desktop',
+    styleUrls: [
+        `../../../../css/component/app-section.component.scss`,
+        `../../../../css/component/menu-selection.component.scss`,
+        `../../../../css/component/duels/desktop/duels-desktop.component.scss`,
+    ],
+    template: `
 		<div class="app-section duels" *ngIf="{ value: category$ | async } as category">
 			<section class="main divider">
 				<with-loading [isLoading]="loading$ | async">
@@ -80,65 +80,65 @@ import { AbstractSubscriptionComponent } from '../../abstract-subscription.compo
 			</section>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DuelsDesktopComponent extends AbstractSubscriptionComponent implements AfterContentInit, AfterViewInit {
-	loading$: Observable<boolean>;
-	menuDisplayType$: Observable<string>;
-	categories$: Observable<readonly DuelsCategory[]>;
-	category$: Observable<DuelsCategory>;
+    loading$: Observable<boolean>;
+    menuDisplayType$: Observable<string>;
+    categories$: Observable<readonly DuelsCategory[]>;
+    category$: Observable<DuelsCategory>;
 
-	private stateUpdater: EventEmitter<MainWindowStoreEvent>;
+    private stateUpdater: EventEmitter<MainWindowStoreEvent>;
 
-	constructor(
-		private readonly ow: OverwolfService,
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-	) {
-		super(store, cdr);
-	}
+    constructor(
+        private readonly ow: OverwolfService,
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+    ) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.loading$ = this.store
-			.listen$(([main, nav]) => main.duels.loading)
-			.pipe(this.mapData(([loading]) => loading));
-		this.menuDisplayType$ = this.store
-			.listen$(([main, nav]) => nav.navigationDuels.menuDisplayType)
-			.pipe(
-				map(([menuDisplayType]) => menuDisplayType),
-				distinctUntilChanged(),
-				tap((info) => cdLog('emitting menuDisplayType in ', this.constructor.name, info)),
-				takeUntil(this.destroyed$),
-			);
-		this.categories$ = this.store
-			.listen$(([main, nav]) => main.duels.categories)
-			.pipe(
-				map(([categories]) => categories ?? []),
-				// Subcategories are not displayed in the menu
-				map((categories) => categories.filter((cat) => !!cat.name)),
-				distinctUntilChanged((a, b) => arraysEqual(a, b)),
-				tap((info) => cdLog('emitting categories in ', this.constructor.name, info)),
-				takeUntil(this.destroyed$),
-			);
-		this.category$ = this.store
-			.listen$(
-				([main, nav]) => main.duels,
-				([main, nav]) => nav.navigationDuels.selectedCategoryId,
-			)
-			.pipe(
-				map(([duels, selectedCategoryId]) => duels.findCategory(selectedCategoryId)),
-				filter((category) => !!category),
-				distinctUntilChanged(),
-				tap((info) => cdLog('emitting category in ', this.constructor.name, info)),
-				takeUntil(this.destroyed$),
-			);
-	}
+    ngAfterContentInit() {
+        this.loading$ = this.store
+            .listen$(([main, nav]) => main.duels.loading)
+            .pipe(this.mapData(([loading]) => loading));
+        this.menuDisplayType$ = this.store
+            .listen$(([main, nav]) => nav.navigationDuels.menuDisplayType)
+            .pipe(
+                map(([menuDisplayType]) => menuDisplayType),
+                distinctUntilChanged(),
+                tap((info) => cdLog('emitting menuDisplayType in ', this.constructor.name, info)),
+                takeUntil(this.destroyed$),
+            );
+        this.categories$ = this.store
+            .listen$(([main, nav]) => main.duels.categories)
+            .pipe(
+                map(([categories]) => categories ?? []),
+                // Subcategories are not displayed in the menu
+                map((categories) => categories.filter((cat) => !!cat.name)),
+                distinctUntilChanged((a, b) => arraysEqual(a, b)),
+                tap((info) => cdLog('emitting categories in ', this.constructor.name, info)),
+                takeUntil(this.destroyed$),
+            );
+        this.category$ = this.store
+            .listen$(
+                ([main, nav]) => main.duels,
+                ([main, nav]) => nav.navigationDuels.selectedCategoryId,
+            )
+            .pipe(
+                map(([duels, selectedCategoryId]) => duels.findCategory(selectedCategoryId)),
+                filter((category) => !!category),
+                distinctUntilChanged(),
+                tap((info) => cdLog('emitting category in ', this.constructor.name, info)),
+                takeUntil(this.destroyed$),
+            );
+    }
 
-	ngAfterViewInit() {
-		this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
-	}
+    ngAfterViewInit() {
+        this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
+    }
 
-	selectCategory(categoryId: DuelsCategoryType) {
-		this.stateUpdater.next(new DuelsSelectCategoryEvent(categoryId));
-	}
+    selectCategory(categoryId: DuelsCategoryType) {
+        this.stateUpdater.next(new DuelsSelectCategoryEvent(categoryId));
+    }
 }

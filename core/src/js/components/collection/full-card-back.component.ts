@@ -1,18 +1,18 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef } from '@angular/core';
-import { Observable } from 'rxjs';
-import { CardBack } from '../../models/card-back';
-import { AppUiStoreFacadeService } from '../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../abstract-subscription.component';
-import { InternalCardBack } from './internal-card-back';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef} from '@angular/core';
+import {Observable} from 'rxjs';
+import {CardBack} from '../../models/card-back';
+import {AppUiStoreFacadeService} from '../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../abstract-subscription.component';
+import {InternalCardBack} from './internal-card-back';
 
 @Component({
-	selector: 'full-card-back',
-	styleUrls: [
-		`../../../css/global/components-global.scss`,
-		`../../../css/global/scrollbar.scss`,
-		`../../../css/component/collection/full-card-back.component.scss`,
-	],
-	template: `
+    selector: 'full-card-back',
+    styleUrls: [
+        `../../../css/global/components-global.scss`,
+        `../../../css/global/scrollbar.scss`,
+        `../../../css/component/collection/full-card-back.component.scss`,
+    ],
+    template: `
 		<div class="card-back-details-container" *ngIf="_cardBack">
 			<card-back
 				class="card-back"
@@ -30,32 +30,33 @@ import { InternalCardBack } from './internal-card-back';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FullCardBackComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	animated$: Observable<boolean>;
-	_cardBack: InternalCardBack;
+    animated$: Observable<boolean>;
 
-	@Input() set cardBack(value: CardBack) {
-		if (!value) {
-			return;
-		}
-		this._cardBack = {
-			...value,
-			image: `https://static.firestoneapp.com/cardbacks/512/${value.id}.png?v=2`,
-			// animatedImage: `https://static.zerotoheroes.com/hearthstone/cardBacks/animated/${value.id}.webm`,
-			animatedImage: null,
-		};
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
+        super(store, cdr);
+    }
 
-	constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
-		super(store, cdr);
-	}
+    _cardBack: InternalCardBack;
 
-	ngAfterContentInit() {
-		this.animated$ = this.listenForBasicPref$((prefs) => prefs.collectionUseAnimatedCardBacks);
-	}
+    @Input() set cardBack(value: CardBack) {
+        if (!value) {
+            return;
+        }
+        this._cardBack = {
+            ...value,
+            image: `https://static.firestoneapp.com/cardbacks/512/${value.id}.png?v=2`,
+            // animatedImage: `https://static.zerotoheroes.com/hearthstone/cardBacks/animated/${value.id}.webm`,
+            animatedImage: null,
+        };
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
+
+    ngAfterContentInit() {
+        this.animated$ = this.listenForBasicPref$((prefs) => prefs.collectionUseAnimatedCardBacks);
+    }
 }

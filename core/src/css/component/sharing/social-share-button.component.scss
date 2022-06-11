@@ -1,20 +1,20 @@
 .social-share {
-	width: 30px;
-	height: 30px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-bottom: 5px;
-	margin-left: 5px;
-	--icon-color: var(--color-2);
-	--icon-secondary-color: var(--color-7);
-	opacity: 1;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 5px;
+  margin-left: 5px;
+  --icon-color: var(--color-2);
+  --icon-secondary-color: var(--color-7);
+  opacity: 1;
 
-	&:hover:not(.disabled) {
-		--icon-color: var(--color-1);
-	}
+  &:hover:not(.disabled) {
+    --icon-color: var(--color-1);
+  }
 
-	&.disabled {
-		opacity: 0.5;
-	}
+  &.disabled {
+    opacity: 0.5;
+  }
 }

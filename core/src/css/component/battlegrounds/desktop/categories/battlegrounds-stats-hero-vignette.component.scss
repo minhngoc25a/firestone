@@ -1,90 +1,91 @@
 .battlegrounds-stats-hero-vignette {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: 100%;
-	height: 100%;
-	flex-grow: 0;
-	flex-shrink: 0;
-	background: rgba(255, 255, 255, 0.08);
-	padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  flex-grow: 0;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 10px;
 
-	.wrapper-for-flip,
-	.box-side {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		flex-direction: column;
-	}
+  .wrapper-for-flip,
+  .box-side {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
 
-	.hero-name {
-		font-size: 14px;
-		color: var(--default-title-color);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		width: 140px;
-		text-align: center;
-	}
+  .hero-name {
+    font-size: 14px;
+    color: var(--default-title-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 140px;
+    text-align: center;
+  }
 
-	.portrait {
-		margin-top: 10px;
-		width: 100px;
+  .portrait {
+    margin-top: 10px;
+    width: 100px;
 
-		::ng-deep .health {
-			right: -12%;
-			bottom: 5%;
+    ::ng-deep .health {
+      right: -12%;
+      bottom: 5%;
 
-			.icon {
-				display: none;
-			}
-			.value {
-				font-size: 18px;
-			}
-		}
-	}
+      .icon {
+        display: none;
+      }
 
-	&.unused {
-		opacity: 0.4;
-	}
+      .value {
+        font-size: 18px;
+      }
+    }
+  }
 
-	&:hover {
-		background: rgba(255, 255, 255, 0.12);
-	}
+  &.unused {
+    opacity: 0.4;
+  }
 
-	.stats {
-		display: flex;
-		flex-direction: column;
-		font-size: 12px;
-		align-items: center;
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
 
-		.item {
-			display: flex;
-			align-items: center;
-			margin-top: 3px;
+  .stats {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    align-items: center;
 
-			.label {
-				margin-right: 5px;
-			}
+    .item {
+      display: flex;
+      align-items: center;
+      margin-top: 3px;
 
-			.value {
-				font-weight: bold;
-				color: var(--default-title-color);
-			}
+      .label {
+        margin-right: 5px;
+      }
 
-			&.mmr {
-				&.negative .value {
-					color: #ff4747;
-				}
+      .value {
+        font-weight: bold;
+        color: var(--default-title-color);
+      }
 
-				&.positive .value {
-					color: #61ff47;
-				}
+      &.mmr {
+        &.negative .value {
+          color: #ff4747;
+        }
 
-				&.missing .value {
-					color: inherit;
-				}
-			}
-		}
-	}
+        &.positive .value {
+          color: #61ff47;
+        }
+
+        &.missing .value {
+          color: inherit;
+        }
+      }
+    }
+  }
 }

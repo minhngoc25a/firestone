@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { SocialUserInfo } from '../../models/mainwindow/social-user-info';
-import { OverwolfService } from '../../services/overwolf.service';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {SocialUserInfo} from '../../models/mainwindow/social-user-info';
+import {OverwolfService} from '../../services/overwolf.service';
 
 @Component({
-	selector: 'share-login',
-	styleUrls: [`../../../css/component/sharing/share-login.component.scss`],
-	template: `
+    selector: 'share-login',
+    styleUrls: [`../../../css/component/sharing/share-login.component.scss`],
+    template: `
 		<div class="share-login">
 			<div class="avatar-image" [helpTooltip]="username">
 				<img [src]="loginImage" />
@@ -15,28 +15,28 @@ import { OverwolfService } from '../../services/overwolf.service';
 			</button>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShareLoginComponent {
-	@Output() onLogoutRequest: EventEmitter<boolean> = new EventEmitter<boolean>();
-	@Output() onLoginRequest: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() onLogoutRequest: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() onLoginRequest: EventEmitter<boolean> = new EventEmitter<boolean>();
+    loggedIn: boolean;
+    loginImage: string;
+    username: string;
 
-	@Input() set socialInfo(value: SocialUserInfo) {
-		if (!value) {
-			return;
-		}
-		this.username = value.name;
-		this.loggedIn = value.id != undefined;
-		this.loginImage = this.loggedIn && value.avatarUrl ? value.avatarUrl : 'assets/images/social-share-login.png';
-	}
+    constructor(private ow: OverwolfService) {
+    }
 
-	loggedIn: boolean;
-	loginImage: string;
-	username: string;
+    @Input() set socialInfo(value: SocialUserInfo) {
+        if (!value) {
+            return;
+        }
+        this.username = value.name;
+        this.loggedIn = value.id != undefined;
+        this.loginImage = this.loggedIn && value.avatarUrl ? value.avatarUrl : 'assets/images/social-share-login.png';
+    }
 
-	constructor(private ow: OverwolfService) {}
-
-	logInOut() {
-		this.loggedIn ? this.onLogoutRequest.next(true) : this.onLoginRequest.next(true);
-	}
+    logInOut() {
+        this.loggedIn ? this.onLogoutRequest.next(true) : this.onLoginRequest.next(true);
+    }
 }

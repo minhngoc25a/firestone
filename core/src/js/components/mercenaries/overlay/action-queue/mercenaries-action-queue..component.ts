@@ -1,29 +1,29 @@
 import {
-	AfterContentInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	ElementRef,
-	HostListener,
-	OnDestroy,
-	Renderer2,
-	ViewRef,
+    AfterContentInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    HostListener,
+    OnDestroy,
+    Renderer2,
+    ViewRef,
 } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, takeUntil, tap } from 'rxjs/operators';
-import { MercenariesAction } from '../../../../models/mercenaries/mercenaries-battle-state';
-import { Preferences } from '../../../../models/preferences';
-import { AppUiStoreFacadeService } from '../../../../services/ui-store/app-ui-store-facade.service';
-import { cdLog } from '../../../../services/ui-store/app-ui-store.service';
-import { AbstractSubscriptionComponent } from '../../../abstract-subscription.component';
+import {Observable, Subscription} from 'rxjs';
+import {debounceTime, distinctUntilChanged, filter, map, takeUntil, tap} from 'rxjs/operators';
+import {MercenariesAction} from '../../../../models/mercenaries/mercenaries-battle-state';
+import {Preferences} from '../../../../models/preferences';
+import {AppUiStoreFacadeService} from '../../../../services/ui-store/app-ui-store-facade.service';
+import {cdLog} from '../../../../services/ui-store/app-ui-store.service';
+import {AbstractSubscriptionComponent} from '../../../abstract-subscription.component';
 
 @Component({
-	selector: 'mercenaries-action-queue',
-	styleUrls: [
-		'../../../../../css/global/components-global.scss',
-		'../../../../../css/component/mercenaries/overlay/action-queue/mercenaries-action-queue.component.scss',
-	],
-	template: `
+    selector: 'mercenaries-action-queue',
+    styleUrls: [
+        '../../../../../css/global/components-global.scss',
+        '../../../../../css/component/mercenaries/overlay/action-queue/mercenaries-action-queue.component.scss',
+    ],
+    template: `
 		<div class="root">
 			<!-- Never remove the scalable from the DOM so that we can perform resizing even when not visible -->
 			<div class="scalable">
@@ -43,80 +43,80 @@ import { AbstractSubscriptionComponent } from '../../../abstract-subscription.co
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MercenariesActionsQueueComponent
-	extends AbstractSubscriptionComponent
-	implements AfterContentInit, OnDestroy {
-	actions$: Observable<readonly MercenariesAction[]>;
+    extends AbstractSubscriptionComponent
+    implements AfterContentInit, OnDestroy {
+    actions$: Observable<readonly MercenariesAction[]>;
 
-	overlayWidthInPx = 240;
+    overlayWidthInPx = 240;
+    private scale: Subscription;
 
-	private scaleExtractor = (prefs: Preferences) => prefs.mercenariesActionsQueueOverlayScale;
-	private scale: Subscription;
+    constructor(
+        private readonly el: ElementRef,
+        private readonly renderer: Renderer2,
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+    ) {
+        super(store, cdr);
+    }
 
-	constructor(
-		private readonly el: ElementRef,
-		private readonly renderer: Renderer2,
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-	) {
-		super(store, cdr);
-	}
+    ngAfterContentInit() {
+        this.actions$ = this.store
+            .listenMercenaries$(([state]) => state?.actionQueue)
+            .pipe(
+                filter(([actionQueue]) => !!actionQueue?.length),
+                map(([actionQueue]) => actionQueue),
+                distinctUntilChanged(),
+                map((actionQueue) => {
+                    // const speeds = actionQueue.map((action) => action.speed);
+                    return actionQueue.map((action, index) => ({
+                        ...action,
+                        actionOrder: index + 1,
+                    }));
+                }),
+                // FIXME
+                tap((filter) => setTimeout(() => this.cdr.detectChanges(), 0)),
+                tap((filter) => cdLog('emitting actionQueue in ', this.constructor.name, filter)),
+                takeUntil(this.destroyed$),
+            );
+        this.scale = this.store
+            .listenPrefs$((prefs) => (!!this.scaleExtractor ? this.scaleExtractor(prefs) : null))
+            .pipe(
+                debounceTime(100),
+                map(([pref]) => pref),
+                distinctUntilChanged(),
+                filter((scale) => !!scale),
+                takeUntil(this.destroyed$),
+            )
+            .subscribe((scale) => {
+                this.el.nativeElement.style.setProperty('--decktracker-scale', scale / 100);
+                this.el.nativeElement.style.setProperty('--decktracker-max-height', '90vh');
+                const newScale = scale / 100;
+                const element = this.el.nativeElement.querySelector('.scalable');
+                this.renderer.setStyle(element, 'transform', `scale(${newScale})`);
+                if (!(this.cdr as ViewRef)?.destroyed) {
+                    this.cdr.detectChanges();
+                }
+            });
+    }
 
-	ngAfterContentInit() {
-		this.actions$ = this.store
-			.listenMercenaries$(([state]) => state?.actionQueue)
-			.pipe(
-				filter(([actionQueue]) => !!actionQueue?.length),
-				map(([actionQueue]) => actionQueue),
-				distinctUntilChanged(),
-				map((actionQueue) => {
-					// const speeds = actionQueue.map((action) => action.speed);
-					return actionQueue.map((action, index) => ({
-						...action,
-						actionOrder: index + 1,
-					}));
-				}),
-				// FIXME
-				tap((filter) => setTimeout(() => this.cdr.detectChanges(), 0)),
-				tap((filter) => cdLog('emitting actionQueue in ', this.constructor.name, filter)),
-				takeUntil(this.destroyed$),
-			);
-		this.scale = this.store
-			.listenPrefs$((prefs) => (!!this.scaleExtractor ? this.scaleExtractor(prefs) : null))
-			.pipe(
-				debounceTime(100),
-				map(([pref]) => pref),
-				distinctUntilChanged(),
-				filter((scale) => !!scale),
-				takeUntil(this.destroyed$),
-			)
-			.subscribe((scale) => {
-				this.el.nativeElement.style.setProperty('--decktracker-scale', scale / 100);
-				this.el.nativeElement.style.setProperty('--decktracker-max-height', '90vh');
-				const newScale = scale / 100;
-				const element = this.el.nativeElement.querySelector('.scalable');
-				this.renderer.setStyle(element, 'transform', `scale(${newScale})`);
-				if (!(this.cdr as ViewRef)?.destroyed) {
-					this.cdr.detectChanges();
-				}
-			});
-	}
+    @HostListener('window:beforeunload')
+    ngOnDestroy() {
+        super.ngOnDestroy();
+        this.scale?.unsubscribe();
+    }
 
-	@HostListener('window:beforeunload')
-	ngOnDestroy() {
-		super.ngOnDestroy();
-		this.scale?.unsubscribe();
-	}
+    private scaleExtractor = (prefs: Preferences) => prefs.mercenariesActionsQueueOverlayScale;
 }
 
 export interface Task {
-	readonly mercenaryCardId: string;
-	readonly title: string;
-	readonly description: string;
-	readonly taskChainProgress: number;
-	readonly progress: number;
-	readonly portraitUrl?: string;
-	readonly frameUrl?: string;
+    readonly mercenaryCardId: string;
+    readonly title: string;
+    readonly description: string;
+    readonly taskChainProgress: number;
+    readonly progress: number;
+    readonly portraitUrl?: string;
+    readonly frameUrl?: string;
 }

@@ -1,22 +1,22 @@
 import {
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	ElementRef,
-	EventEmitter,
-	Input,
-	Output,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    Output,
 } from '@angular/core';
-import { SetCard } from '@models/set';
+import {SetCard} from '@models/set';
 
 @Component({
-	selector: 'duels-bucket-cards-list',
-	styleUrls: [
-		'../../../../../css/global/components-global.scss',
-		`../../../../../css/global/scrollbar-decktracker-overlay.scss`,
-		'../../../../../css/component/duels/desktop/deckbuilder/duels-bucket-cards-list.component.scss',
-	],
-	template: `
+    selector: 'duels-bucket-cards-list',
+    styleUrls: [
+        '../../../../../css/global/components-global.scss',
+        `../../../../../css/global/scrollbar-decktracker-overlay.scss`,
+        '../../../../../css/component/duels/desktop/deckbuilder/duels-bucket-cards-list.component.scss',
+    ],
+    template: `
 		<perfect-scrollbar class="cards-list active" scrollable>
 			<duels-bucket-card
 				class="card"
@@ -26,36 +26,37 @@ import { SetCard } from '@models/set';
 			></duels-bucket-card>
 		</perfect-scrollbar>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DuelsBucketCardsListComponent {
-	@Output() cardClick = new EventEmitter<BucketCard>();
-	@Input() set cards(value: readonly BucketCard[]) {
-		this._cards = value;
-	}
+    @Output() cardClick = new EventEmitter<BucketCard>();
+    @Input() collection: readonly SetCard[];
+    isScroll: boolean;
 
-	@Input() collection: readonly SetCard[];
+    constructor(private readonly el: ElementRef, private readonly cdr: ChangeDetectorRef) {
+    }
 
-	_cards: readonly BucketCard[];
-	isScroll: boolean;
+    _cards: readonly BucketCard[];
 
-	constructor(private readonly el: ElementRef, private readonly cdr: ChangeDetectorRef) {}
+    @Input() set cards(value: readonly BucketCard[]) {
+        this._cards = value;
+    }
 
-	trackByCard(index: number, item: BucketCard) {
-		return item.cardId;
-	}
+    trackByCard(index: number, item: BucketCard) {
+        return item.cardId;
+    }
 
-	onBucketCardClick(card: BucketCard) {
-		console.debug('clicking on card', card);
-		this.cardClick.next(card);
-	}
+    onBucketCardClick(card: BucketCard) {
+        console.debug('clicking on card', card);
+        this.cardClick.next(card);
+    }
 }
 
 export interface BucketCard {
-	readonly cardId: string;
-	readonly cardName: string;
-	readonly manaCost: number;
-	readonly rarity: string;
-	readonly offeringRate: number;
-	readonly totalBuckets: number;
+    readonly cardId: string;
+    readonly cardName: string;
+    readonly manaCost: number;
+    readonly rarity: string;
+    readonly offeringRate: number;
+    readonly totalBuckets: number;
 }

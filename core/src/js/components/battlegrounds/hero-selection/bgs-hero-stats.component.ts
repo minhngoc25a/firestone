@@ -1,21 +1,21 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { distinctUntilChanged, filter, map, takeUntil, tap } from 'rxjs/operators';
-import { BgsHeroStat } from '../../../models/battlegrounds/stats/bgs-hero-stat';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { cdLog } from '../../../services/ui-store/app-ui-store.service';
-import { arraysEqual, sumOnArray } from '../../../services/utils';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
-import { SimpleBarChartData } from '../../common/chart/simple-bar-chart-data';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
+import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
+import {distinctUntilChanged, filter, map, takeUntil, tap} from 'rxjs/operators';
+import {BgsHeroStat} from '../../../models/battlegrounds/stats/bgs-hero-stat';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {cdLog} from '../../../services/ui-store/app-ui-store.service';
+import {arraysEqual, sumOnArray} from '../../../services/utils';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
+import {SimpleBarChartData} from '../../common/chart/simple-bar-chart-data';
 
 @Component({
-	selector: 'bgs-hero-stats',
-	styleUrls: [
-		`../../../../css/global/reset-styles.scss`,
-		`../../../../css/component/battlegrounds/hero-selection/bgs-hero-selection-layout.component.scss`,
-		`../../../../css/component/battlegrounds/hero-selection/bgs-hero-stats.component.scss`,
-	],
-	template: `
+    selector: 'bgs-hero-stats',
+    styleUrls: [
+        `../../../../css/global/reset-styles.scss`,
+        `../../../../css/component/battlegrounds/hero-selection/bgs-hero-selection-layout.component.scss`,
+        `../../../../css/component/battlegrounds/hero-selection/bgs-hero-stats.component.scss`,
+    ],
+    template: `
 		<div class="stats">
 			<div class="title" [owTranslate]="'battlegrounds.hero-stats.finishes-title'"></div>
 			<basic-bar-chart-2
@@ -66,101 +66,101 @@ import { SimpleBarChartData } from '../../common/chart/simple-bar-chart-data';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsHeroStatsComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	placementChartData$: Observable<SimpleBarChartData[]>;
-	averagePosition: number;
-	playerAveragePosition: number;
-	totalPlayerMatches: number;
-	cardId: string;
-	_hero: BgsHeroStat;
+    placementChartData$: Observable<SimpleBarChartData[]>;
+    averagePosition: number;
+    playerAveragePosition: number;
+    totalPlayerMatches: number;
+    cardId: string;
+    private placementDistribution$: BehaviorSubject<readonly PlacementDistribution[]> = new BehaviorSubject(null);
+    private playerPlacementDistribution$: BehaviorSubject<readonly PlacementDistribution[]> = new BehaviorSubject(null);
 
-	private placementDistribution$: BehaviorSubject<readonly PlacementDistribution[]> = new BehaviorSubject(null);
-	private playerPlacementDistribution$: BehaviorSubject<readonly PlacementDistribution[]> = new BehaviorSubject(null);
+    constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
+        super(store, cdr);
+    }
 
-	@Input() set hero(value: BgsHeroStat) {
-		if (!value) {
-			return;
-		}
-		this.cardId = value.id;
-		this._hero = value;
-		this.averagePosition = value.averagePosition;
-		this.totalPlayerMatches = value.playerGamesPlayed;
-		this.playerAveragePosition = value.playerAveragePosition;
-		this.placementDistribution$.next(value.placementDistribution);
-		this.playerPlacementDistribution$.next(value.playerPlacementDistribution);
-	}
+    _hero: BgsHeroStat;
 
-	constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
-		super(store, cdr);
-	}
+    @Input() set hero(value: BgsHeroStat) {
+        if (!value) {
+            return;
+        }
+        this.cardId = value.id;
+        this._hero = value;
+        this.averagePosition = value.averagePosition;
+        this.totalPlayerMatches = value.playerGamesPlayed;
+        this.playerAveragePosition = value.playerAveragePosition;
+        this.placementDistribution$.next(value.placementDistribution);
+        this.playerPlacementDistribution$.next(value.playerPlacementDistribution);
+    }
 
-	ngAfterContentInit(): void {
-		this.placementChartData$ = combineLatest(
-			this.placementDistribution$.asObservable(),
-			this.playerPlacementDistribution$.asObservable(),
-			this.store.bgHeroStats$(),
-		).pipe(
-			filter(([global, player, globalStats]) => !!global && !!player && !!globalStats),
-			map(
-				([global, player, globalStats]) =>
-					[
-						global,
-						player,
-						Math.max(
-							...globalStats
-								.map((stat) => {
-									const totalStatMatches = sumOnArray(
-										stat.placementDistribution,
-										(info) => info.totalMatches,
-									);
-									const highestStatValue = Math.max(
-										...stat.placementDistribution.map(
-											(info) => info.totalMatches / totalStatMatches,
-										),
-									);
-									return highestStatValue;
-								})
-								.reduce((a, b) => a.concat(b), []),
-						),
-					] as [readonly PlacementDistribution[], readonly PlacementDistribution[], number],
-			),
-			distinctUntilChanged((a, b) => arraysEqual(a, b)),
-			map(([global, player, maxGlobalValue]) => {
-				const totalGlobalMatches = sumOnArray(global, (info) => info.totalMatches);
-				const globalChartData: SimpleBarChartData = {
-					data: global.map((info) => ({
-						label: '' + info.rank,
-						value: (100 * info.totalMatches) / totalGlobalMatches,
-						rawValue: info.totalMatches,
-					})),
-				};
-				const totalPlayerMatches = sumOnArray(player, (info) => info.totalMatches);
-				const playerChartData: SimpleBarChartData = {
-					data: player.map((info) => ({
-						label: '' + info.rank,
-						value: totalPlayerMatches ? (100 * info.totalMatches) / totalPlayerMatches : 0,
-						rawValue: info.totalMatches,
-					})),
-				};
-				return [globalChartData, playerChartData];
-			}),
-			tap((info) => cdLog('emitting placementChartData in ', this.constructor.name, info)),
-			takeUntil(this.destroyed$),
-		);
-	}
+    ngAfterContentInit(): void {
+        this.placementChartData$ = combineLatest(
+            this.placementDistribution$.asObservable(),
+            this.playerPlacementDistribution$.asObservable(),
+            this.store.bgHeroStats$(),
+        ).pipe(
+            filter(([global, player, globalStats]) => !!global && !!player && !!globalStats),
+            map(
+                ([global, player, globalStats]) =>
+                    [
+                        global,
+                        player,
+                        Math.max(
+                            ...globalStats
+                                .map((stat) => {
+                                    const totalStatMatches = sumOnArray(
+                                        stat.placementDistribution,
+                                        (info) => info.totalMatches,
+                                    );
+                                    const highestStatValue = Math.max(
+                                        ...stat.placementDistribution.map(
+                                            (info) => info.totalMatches / totalStatMatches,
+                                        ),
+                                    );
+                                    return highestStatValue;
+                                })
+                                .reduce((a, b) => a.concat(b), []),
+                        ),
+                    ] as [readonly PlacementDistribution[], readonly PlacementDistribution[], number],
+            ),
+            distinctUntilChanged((a, b) => arraysEqual(a, b)),
+            map(([global, player, maxGlobalValue]) => {
+                const totalGlobalMatches = sumOnArray(global, (info) => info.totalMatches);
+                const globalChartData: SimpleBarChartData = {
+                    data: global.map((info) => ({
+                        label: '' + info.rank,
+                        value: (100 * info.totalMatches) / totalGlobalMatches,
+                        rawValue: info.totalMatches,
+                    })),
+                };
+                const totalPlayerMatches = sumOnArray(player, (info) => info.totalMatches);
+                const playerChartData: SimpleBarChartData = {
+                    data: player.map((info) => ({
+                        label: '' + info.rank,
+                        value: totalPlayerMatches ? (100 * info.totalMatches) / totalPlayerMatches : 0,
+                        rawValue: info.totalMatches,
+                    })),
+                };
+                return [globalChartData, playerChartData];
+            }),
+            tap((info) => cdLog('emitting placementChartData in ', this.constructor.name, info)),
+            takeUntil(this.destroyed$),
+        );
+    }
 
-	buildPercents(value: number): string {
-		return value == null || isNaN(value) ? '-' : value.toFixed(1) + '%';
-	}
+    buildPercents(value: number): string {
+        return value == null || isNaN(value) ? '-' : value.toFixed(1) + '%';
+    }
 
-	buildValue(value: number): string {
-		return value == null || isNaN(value) ? '-' : value.toFixed(2);
-	}
+    buildValue(value: number): string {
+        return value == null || isNaN(value) ? '-' : value.toFixed(2);
+    }
 }
 
 interface PlacementDistribution {
-	readonly rank: number;
-	readonly totalMatches: number;
+    readonly rank: number;
+    readonly totalMatches: number;
 }

@@ -1,22 +1,22 @@
 import {
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
-	Input,
-	Output,
-	ViewRef,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    Output,
+    ViewRef,
 } from '@angular/core';
-import { uuid } from '../../services/utils';
+import {uuid} from '../../services/utils';
 
 @Component({
-	selector: 'checkbox',
-	styleUrls: [
-		`../../../css/global/components-global.scss`,
-		`../../../css/component/settings/settings-common.component.scss`,
-		`../../../css/component/settings/checkbox.component.scss`,
-	],
-	template: `
+    selector: 'checkbox',
+    styleUrls: [
+        `../../../css/global/components-global.scss`,
+        `../../../css/component/settings/settings-common.component.scss`,
+        `../../../css/component/settings/checkbox.component.scss`,
+    ],
+    template: `
 		<div class="checkbox" [ngClass]="{ 'disabled': disabled }">
 			<input type="checkbox" name="checkbox-{{ uniqueId }}" id="checkbox-{{ uniqueId }}" />
 			<label
@@ -40,33 +40,33 @@ import { uuid } from '../../services/utils';
 			</label>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CheckboxComponent {
-	@Output() valueChanged = new EventEmitter<boolean>();
+    @Output() valueChanged = new EventEmitter<boolean>();
 
-	@Input() label: string;
-	@Input() labelTooltip: string;
-	@Input() value: boolean;
-	@Input() disabled: boolean;
+    @Input() label: string;
+    @Input() labelTooltip: string;
+    @Input() value: boolean;
+    @Input() disabled: boolean;
 
-	uniqueId: string;
+    uniqueId: string;
 
-	constructor(private cdr: ChangeDetectorRef) {
-		this.uniqueId = uuid();
-	}
+    constructor(private cdr: ChangeDetectorRef) {
+        this.uniqueId = uuid();
+    }
 
-	toggleValueKeyboard(event: KeyboardEvent) {
-		if (event.code === 'Space') {
-			this.toggleValue();
-		}
-	}
+    toggleValueKeyboard(event: KeyboardEvent) {
+        if (event.code === 'Space') {
+            this.toggleValue();
+        }
+    }
 
-	async toggleValue() {
-		this.value = !this.value;
-		this.valueChanged.next(this.value);
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    async toggleValue() {
+        this.value = !this.value;
+        this.valueChanged.next(this.value);
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 }

@@ -1,20 +1,20 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
-import { isDuels } from '@services/duels/duels-utils';
-import { isMercenaries } from '@services/mercenaries/mercenaries-utils';
-import { RunStep } from '../../../models/duels/run-step';
-import { GameStat } from '../../../models/mainwindow/stats/game-stat';
-import { StatGameModeType } from '../../../models/mainwindow/stats/stat-game-mode.type';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
+import {isDuels} from '@services/duels/duels-utils';
+import {isMercenaries} from '@services/mercenaries/mercenaries-utils';
+import {RunStep} from '../../../models/duels/run-step';
+import {GameStat} from '../../../models/mainwindow/stats/game-stat';
+import {StatGameModeType} from '../../../models/mainwindow/stats/stat-game-mode.type';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
 
 @Component({
-	selector: 'replay-info',
-	styleUrls: [
-		`../../../../css/global/menu.scss`,
-		`../../../../css/component/replays/replay-info/replay-info.component.scss`,
-	],
-	template: `
+    selector: 'replay-info',
+    styleUrls: [
+        `../../../../css/global/menu.scss`,
+        `../../../../css/component/replays/replay-info/replay-info.component.scss`,
+    ],
+    template: `
 		<replay-info-ranked
 			*ngIf="gameMode === 'ranked'"
 			[showStatsLabel]="showStatsLabel"
@@ -51,39 +51,38 @@ import { AbstractSubscriptionComponent } from '../../abstract-subscription.compo
 			[displayCoin]="displayCoin"
 		></replay-info-generic>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReplayInfoComponent extends AbstractSubscriptionComponent {
-	@Input() showStatsLabel = this.i18n.translateString('app.replays.replay-info.show-stats-button');
-	@Input() showReplayLabel = this.i18n.translateString('app.replays.replay-info.watch-replay-button');
-	@Input() displayCoin = true;
-	@Input() displayLoot: boolean;
-	@Input() displayShortLoot: boolean;
+    @Input() showStatsLabel = this.i18n.translateString('app.replays.replay-info.show-stats-button');
+    @Input() showReplayLabel = this.i18n.translateString('app.replays.replay-info.watch-replay-button');
+    @Input() displayCoin = true;
+    @Input() displayLoot: boolean;
+    @Input() displayShortLoot: boolean;
+    gameMode: StatGameModeType;
+    isMercenaries: boolean;
+    isDuels: boolean;
+    replayInfo: GameStat;
 
-	@Input() set replay(value: GameStat | RunStep) {
-		this.replayInfo = value;
-		this.updateInfo();
-	}
+    constructor(
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+        private readonly i18n: LocalizationFacadeService,
+    ) {
+        super(store, cdr);
+    }
 
-	gameMode: StatGameModeType;
-	isMercenaries: boolean;
-	isDuels: boolean;
-	replayInfo: GameStat;
+    @Input() set replay(value: GameStat | RunStep) {
+        this.replayInfo = value;
+        this.updateInfo();
+    }
 
-	constructor(
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-		private readonly i18n: LocalizationFacadeService,
-	) {
-		super(store, cdr);
-	}
-
-	private updateInfo() {
-		if (!this.replayInfo) {
-			return;
-		}
-		this.gameMode = this.replayInfo.gameMode;
-		this.isMercenaries = isMercenaries(this.gameMode);
-		this.isDuels = isDuels(this.gameMode);
-	}
+    private updateInfo() {
+        if (!this.replayInfo) {
+            return;
+        }
+        this.gameMode = this.replayInfo.gameMode;
+        this.isMercenaries = isMercenaries(this.gameMode);
+        this.isDuels = isDuels(this.gameMode);
+    }
 }

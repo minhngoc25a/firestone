@@ -1,30 +1,32 @@
 import {
-	AfterContentInit,
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
+    AfterContentInit,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
 } from '@angular/core';
-import { Preferences } from '@models/preferences';
-import { GenericPreferencesUpdateEvent } from '@services/mainwindow/store/events/generic-preferences-update-event';
-import { Observable } from 'rxjs';
-import { DuelsStateBuilderService } from '../../../../services/duels/duels-state-builder.service';
-import { LocalizationFacadeService } from '../../../../services/localization-facade.service';
-import { DuelsToggleShowHiddenPersonalDecksEvent } from '../../../../services/mainwindow/store/events/duels/duels-toggle-show-hidden-personal-decks-event';
-import { MainWindowStoreEvent } from '../../../../services/mainwindow/store/events/main-window-store-event';
-import { OverwolfService } from '../../../../services/overwolf.service';
-import { AppUiStoreFacadeService } from '../../../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../../../abstract-subscription.component';
+import {Preferences} from '@models/preferences';
+import {GenericPreferencesUpdateEvent} from '@services/mainwindow/store/events/generic-preferences-update-event';
+import {Observable} from 'rxjs';
+import {DuelsStateBuilderService} from '../../../../services/duels/duels-state-builder.service';
+import {LocalizationFacadeService} from '../../../../services/localization-facade.service';
+import {
+    DuelsToggleShowHiddenPersonalDecksEvent
+} from '../../../../services/mainwindow/store/events/duels/duels-toggle-show-hidden-personal-decks-event';
+import {MainWindowStoreEvent} from '../../../../services/mainwindow/store/events/main-window-store-event';
+import {OverwolfService} from '../../../../services/overwolf.service';
+import {AppUiStoreFacadeService} from '../../../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../../../abstract-subscription.component';
 
 @Component({
-	selector: 'duels-filters',
-	styleUrls: [
-		`../../../../../css/global/filters.scss`,
-		`../../../../../css/component/app-section.component.scss`,
-		`../../../../../css/component/duels/desktop/filters/_duels-filters.component.scss`,
-	],
-	template: `
+    selector: 'duels-filters',
+    styleUrls: [
+        `../../../../../css/global/filters.scss`,
+        `../../../../../css/component/app-section.component.scss`,
+        `../../../../../css/component/duels/desktop/filters/_duels-filters.component.scss`,
+    ],
+    template: `
 		<div class="filters duels-filters">
 			<duels-treasures-sort-dropdown class="filter treasures-sort"></duels-treasures-sort-dropdown>
 			<duels-stat-type-filter-dropdown class="filter stat-type-filter"></duels-stat-type-filter-dropdown>
@@ -65,66 +67,66 @@ import { AbstractSubscriptionComponent } from '../../../abstract-subscription.co
 			></preference-toggle>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DuelsFiltersComponent extends AbstractSubscriptionComponent implements AfterContentInit, AfterViewInit {
-	threshold = DuelsStateBuilderService.STATS_THRESHOLD;
+    threshold = DuelsStateBuilderService.STATS_THRESHOLD;
 
-	showHiddenDecksLink$: Observable<boolean>;
-	showHideBelowThresholdLink$: Observable<boolean>;
+    showHiddenDecksLink$: Observable<boolean>;
+    showHideBelowThresholdLink$: Observable<boolean>;
 
-	helpTooltip = this.i18n.translateString('settings.duels.hide-stats-below-threshold-tooltip', {
-		value: this.threshold,
-	});
+    helpTooltip = this.i18n.translateString('settings.duels.hide-stats-below-threshold-tooltip', {
+        value: this.threshold,
+    });
 
-	private stateUpdater: EventEmitter<MainWindowStoreEvent>;
+    private stateUpdater: EventEmitter<MainWindowStoreEvent>;
 
-	constructor(
-		private readonly ow: OverwolfService,
-		private readonly i18n: LocalizationFacadeService,
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-	) {
-		super(store, cdr);
-	}
+    constructor(
+        private readonly ow: OverwolfService,
+        private readonly i18n: LocalizationFacadeService,
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+    ) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.showHiddenDecksLink$ = this.store
-			.listen$(
-				([main, nav, prefs]) => prefs.duelsPersonalDeckHiddenDeckCodes,
-				([main, nav, prefs]) => nav.navigationDuels.selectedCategoryId,
-			)
-			.pipe(
-				this.mapData(([hiddenCodes, selectedCategoryId]) => {
-					const result = !!hiddenCodes?.length && selectedCategoryId === 'duels-personal-decks';
-					console.debug('showing hidden decks link?', result, hiddenCodes, selectedCategoryId);
-					return result;
-				}),
-			);
-		this.showHideBelowThresholdLink$ = this.store
-			.listen$(([main, nav]) => nav.navigationDuels.selectedCategoryId)
-			.pipe(
-				this.mapData(([selectedCategoryId]) => ['duels-stats', 'duels-treasures'].includes(selectedCategoryId)),
-			);
-	}
+    ngAfterContentInit() {
+        this.showHiddenDecksLink$ = this.store
+            .listen$(
+                ([main, nav, prefs]) => prefs.duelsPersonalDeckHiddenDeckCodes,
+                ([main, nav, prefs]) => nav.navigationDuels.selectedCategoryId,
+            )
+            .pipe(
+                this.mapData(([hiddenCodes, selectedCategoryId]) => {
+                    const result = !!hiddenCodes?.length && selectedCategoryId === 'duels-personal-decks';
+                    console.debug('showing hidden decks link?', result, hiddenCodes, selectedCategoryId);
+                    return result;
+                }),
+            );
+        this.showHideBelowThresholdLink$ = this.store
+            .listen$(([main, nav]) => nav.navigationDuels.selectedCategoryId)
+            .pipe(
+                this.mapData(([selectedCategoryId]) => ['duels-stats', 'duels-treasures'].includes(selectedCategoryId)),
+            );
+    }
 
-	ngAfterViewInit() {
-		this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
-	}
+    ngAfterViewInit() {
+        this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
+    }
 
-	toggleShowHiddenDecks = (newValue: boolean) => {
-		this.stateUpdater.next(new DuelsToggleShowHiddenPersonalDecksEvent(newValue));
-	};
+    toggleShowHiddenDecks = (newValue: boolean) => {
+        this.stateUpdater.next(new DuelsToggleShowHiddenPersonalDecksEvent(newValue));
+    };
 
-	toggleShowLowData = (newValue: boolean) => {
-		this.stateUpdater.next(
-			new GenericPreferencesUpdateEvent(
-				(prefs: Preferences) =>
-					({
-						...prefs,
-						duelsHideStatsBelowThreshold: newValue,
-					} as Preferences),
-			),
-		);
-	};
+    toggleShowLowData = (newValue: boolean) => {
+        this.stateUpdater.next(
+            new GenericPreferencesUpdateEvent(
+                (prefs: Preferences) =>
+                    ({
+                        ...prefs,
+                        duelsHideStatsBelowThreshold: newValue,
+                    } as Preferences),
+            ),
+        );
+    };
 }

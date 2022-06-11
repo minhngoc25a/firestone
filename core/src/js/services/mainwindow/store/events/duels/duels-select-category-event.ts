@@ -1,22 +1,23 @@
-import { DuelsCategoryType } from '../../../../../models/mainwindow/duels/duels-category.type';
-import { MainWindowStoreEvent } from '../main-window-store-event';
+import {DuelsCategoryType} from '../../../../../models/mainwindow/duels/duels-category.type';
+import {MainWindowStoreEvent} from '../main-window-store-event';
 
 export class DuelsSelectCategoryEvent implements MainWindowStoreEvent {
-	public static eventName(): string {
-		return 'DuelsSelectCategoryEvent';
-	}
+    constructor(public readonly categoryId: DuelsCategoryType) {
+    }
 
-	constructor(public readonly categoryId: DuelsCategoryType) {}
+    public static eventName(): string {
+        return 'DuelsSelectCategoryEvent';
+    }
 
-	public eventName(): string {
-		return 'DuelsSelectCategoryEvent';
-	}
+    public eventName(): string {
+        return 'DuelsSelectCategoryEvent';
+    }
 
-	public isNavigationEvent(): boolean {
-		return true;
-	}
+    public isNavigationEvent(): boolean {
+        return true;
+    }
 
-	public isResetHistoryEvent(): boolean {
-		return false;
-	}
+    public isResetHistoryEvent(): boolean {
+        return false;
+    }
 }

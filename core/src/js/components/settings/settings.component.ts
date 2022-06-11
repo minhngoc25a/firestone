@@ -1,24 +1,24 @@
 import {
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
-	HostListener,
-	OnDestroy,
-	ViewRef,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    HostListener,
+    OnDestroy,
+    ViewRef,
 } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { DebugService } from '../../services/debug.service';
-import { OverwolfService } from '../../services/overwolf.service';
+import {Subscription} from 'rxjs';
+import {DebugService} from '../../services/debug.service';
+import {OverwolfService} from '../../services/overwolf.service';
 
 @Component({
-	selector: 'settings',
-	styleUrls: [
-		`../../../css/global/components-global.scss`,
-		`../../../css/component/settings/settings.component.scss`,
-	],
-	template: `
+    selector: 'settings',
+    styleUrls: [
+        `../../../css/global/components-global.scss`,
+        `../../../css/component/settings/settings.component.scss`,
+    ],
+    template: `
 		<window-wrapper [activeTheme]="'general'">
 			<section class="title-bar">
 				<div class="title" [owTranslate]="'settings.title'"></div>
@@ -53,88 +53,89 @@ import { OverwolfService } from '../../services/overwolf.service';
 			<settings-modal></settings-modal>
 		</window-wrapper>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsComponent implements AfterViewInit, OnDestroy {
-	thisWindowId: string;
-	selectedApp = 'general';
-	selectedMenu: string;
+    thisWindowId: string;
+    selectedApp = 'general';
+    selectedMenu: string;
 
-	private settingsEventBus: EventEmitter<[string, string]>;
-	private messageReceivedListener: (message: any) => void;
-	private settingsSubscription: Subscription;
+    private settingsEventBus: EventEmitter<[string, string]>;
+    private messageReceivedListener: (message: any) => void;
+    private settingsSubscription: Subscription;
 
-	constructor(private debugService: DebugService, private ow: OverwolfService, private cdr: ChangeDetectorRef) {}
+    constructor(private debugService: DebugService, private ow: OverwolfService, private cdr: ChangeDetectorRef) {
+    }
 
-	async ngAfterViewInit() {
-		this.thisWindowId = (await this.ow.getCurrentWindow()).id;
-		window['selectApp'] = this.onAppSelected;
-		this.settingsEventBus = this.ow.getMainWindow().settingsEventBus;
-		this.settingsSubscription = this.settingsEventBus.subscribe(([selectedApp, selectedMenu]) => {
-			// No replays screen yet
+    async ngAfterViewInit() {
+        this.thisWindowId = (await this.ow.getCurrentWindow()).id;
+        window['selectApp'] = this.onAppSelected;
+        this.settingsEventBus = this.ow.getMainWindow().settingsEventBus;
+        this.settingsSubscription = this.settingsEventBus.subscribe(([selectedApp, selectedMenu]) => {
+            // No replays screen yet
 
-			this.selectApp(selectedApp, selectedMenu);
-		});
-		this.messageReceivedListener = this.ow.addMessageReceivedListener(async (message) => {
-			if (message.id === 'move') {
-				const window = await this.ow.getCurrentWindow();
-				const newX = message.content.x - window.width / 2;
-				const newY = message.content.y - window.height / 2;
-				this.ow.changeWindowPosition(this.thisWindowId, newX, newY);
-			}
-		});
-	}
+            this.selectApp(selectedApp, selectedMenu);
+        });
+        this.messageReceivedListener = this.ow.addMessageReceivedListener(async (message) => {
+            if (message.id === 'move') {
+                const window = await this.ow.getCurrentWindow();
+                const newX = message.content.x - window.width / 2;
+                const newY = message.content.y - window.height / 2;
+                this.ow.changeWindowPosition(this.thisWindowId, newX, newY);
+            }
+        });
+    }
 
-	@HostListener('window:beforeunload')
-	ngOnDestroy(): void {
-		this.ow.removeMessageReceivedListener(this.messageReceivedListener);
-		this.settingsSubscription?.unsubscribe();
-	}
+    @HostListener('window:beforeunload')
+    ngOnDestroy(): void {
+        this.ow.removeMessageReceivedListener(this.messageReceivedListener);
+        this.settingsSubscription?.unsubscribe();
+    }
 
-	onAppSelected(selectedApp: string, selectedMenu?: string) {
-		this.selectApp(selectedApp, selectedMenu);
-	}
+    onAppSelected(selectedApp: string, selectedMenu?: string) {
+        this.selectApp(selectedApp, selectedMenu);
+    }
 
-	selectApp(selectedApp: string, selectedMenu?: string) {
-		this.selectedApp = selectedApp === 'duels' ? 'general' : selectedApp;
-		this.selectedMenu = selectedMenu || this.getDefaultMenu(selectedApp);
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    selectApp(selectedApp: string, selectedMenu?: string) {
+        this.selectedApp = selectedApp === 'duels' ? 'general' : selectedApp;
+        this.selectedMenu = selectedMenu || this.getDefaultMenu(selectedApp);
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	@HostListener('mousedown', ['$event'])
-	dragMove(event: MouseEvent) {
-		const path: any[] = event.composedPath();
-		// Hack for drop-downs
-		if (
-			path.length > 2 &&
-			path[0].localName === 'div' &&
-			path[0].className?.includes('options') &&
-			path[1].localName === 'div' &&
-			path[1].className?.includes('below')
-		) {
-			return;
-		}
+    @HostListener('mousedown', ['$event'])
+    dragMove(event: MouseEvent) {
+        const path: any[] = event.composedPath();
+        // Hack for drop-downs
+        if (
+            path.length > 2 &&
+            path[0].localName === 'div' &&
+            path[0].className?.includes('options') &&
+            path[1].localName === 'div' &&
+            path[1].className?.includes('below')
+        ) {
+            return;
+        }
 
-		this.ow.dragMove(this.thisWindowId);
-	}
+        this.ow.dragMove(this.thisWindowId);
+    }
 
-	private getDefaultMenu(selectedApp: string): string {
-		switch (selectedApp) {
-			case 'general':
-				return 'launch';
-			case 'achievements':
-				return 'notifications';
-			case 'collection':
-				return 'notification';
-			case 'decktracker':
-				return 'your-deck';
-			case 'replays':
-				return 'general';
-			case 'battlegrounds':
-				return 'general';
-		}
-		return null;
-	}
+    private getDefaultMenu(selectedApp: string): string {
+        switch (selectedApp) {
+            case 'general':
+                return 'launch';
+            case 'achievements':
+                return 'notifications';
+            case 'collection':
+                return 'notification';
+            case 'decktracker':
+                return 'your-deck';
+            case 'replays':
+                return 'general';
+            case 'battlegrounds':
+                return 'general';
+        }
+        return null;
+    }
 }

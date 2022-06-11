@@ -1,14 +1,14 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef } from '@angular/core';
-import { DeckState } from '../../../../models/decktracker/deck-state';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef} from '@angular/core';
+import {DeckState} from '../../../../models/decktracker/deck-state';
 
 @Component({
-	selector: 'decktracker-twitch-title-bar',
-	styleUrls: [
-		'../../../../../css/global/components-global.scss',
-		'../../../../../css/component/decktracker/overlay/decktracker-control-bar.component.scss',
-		'../../../../../css/component/decktracker/overlay/twitch/decktracker-twitch-title-bar.component.scss',
-	],
-	template: `
+    selector: 'decktracker-twitch-title-bar',
+    styleUrls: [
+        '../../../../../css/global/components-global.scss',
+        '../../../../../css/component/decktracker/overlay/decktracker-control-bar.component.scss',
+        '../../../../../css/component/decktracker/overlay/twitch/decktracker-twitch-title-bar.component.scss',
+    ],
+    template: `
 		<div class="control-bar">
 			<i class="logo">
 				<svg class="svg-icon-fill">
@@ -45,84 +45,85 @@ import { DeckState } from '../../../../models/decktracker/deck-state';
 		</textarea
 		>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeckTrackerTwitchTitleBarComponent {
-	@Input() deckState: DeckState;
-	copyText: string;
-	shouldShowDeckstring = false;
-	copied = false;
+    @Input() deckState: DeckState;
+    copyText: string;
+    shouldShowDeckstring = false;
+    copied = false;
 
-	constructor(private cdr: ChangeDetectorRef) {}
+    constructor(private cdr: ChangeDetectorRef) {
+    }
 
-	async copyDeckstring() {
-		if (this.shouldShowDeckstring) {
-			this.shouldShowDeckstring = false;
-			if (!(this.cdr as ViewRef)?.destroyed) {
-				this.cdr.detectChanges();
-			}
-			return;
-		}
-		console.log('navigator.userAgent', navigator.userAgent);
-		const copyPermission = await (navigator as any).permissions
-			.query({
-				// Firefox supports "clipboard", while chrome is "clipboard-write"
-				name: 'clipboard-write',
-			})
-			.catch((err) => {
-				console.warn('could not receive permission', err);
-			});
-		console.log('copyPermission', copyPermission);
-		if (copyPermission?.state === 'denied') {
-			// See https://github.com/HearthSim/twitch-hdt-frontend/issues/50
-			this.copyText = 'Manual copy';
-			this.shouldShowDeckstring = true;
-			if (!(this.cdr as ViewRef)?.destroyed) {
-				this.cdr.detectChanges();
-			}
-		} else {
-			(navigator as any).clipboard.writeText(this.deckState.deckstring);
-			this.copyText = 'Copied';
-			this.copied = true;
-			console.log('copied deckstring to clipboard', this.deckState.deckstring);
-			if (!(this.cdr as ViewRef)?.destroyed) {
-				this.cdr.detectChanges();
-			}
-		}
-		setTimeout(() => {
-			this.copied = false;
-			this.copyText = null;
-			if (!(this.cdr as ViewRef)?.destroyed) {
-				this.cdr.detectChanges();
-			}
-		}, 3000);
-	}
+    async copyDeckstring() {
+        if (this.shouldShowDeckstring) {
+            this.shouldShowDeckstring = false;
+            if (!(this.cdr as ViewRef)?.destroyed) {
+                this.cdr.detectChanges();
+            }
+            return;
+        }
+        console.log('navigator.userAgent', navigator.userAgent);
+        const copyPermission = await (navigator as any).permissions
+            .query({
+                // Firefox supports "clipboard", while chrome is "clipboard-write"
+                name: 'clipboard-write',
+            })
+            .catch((err) => {
+                console.warn('could not receive permission', err);
+            });
+        console.log('copyPermission', copyPermission);
+        if (copyPermission?.state === 'denied') {
+            // See https://github.com/HearthSim/twitch-hdt-frontend/issues/50
+            this.copyText = 'Manual copy';
+            this.shouldShowDeckstring = true;
+            if (!(this.cdr as ViewRef)?.destroyed) {
+                this.cdr.detectChanges();
+            }
+        } else {
+            (navigator as any).clipboard.writeText(this.deckState.deckstring);
+            this.copyText = 'Copied';
+            this.copied = true;
+            console.log('copied deckstring to clipboard', this.deckState.deckstring);
+            if (!(this.cdr as ViewRef)?.destroyed) {
+                this.cdr.detectChanges();
+            }
+        }
+        setTimeout(() => {
+            this.copied = false;
+            this.copyText = null;
+            if (!(this.cdr as ViewRef)?.destroyed) {
+                this.cdr.detectChanges();
+            }
+        }, 3000);
+    }
 
-	stopBubbling(event: MouseEvent) {
-		event.stopPropagation();
-	}
+    stopBubbling(event: MouseEvent) {
+        event.stopPropagation();
+    }
 
-	onMouseEnter() {
-		if (this.copied) {
-			return;
-		}
-		this.copyText = 'Copy';
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    onMouseEnter() {
+        if (this.copied) {
+            return;
+        }
+        this.copyText = 'Copy';
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	onMouseLeave() {
-		if (this.copied) {
-			return;
-		}
-		this.copyText = null;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    onMouseLeave() {
+        if (this.copied) {
+            return;
+        }
+        this.copyText = null;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	closeWindow() {
-		(window as any).Twitch.ext.actions.minimize();
-	}
+    closeWindow() {
+        (window as any).Twitch.ext.actions.minimize();
+    }
 }

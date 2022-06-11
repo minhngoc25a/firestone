@@ -1,81 +1,81 @@
 .replays {
-	padding-top: 15px;
+  padding-top: 15px;
 
-	with-loading {
-		flex-grow: 1;
-	}
+  with-loading {
+    flex-grow: 1;
+  }
 }
 
 .content {
-	display: flex;
-	flex-direction: column;
-	flex-grow: 1;
-	max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  max-width: 100%;
 
-	& > * {
-		display: flex;
-		min-height: 0;
-		opacity: 1;
-	}
+  & > * {
+    display: flex;
+    min-height: 0;
+    opacity: 1;
+  }
 
-	& > ::ng-deep * {
-		display: flex;
-		min-height: 0;
-		opacity: 1;
-	}
+  & > ::ng-deep * {
+    display: flex;
+    min-height: 0;
+    opacity: 1;
+  }
 
-	::ng-deep & > * {
-		display: flex;
-		min-height: 0;
-		opacity: 1;
-	}
+  ::ng-deep & > * {
+    display: flex;
+    min-height: 0;
+    opacity: 1;
+  }
 }
 
 .secondary {
-	font-family: Open Sans;
-	font-style: normal;
-	font-weight: normal;
-	color: var(--color-1);
-	font-size: 13px;
+  font-family: Open Sans;
+  font-style: normal;
+  font-weight: normal;
+  color: var(--color-1);
+  font-size: 13px;
 
-	& > * {
-		flex-grow: 1;
-	}
+  & > * {
+    flex-grow: 1;
+  }
 
-	.match-stats {
-		background: rgba(255, 255, 255, 0.08);
-		display: flex;
-		flex-direction: column;
-		padding: 10px;
-		padding-right: 0;
-		margin-bottom: 10px;
+  .match-stats {
+    background: rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    padding-right: 0;
+    margin-bottom: 10px;
 
-		.title {
-			font-size: 14px;
-			color: var(--color-8);
-			display: flex;
-		}
+    .title {
+      font-size: 14px;
+      color: var(--color-8);
+      display: flex;
+    }
 
-		::ng-deep bgs-post-match-stats-recap {
-			min-height: 0;
-			flex-grow: 1;
-			width: 100%;
+    ::ng-deep bgs-post-match-stats-recap {
+      min-height: 0;
+      flex-grow: 1;
+      width: 100%;
 
-			.stats-recap {
-				width: 100%;
-				background: transparent;
-				font-size: 16px;
-				padding-left: 0;
-				padding-top: 0;
+      .stats-recap {
+        width: 100%;
+        background: transparent;
+        font-size: 16px;
+        padding-left: 0;
+        padding-top: 0;
 
-				stat-cell {
-					padding-left: 10px;
-				}
+        stat-cell {
+          padding-left: 10px;
+        }
 
-				.hero {
-					display: none;
-				}
-			}
-		}
-	}
+        .hero {
+          display: none;
+        }
+      }
+    }
+  }
 }

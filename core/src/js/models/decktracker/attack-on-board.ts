@@ -1,4 +1,4 @@
 export interface AttackOnBoard {
-	readonly board: number;
-	readonly hero: number;
+    readonly board: number;
+    readonly hero: number;
 }

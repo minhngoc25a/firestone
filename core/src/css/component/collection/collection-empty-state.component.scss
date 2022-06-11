@@ -2,31 +2,31 @@
 @import '../../global/fonts';
 
 .empty-state {
-	@extend %empty-state;
-	flex-grow: 1;
-	display: flex;
-	flex-direction: column;
-	justify-items: center;
-	align-items: center;
+  @extend %empty-state;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  align-items: center;
 
-	.state-container {
-		margin: auto;
-	    display: flex;
-	    flex-direction: column;
-	    align-items: center;
+  .state-container {
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-		i {
-			margin-bottom: 30px;
-		}
+    i {
+      margin-bottom: 30px;
+    }
 
-		.no-search-result i {
-			margin-bottom: -16px;
-		}
+    .no-search-result i {
+      margin-bottom: -16px;
+    }
 
-		.title {
-			@extend %empty-state-title;
-			margin-bottom: 15px;
-		}
-	}
+    .title {
+      @extend %empty-state-title;
+      margin-bottom: 15px;
+    }
+  }
 
 }

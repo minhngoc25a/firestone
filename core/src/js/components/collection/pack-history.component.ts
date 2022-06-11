@@ -1,19 +1,19 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { PackResult } from '@firestone-hs/user-packs';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { CardHistory } from '../../models/card-history';
-import { AppUiStoreFacadeService } from '../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../abstract-subscription.component';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {PackResult} from '@firestone-hs/user-packs';
+import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
+import {CardHistory} from '../../models/card-history';
+import {AppUiStoreFacadeService} from '../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../abstract-subscription.component';
 
 @Component({
-	selector: 'pack-history',
-	styleUrls: [
-		`../../../css/global/scrollbar.scss`,
-		`../../../css/global/forms.scss`,
-		`../../../css/global/toggle.scss`,
-		`../../../css/component/collection/pack-history.component.scss`,
-	],
-	template: `
+    selector: 'pack-history',
+    styleUrls: [
+        `../../../css/global/scrollbar.scss`,
+        `../../../css/global/forms.scss`,
+        `../../../css/global/toggle.scss`,
+        `../../../css/component/collection/pack-history.component.scss`,
+    ],
+    template: `
 		<div class="pack-history">
 			<div class="history">
 				<div class="top-container">
@@ -60,37 +60,37 @@ import { AbstractSubscriptionComponent } from '../abstract-subscription.componen
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PackHistoryComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	packHistory$: Observable<readonly PackResult[]>;
-	totalHistoryLength$: Observable<number>;
+    packHistory$: Observable<readonly PackResult[]>;
+    totalHistoryLength$: Observable<number>;
 
-	private displayedHistorySize = new BehaviorSubject<number>(50);
+    private displayedHistorySize = new BehaviorSubject<number>(50);
 
-	constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
-		super(store, cdr);
-	}
+    constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		const filteredHistory$ = this.store
-			.listen$(([main, nav, prefs]) => main.binder.packStats)
-			.pipe(
-				this.mapData(([packs]) =>
-					(packs ?? []).filter((stat) => stat.boosterId != null || stat.setId != 'hof'),
-				),
-			);
-		this.packHistory$ = combineLatest(filteredHistory$, this.displayedHistorySize.asObservable()).pipe(
-			this.mapData(([packs, displayedHistorySize]) => packs.slice(0, displayedHistorySize)),
-		);
-		this.totalHistoryLength$ = filteredHistory$.pipe(this.mapData((packs) => packs.length));
-	}
+    ngAfterContentInit() {
+        const filteredHistory$ = this.store
+            .listen$(([main, nav, prefs]) => main.binder.packStats)
+            .pipe(
+                this.mapData(([packs]) =>
+                    (packs ?? []).filter((stat) => stat.boosterId != null || stat.setId != 'hof'),
+                ),
+            );
+        this.packHistory$ = combineLatest(filteredHistory$, this.displayedHistorySize.asObservable()).pipe(
+            this.mapData(([packs, displayedHistorySize]) => packs.slice(0, displayedHistorySize)),
+        );
+        this.totalHistoryLength$ = filteredHistory$.pipe(this.mapData((packs) => packs.length));
+    }
 
-	loadMore() {
-		this.displayedHistorySize.next(this.displayedHistorySize.value + 100);
-	}
+    loadMore() {
+        this.displayedHistorySize.next(this.displayedHistorySize.value + 100);
+    }
 
-	trackById(index, history: CardHistory) {
-		return history.creationTimestamp;
-	}
+    trackById(index, history: CardHistory) {
+        return history.creationTimestamp;
+    }
 }

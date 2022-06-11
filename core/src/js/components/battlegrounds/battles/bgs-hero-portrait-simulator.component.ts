@@ -1,18 +1,18 @@
 import {
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
-	Input,
-	Output,
-	ViewRef,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    Output,
+    ViewRef,
 } from '@angular/core';
-import { CardIds } from '@firestone-hs/reference-data';
+import {CardIds} from '@firestone-hs/reference-data';
 
 @Component({
-	selector: 'bgs-hero-portrait-simulator',
-	styleUrls: [`../../../../css/component/battlegrounds/battles/bgs-hero-portrait-simulator.component.scss`],
-	template: `
+    selector: 'bgs-hero-portrait-simulator',
+    styleUrls: [`../../../../css/component/battlegrounds/battles/bgs-hero-portrait-simulator.component.scss`],
+    template: `
 		<div class="container">
 			<div class="hero">
 				<bgs-hero-portrait
@@ -49,51 +49,54 @@ import { CardIds } from '@firestone-hs/reference-data';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsHeroPortraitSimulatorComponent {
-	@Output() portraitChangeRequested: EventEmitter<void> = new EventEmitter<void>();
-	@Output() heroPowerChangeRequested: EventEmitter<void> = new EventEmitter<void>();
+    @Output() portraitChangeRequested: EventEmitter<void> = new EventEmitter<void>();
+    @Output() heroPowerChangeRequested: EventEmitter<void> = new EventEmitter<void>();
 
-	@Input() health = 40;
-	@Input() maxHealth = 40;
-	@Input() tooltipPosition: string;
+    @Input() health = 40;
+    @Input() maxHealth = 40;
+    @Input() tooltipPosition: string;
+    heroPowerIcon: string;
+    defaultHero = true;
 
-	@Input() set heroCardId(value: string) {
-		this._heroCardId = value;
-		this.defaultHero = value === CardIds.KelthuzadBattlegrounds;
-	}
+    constructor(private readonly cdr: ChangeDetectorRef) {
+    }
 
-	@Input() set tavernTier(value: number) {
-		this._tavernTier = value;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    _heroCardId: string;
 
-	@Input() set heroPowerCardId(value: string) {
-		this._heroPowerCardId = value;
-		if (value) {
-			this.heroPowerIcon = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value}.jpg`;
-			if (!(this.cdr as ViewRef)?.destroyed) {
-				this.cdr.detectChanges();
-			}
-		}
-	}
+    @Input() set heroCardId(value: string) {
+        this._heroCardId = value;
+        this.defaultHero = value === CardIds.KelthuzadBattlegrounds;
+    }
 
-	heroPowerIcon: string;
-	_heroCardId: string;
-	_heroPowerCardId: string;
-	_tavernTier: number;
-	defaultHero = true;
+    _heroPowerCardId: string;
 
-	constructor(private readonly cdr: ChangeDetectorRef) {}
+    @Input() set heroPowerCardId(value: string) {
+        this._heroPowerCardId = value;
+        if (value) {
+            this.heroPowerIcon = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value}.jpg`;
+            if (!(this.cdr as ViewRef)?.destroyed) {
+                this.cdr.detectChanges();
+            }
+        }
+    }
 
-	onPortraitClick() {
-		this.portraitChangeRequested.next();
-	}
+    _tavernTier: number;
 
-	onHeroPowerClick() {
-		this.heroPowerChangeRequested.next();
-	}
+    @Input() set tavernTier(value: number) {
+        this._tavernTier = value;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
+
+    onPortraitClick() {
+        this.portraitChangeRequested.next();
+    }
+
+    onHeroPowerClick() {
+        this.heroPowerChangeRequested.next();
+    }
 }

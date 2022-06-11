@@ -2,63 +2,63 @@
 @import '../../global/fonts';
 
 .card-back-details-container {
-	display: flex;
-	position: relative;
-	width: 100%;
+  display: flex;
+  position: relative;
+  width: 100%;
 
-	.card-back {
-		width: 45%;
-		padding: 5%;
-		padding-top: 3%;
-		flex-shrink: 0;
-		max-width: 400px;
+  .card-back {
+    width: 45%;
+    padding: 5%;
+    padding-top: 3%;
+    flex-shrink: 0;
+    max-width: 400px;
 
-		::ng-deep .missing {
-			opacity: 1;
-		}
-	}
+    ::ng-deep .missing {
+      opacity: 1;
+    }
+  }
 
-	.details {
-		// width: 413px;
-		flex-grow: 1;
-		padding-right: 55px;
-		padding-top: 41px;
-		display: flex;
-		flex-direction: column;
+  .details {
+    // width: 413px;
+    flex-grow: 1;
+    padding-right: 55px;
+    padding-top: 41px;
+    display: flex;
+    flex-direction: column;
 
-		h1 {
-			@extend %card-title;
-			padding-bottom: 14px;
-			border-bottom: 1px solid $yellow03;
-			margin-bottom: 20px;
-			// width: 265px;
-		}
+    h1 {
+      @extend %card-title;
+      padding-bottom: 14px;
+      border-bottom: 1px solid $yellow03;
+      margin-bottom: 20px;
+      // width: 265px;
+    }
 
-		.card-back-details {
-			overflow-y: scroll;
-		}
+    .card-back-details {
+      overflow-y: scroll;
+    }
 
-		.card-back-info {
-			@extend %you-have-viewed;
-			margin-top: 9px;
+    .card-back-info {
+      @extend %you-have-viewed;
+      margin-top: 9px;
 
-			.sub-title {
-				@extend %card-details;
-				margin-right: 10px;
-			}
+      .sub-title {
+        @extend %card-details;
+        margin-right: 10px;
+      }
 
-			&.description {
-				margin-top: 20px;
+      &.description {
+        margin-top: 20px;
 
-				.sub-title {
-					display: block;
-				}
+        .sub-title {
+          display: block;
+        }
 
-				i {
-					display: inline;
-					font-style: italic;
-				}
-			}
-		}
-	}
+        i {
+          display: inline;
+          font-style: italic;
+        }
+      }
+    }
+  }
 }

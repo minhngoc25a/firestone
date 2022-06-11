@@ -1,15 +1,15 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input } from '@angular/core';
-import { MainWindowStoreEvent } from '../../../services/mainwindow/store/events/main-window-store-event';
-import { OverwolfService } from '../../../services/overwolf.service';
-import { CardsByCost } from './cards-by-cost';
+import {AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input} from '@angular/core';
+import {MainWindowStoreEvent} from '../../../services/mainwindow/store/events/main-window-store-event';
+import {OverwolfService} from '../../../services/overwolf.service';
+import {CardsByCost} from './cards-by-cost';
 
 @Component({
-	selector: 'deck-mana-curve-bar',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/decktracker/main/deck-mana-curve-bar.component.scss`,
-	],
-	template: `
+    selector: 'deck-mana-curve-bar',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/decktracker/main/deck-mana-curve-bar.component.scss`,
+    ],
+    template: `
 		<div class="deck-mana-curve-bar">
 			<div class="quantity">{{ _info?.quantity }}</div>
 			<div class="bar">
@@ -19,36 +19,38 @@ import { CardsByCost } from './cards-by-cost';
 			<div class="label">{{ _info?.label }}</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeckManaCurveBarComponent implements AfterViewInit {
-	@Input() set info(value: CardsByCost) {
-		this._info = value;
-		this.updateValues();
-	}
+    fillHeight: number;
+    private stateUpdater: EventEmitter<MainWindowStoreEvent>;
 
-	@Input() set maxQuantity(value: number) {
-		this._maxQuantity = value;
-		this.updateValues();
-	}
+    constructor(private readonly ow: OverwolfService) {
+    }
 
-	_info: CardsByCost;
-	_maxQuantity: number;
-	fillHeight: number;
+    _info: CardsByCost;
 
-	private stateUpdater: EventEmitter<MainWindowStoreEvent>;
+    @Input() set info(value: CardsByCost) {
+        this._info = value;
+        this.updateValues();
+    }
 
-	constructor(private readonly ow: OverwolfService) {}
+    _maxQuantity: number;
 
-	ngAfterViewInit() {
-		this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
-	}
+    @Input() set maxQuantity(value: number) {
+        this._maxQuantity = value;
+        this.updateValues();
+    }
 
-	private updateValues() {
-		if (!this._info || !this._maxQuantity) {
-			return;
-		}
+    ngAfterViewInit() {
+        this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
+    }
 
-		this.fillHeight = (100 * this._info.quantity) / this._maxQuantity;
-	}
+    private updateValues() {
+        if (!this._info || !this._maxQuantity) {
+            return;
+        }
+
+        this.fillHeight = (100 * this._info.quantity) / this._maxQuantity;
+    }
 }

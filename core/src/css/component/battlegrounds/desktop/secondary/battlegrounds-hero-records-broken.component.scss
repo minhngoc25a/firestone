@@ -1,55 +1,56 @@
 .battlegrounds-hero-records-broken {
-	display: flex;
-	position: relative;
+  display: flex;
+  position: relative;
 
-	.portrait {
-		width: 100%;
+  .portrait {
+    width: 100%;
 
-		::ng-deep {
-			.hero-portrait {
-				width: 100%;
+    ::ng-deep {
+      .hero-portrait {
+        width: 100%;
 
-				.hero-portrait-frame {
-					width: 100%;
-					height: auto;
+        .hero-portrait-frame {
+          width: 100%;
+          height: auto;
 
-					.aspect-ratio {
-						display: block;
-						padding-bottom: 115%;
-					}
-				}
+          .aspect-ratio {
+            display: block;
+            padding-bottom: 115%;
+          }
+        }
 
-				.health {
-					.icon {
-						display: none;
-					}
-					.value {
-						font-size: 13px;
-					}
-				}
-			}
-		}
-	}
+        .health {
+          .icon {
+            display: none;
+          }
 
-	.records {
-		right: -5px;
-		top: 5px;
-		position: absolute;
-		color: var(--color-5);
-		z-index: 1;
+          .value {
+            font-size: 13px;
+          }
+        }
+      }
+    }
+  }
 
-		.icon {
-			width: 34px;
-			height: 34px;
-		}
+  .records {
+    right: -5px;
+    top: 5px;
+    position: absolute;
+    color: var(--color-5);
+    z-index: 1;
 
-		.value {
-			position: absolute;
-			top: 8px;
-			font-size: 12px;
-			font-weight: bold;
-			width: 100%;
-			text-align: center;
-		}
-	}
+    .icon {
+      width: 34px;
+      height: 34px;
+    }
+
+    .value {
+      position: absolute;
+      top: 8px;
+      font-size: 12px;
+      font-weight: bold;
+      width: 100%;
+      text-align: center;
+    }
+  }
 }

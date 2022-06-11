@@ -1,18 +1,18 @@
-import { DeckInfoFromMemory } from '@models/mainwindow/decktracker/deck-info-from-memory';
-import { OverwolfService } from '@services/overwolf.service';
-import { MindVisionFacadeService } from '@services/plugins/mind-vision/mind-vision-facade.service';
-import { MindVisionOperationFacade } from '@services/plugins/mind-vision/mind-vision-operation-facade';
+import {DeckInfoFromMemory} from '@models/mainwindow/decktracker/deck-info-from-memory';
+import {OverwolfService} from '@services/overwolf.service';
+import {MindVisionFacadeService} from '@services/plugins/mind-vision/mind-vision-facade.service';
+import {MindVisionOperationFacade} from '@services/plugins/mind-vision/mind-vision-operation-facade';
 
 export class GetActiveDeckOperation extends MindVisionOperationFacade<DeckInfoFromMemory> {
-	constructor(mindVision: MindVisionFacadeService, ow: OverwolfService) {
-		super(
-			ow,
-			'getActiveDeck',
-			(forceReset?: boolean, selectedDeckId?: number) => mindVision.getActiveDeck(selectedDeckId, forceReset),
-			(deck) => !deck,
-			(deck) => deck,
-			5,
-			2000,
-		);
-	}
+    constructor(mindVision: MindVisionFacadeService, ow: OverwolfService) {
+        super(
+            ow,
+            'getActiveDeck',
+            (forceReset?: boolean, selectedDeckId?: number) => mindVision.getActiveDeck(selectedDeckId, forceReset),
+            (deck) => !deck,
+            (deck) => deck,
+            5,
+            2000,
+        );
+    }
 }

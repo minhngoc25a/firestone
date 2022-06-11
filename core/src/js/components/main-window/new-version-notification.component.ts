@@ -1,29 +1,29 @@
 import {
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
-	Input,
-	Output,
-	ViewRef,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    Output,
+    ViewRef,
 } from '@angular/core';
-import { Preferences } from '../../models/preferences';
-import { OverwolfService } from '../../services/overwolf.service';
-import { PreferencesService } from '../../services/preferences.service';
-import { capitalizeFirstLetter, isVersionBefore } from '../../services/utils';
-import { Update, updates, UpdateSectionItem, UpdateSectionItemDetails } from './updates';
+import {Preferences} from '../../models/preferences';
+import {OverwolfService} from '../../services/overwolf.service';
+import {PreferencesService} from '../../services/preferences.service';
+import {capitalizeFirstLetter, isVersionBefore} from '../../services/utils';
+import {Update, updates, UpdateSectionItem, UpdateSectionItemDetails} from './updates';
 
 @Component({
-	selector: 'new-version-notification',
-	styleUrls: [
-		`../../../css/global/components-global.scss`,
-		`../../../css/global/menu.scss`,
-		`../../../css/global/scrollbar-general.scss`,
-		`../../../css/component/settings/settings-common.component.scss`,
-		`../../../css/component/main-window/new-version-notification.component.scss`,
-	],
-	template: `
+    selector: 'new-version-notification',
+    styleUrls: [
+        `../../../css/global/components-global.scss`,
+        `../../../css/global/menu.scss`,
+        `../../../css/global/scrollbar-general.scss`,
+        `../../../css/component/settings/settings-common.component.scss`,
+        `../../../css/component/main-window/new-version-notification.component.scss`,
+    ],
+    template: `
 		<div class="new-version" *ngIf="showNewVersion">
 			<div class="backdrop"></div>
 			<div class="element">
@@ -92,93 +92,94 @@ import { Update, updates, UpdateSectionItem, UpdateSectionItemDetails } from './
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NewVersionNotificationComponent implements AfterViewInit {
-	@Output() notificationDisplayed: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() notificationDisplayed: EventEmitter<boolean> = new EventEmitter<boolean>();
+    showNewVersion: boolean;
+    version: string;
+    groupedUpdates: Update;
+    dontShowAgain: boolean;
 
-	@Input() set forceOpen(value: boolean) {
-		this._forceOpen = value;
-		if (this._forceOpen) {
-			this.updateInfo();
-		}
-	}
+    constructor(
+        private readonly ow: OverwolfService,
+        private readonly cdr: ChangeDetectorRef,
+        private readonly prefs: PreferencesService,
+    ) {
+    }
 
-	showNewVersion: boolean;
-	version: string;
-	groupedUpdates: Update;
-	dontShowAgain: boolean;
-	_forceOpen: boolean;
+    _forceOpen: boolean;
 
-	constructor(
-		private readonly ow: OverwolfService,
-		private readonly cdr: ChangeDetectorRef,
-		private readonly prefs: PreferencesService,
-	) {}
+    @Input() set forceOpen(value: boolean) {
+        this._forceOpen = value;
+        if (this._forceOpen) {
+            this.updateInfo();
+        }
+    }
 
-	async ngAfterViewInit() {
-		this.updateInfo();
-	}
+    async ngAfterViewInit() {
+        this.updateInfo();
+    }
 
-	async confirm() {
-		await this.prefs.acknowledgeReleaseNotes(this.version);
-		this.showNewVersion = false;
-		this.notificationDisplayed.next(this.showNewVersion);
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    async confirm() {
+        await this.prefs.acknowledgeReleaseNotes(this.version);
+        this.showNewVersion = false;
+        this.notificationDisplayed.next(this.showNewVersion);
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	getDetailTitle(detail: UpdateSectionItemDetails): string {
-		switch (detail.type) {
-			case 'feature':
-				return 'Feature';
-			case 'bug':
-				return 'Bug Fix';
-			case 'content':
-				return 'Content';
-			default:
-				return 'Other';
-		}
-	}
+    getDetailTitle(detail: UpdateSectionItemDetails): string {
+        switch (detail.type) {
+            case 'feature':
+                return 'Feature';
+            case 'bug':
+                return 'Bug Fix';
+            case 'content':
+                return 'Content';
+            default:
+                return 'Other';
+        }
+    }
 
-	getCategoryTitle(update: UpdateSectionItem): string {
-		return capitalizeFirstLetter(update.category);
-	}
+    getCategoryTitle(update: UpdateSectionItem): string {
+        return capitalizeFirstLetter(update.category);
+    }
 
-	getIcon(update: UpdateSectionItem): string {
-		switch (update.category) {
-			default:
-				return `assets/svg/whatsnew/${update.category}.svg`;
-		}
-	}
+    getIcon(update: UpdateSectionItem): string {
+        switch (update.category) {
+            default:
+                return `assets/svg/whatsnew/${update.category}.svg`;
+        }
+    }
 
-	toggleDontShowAgain(value: boolean) {
-		this.dontShowAgain = !this.dontShowAgain;
-		this.prefs.setDontShowNewVersionNotif(this.dontShowAgain);
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    toggleDontShowAgain(value: boolean) {
+        this.dontShowAgain = !this.dontShowAgain;
+        this.prefs.setDontShowNewVersionNotif(this.dontShowAgain);
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	private async updateInfo() {
-		const prefs: Preferences = await this.prefs.getPreferences();
-		const lastSeenReleaseNotes: string = prefs.lastSeenReleaseNotes;
-		const lastUpdate = updates[0];
-		this.version = lastUpdate.version;
-		this.dontShowAgain = prefs.dontShowNewVersionNotif;
-		if (!this._forceOpen && prefs.dontShowNewVersionNotif) {
-			return;
-		}
+    private async updateInfo() {
+        const prefs: Preferences = await this.prefs.getPreferences();
+        const lastSeenReleaseNotes: string = prefs.lastSeenReleaseNotes;
+        const lastUpdate = updates[0];
+        this.version = lastUpdate.version;
+        this.dontShowAgain = prefs.dontShowNewVersionNotif;
+        if (!this._forceOpen && prefs.dontShowNewVersionNotif) {
+            return;
+        }
 
-		if (this._forceOpen || !lastSeenReleaseNotes || isVersionBefore(lastSeenReleaseNotes, this.version)) {
-			this.showNewVersion = true;
-			// Also sort by category, then type
-			this.groupedUpdates = updates[0];
-		}
-		this.notificationDisplayed.next(this.showNewVersion);
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+        if (this._forceOpen || !lastSeenReleaseNotes || isVersionBefore(lastSeenReleaseNotes, this.version)) {
+            this.showNewVersion = true;
+            // Also sort by category, then type
+            this.groupedUpdates = updates[0];
+        }
+        this.notificationDisplayed.next(this.showNewVersion);
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 }

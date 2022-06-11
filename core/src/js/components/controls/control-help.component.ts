@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Output} from '@angular/core';
 
 @Component({
-	selector: 'control-help',
-	styleUrls: [
-		`../../../css/global/components-global.scss`,
-		`../../../css/component/controls/controls.scss`,
-		`../../../css/component/controls/control-help.component.scss`,
-	],
-	template: `
+    selector: 'control-help',
+    styleUrls: [
+        `../../../css/global/components-global.scss`,
+        `../../../css/component/controls/controls.scss`,
+        `../../../css/component/controls/control-help.component.scss`,
+    ],
+    template: `
 		<button
 			(mousedown)="showHelp()"
 			[helpTooltip]="'app.global.controls.help-button-tooltip' | owTranslate"
@@ -18,12 +18,12 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angul
 			</svg>
 		</button>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ControlHelpComponent {
-	@Output() help: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() help: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-	showHelp() {
-		this.help.next(true);
-	}
+    showHelp() {
+        this.help.next(true);
+    }
 }

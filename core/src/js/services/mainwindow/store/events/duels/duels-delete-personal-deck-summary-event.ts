@@ -1,21 +1,22 @@
-import { MainWindowStoreEvent } from '../main-window-store-event';
+import {MainWindowStoreEvent} from '../main-window-store-event';
 
 export class DuelsDeletePersonalDeckSummaryEvent implements MainWindowStoreEvent {
-	constructor(public readonly deckstring: string) {}
+    constructor(public readonly deckstring: string) {
+    }
 
-	public static eventName(): string {
-		return 'DuelsDeletePersonalDeckSummaryEvent';
-	}
+    public static eventName(): string {
+        return 'DuelsDeletePersonalDeckSummaryEvent';
+    }
 
-	public eventName(): string {
-		return 'DuelsDeletePersonalDeckSummaryEvent';
-	}
+    public eventName(): string {
+        return 'DuelsDeletePersonalDeckSummaryEvent';
+    }
 
-	public isNavigationEvent(): boolean {
-		return false;
-	}
+    public isNavigationEvent(): boolean {
+        return false;
+    }
 
-	public isResetHistoryEvent(): boolean {
-		return false;
-	}
+    public isResetHistoryEvent(): boolean {
+        return false;
+    }
 }

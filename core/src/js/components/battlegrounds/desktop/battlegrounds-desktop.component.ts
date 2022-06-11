@@ -1,28 +1,30 @@
 import {
-	AfterContentInit,
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
+    AfterContentInit,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
 } from '@angular/core';
-import { Observable } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
-import { BattlegroundsCategory } from '../../../models/mainwindow/battlegrounds/battlegrounds-category';
-import { SelectBattlegroundsCategoryEvent } from '../../../services/mainwindow/store/events/battlegrounds/select-battlegrounds-category-event';
-import { MainWindowStoreEvent } from '../../../services/mainwindow/store/events/main-window-store-event';
-import { OverwolfService } from '../../../services/overwolf.service';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
+import {Observable} from 'rxjs';
+import {filter, takeUntil} from 'rxjs/operators';
+import {BattlegroundsCategory} from '../../../models/mainwindow/battlegrounds/battlegrounds-category';
+import {
+    SelectBattlegroundsCategoryEvent
+} from '../../../services/mainwindow/store/events/battlegrounds/select-battlegrounds-category-event';
+import {MainWindowStoreEvent} from '../../../services/mainwindow/store/events/main-window-store-event';
+import {OverwolfService} from '../../../services/overwolf.service';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
 
 @Component({
-	selector: 'battlegrounds-desktop',
-	styleUrls: [
-		`../../../../css/component/app-section.component.scss`,
-		`../../../../css/component/menu-selection.component.scss`,
-		`../../../../css/component/battlegrounds/desktop/battlegrounds-desktop.component.scss`,
-	],
-	template: `
+    selector: 'battlegrounds-desktop',
+    styleUrls: [
+        `../../../../css/component/app-section.component.scss`,
+        `../../../../css/component/menu-selection.component.scss`,
+        `../../../../css/component/battlegrounds/desktop/battlegrounds-desktop.component.scss`,
+    ],
+    template: `
 		<div class="app-section battlegrounds" *ngIf="{ value: category$ | async } as category">
 			<section class="main divider">
 				<with-loading [isLoading]="loading$ | async">
@@ -70,57 +72,57 @@ import { AbstractSubscriptionComponent } from '../../abstract-subscription.compo
 			</section>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BattlegroundsDesktopComponent
-	extends AbstractSubscriptionComponent
-	implements AfterContentInit, AfterViewInit {
-	loading$: Observable<boolean>;
-	menuDisplayType$: Observable<string>;
-	currentView$: Observable<string>;
-	categories$: Observable<readonly BattlegroundsCategory[]>;
-	category$: Observable<BattlegroundsCategory>;
+    extends AbstractSubscriptionComponent
+    implements AfterContentInit, AfterViewInit {
+    loading$: Observable<boolean>;
+    menuDisplayType$: Observable<string>;
+    currentView$: Observable<string>;
+    categories$: Observable<readonly BattlegroundsCategory[]>;
+    category$: Observable<BattlegroundsCategory>;
 
-	private stateUpdater: EventEmitter<MainWindowStoreEvent>;
+    private stateUpdater: EventEmitter<MainWindowStoreEvent>;
 
-	constructor(
-		private readonly ow: OverwolfService,
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-	) {
-		super(store, cdr);
-	}
+    constructor(
+        private readonly ow: OverwolfService,
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+    ) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.loading$ = this.store
-			.listen$(([main, nav]) => main.battlegrounds.loading)
-			.pipe(this.mapData(([loading]) => loading));
-		this.menuDisplayType$ = this.store
-			.listen$(([main, nav]) => nav.navigationBattlegrounds.menuDisplayType)
-			.pipe(this.mapData(([menuDisplayType]) => menuDisplayType));
-		this.category$ = this.store
-			.listen$(
-				([main, nav]) => main.battlegrounds,
-				([main, nav]) => nav.navigationBattlegrounds.selectedCategoryId,
-			)
-			.pipe(
-				this.mapData(([battlegrounds, selectedCategoryId]) => battlegrounds.findCategory(selectedCategoryId)),
-				filter((category) => !!category),
-				takeUntil(this.destroyed$),
-			);
-		this.currentView$ = this.store
-			.listen$(([main, nav]) => nav.navigationBattlegrounds.currentView)
-			.pipe(this.mapData(([currentView]) => currentView));
-		this.categories$ = this.store
-			.listen$(([main, nav]) => main.battlegrounds.categories)
-			.pipe(this.mapData(([categories]) => categories ?? []));
-	}
+    ngAfterContentInit() {
+        this.loading$ = this.store
+            .listen$(([main, nav]) => main.battlegrounds.loading)
+            .pipe(this.mapData(([loading]) => loading));
+        this.menuDisplayType$ = this.store
+            .listen$(([main, nav]) => nav.navigationBattlegrounds.menuDisplayType)
+            .pipe(this.mapData(([menuDisplayType]) => menuDisplayType));
+        this.category$ = this.store
+            .listen$(
+                ([main, nav]) => main.battlegrounds,
+                ([main, nav]) => nav.navigationBattlegrounds.selectedCategoryId,
+            )
+            .pipe(
+                this.mapData(([battlegrounds, selectedCategoryId]) => battlegrounds.findCategory(selectedCategoryId)),
+                filter((category) => !!category),
+                takeUntil(this.destroyed$),
+            );
+        this.currentView$ = this.store
+            .listen$(([main, nav]) => nav.navigationBattlegrounds.currentView)
+            .pipe(this.mapData(([currentView]) => currentView));
+        this.categories$ = this.store
+            .listen$(([main, nav]) => main.battlegrounds.categories)
+            .pipe(this.mapData(([categories]) => categories ?? []));
+    }
 
-	ngAfterViewInit() {
-		this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
-	}
+    ngAfterViewInit() {
+        this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
+    }
 
-	selectCategory(categoryId: string) {
-		this.stateUpdater.next(new SelectBattlegroundsCategoryEvent(categoryId));
-	}
+    selectCategory(categoryId: string) {
+        this.stateUpdater.next(new SelectBattlegroundsCategoryEvent(categoryId));
+    }
 }

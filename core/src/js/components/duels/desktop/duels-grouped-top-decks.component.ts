@@ -1,16 +1,16 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input } from '@angular/core';
-import { DuelsGroupedDecks } from '../../../models/duels/duels-grouped-decks';
-import { DuelsDeckStat } from '../../../models/duels/duels-player-stats';
-import { MainWindowStoreEvent } from '../../../services/mainwindow/store/events/main-window-store-event';
-import { OverwolfService } from '../../../services/overwolf.service';
+import {AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input} from '@angular/core';
+import {DuelsGroupedDecks} from '../../../models/duels/duels-grouped-decks';
+import {DuelsDeckStat} from '../../../models/duels/duels-player-stats';
+import {MainWindowStoreEvent} from '../../../services/mainwindow/store/events/main-window-store-event';
+import {OverwolfService} from '../../../services/overwolf.service';
 
 @Component({
-	selector: 'duels-grouped-top-decks',
-	styleUrls: [
-		`../../../../css/global/menu.scss`,
-		`../../../../css/component/duels/desktop/duels-grouped-top-decks.component.scss`,
-	],
-	template: `
+    selector: 'duels-grouped-top-decks',
+    styleUrls: [
+        `../../../../css/global/menu.scss`,
+        `../../../../css/component/duels/desktop/duels-grouped-top-decks.component.scss`,
+    ],
+    template: `
 		<div class="grouped-decks">
 			<div class="header">{{ header }}</div>
 			<ul class="decks">
@@ -18,22 +18,23 @@ import { OverwolfService } from '../../../services/overwolf.service';
 			</ul>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DuelsGroupedTopDecksComponent implements AfterViewInit {
-	header: string;
-	_groupedDecks: readonly DuelsDeckStat[];
+    header: string;
+    private stateUpdater: EventEmitter<MainWindowStoreEvent>;
 
-	private stateUpdater: EventEmitter<MainWindowStoreEvent>;
+    constructor(private ow: OverwolfService) {
+    }
 
-	@Input() set groupedDecks(value: DuelsGroupedDecks) {
-		this.header = value.header;
-		this._groupedDecks = value.decks;
-	}
+    _groupedDecks: readonly DuelsDeckStat[];
 
-	constructor(private ow: OverwolfService) {}
+    @Input() set groupedDecks(value: DuelsGroupedDecks) {
+        this.header = value.header;
+        this._groupedDecks = value.decks;
+    }
 
-	ngAfterViewInit() {
-		this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
-	}
+    ngAfterViewInit() {
+        this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
+    }
 }

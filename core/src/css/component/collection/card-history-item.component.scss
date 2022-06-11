@@ -1,66 +1,66 @@
 @import '../../global/fonts';
 
 .card-history-item {
-	@extend %you-have-viewed;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	height: 36px;
+  @extend %you-have-viewed;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 36px;
 
-	&:hover {
-		background: rgba(255, 255, 255, 0.04);
-	}
+  &:hover {
+    background: rgba(255, 255, 255, 0.04);
+  }
 
-	.rarity {
-		width: 15px;
-		margin-left: 10px;
-		margin-right: 16px;
-	}
+  .rarity {
+    width: 15px;
+    margin-left: 10px;
+    margin-right: 16px;
+  }
 
-	.name {
-		// width: 195px;
-		flex-grow: 1;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
+  .name {
+    // width: 195px;
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-	.dust-amount,
-	.new {
-		width: 95px;
-		text-align: center;
-		display: flex;
-		justify-content: flex-end;
-		align-items: center;
-		margin-right: 10px;
-	}
+  .dust-amount,
+  .new {
+    width: 95px;
+    text-align: center;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-right: 10px;
+  }
 
-	.dust-amount {
-		span {
-			margin-right: 6px;
-		}
+  .dust-amount {
+    span {
+      margin-right: 6px;
+    }
 
-		&:before {
-			content: '+';
-			margin-right: 4px;
-		}
-	}
+    &:before {
+      content: '+';
+      margin-right: 4px;
+    }
+  }
 
-	.new {
-		span {
-			border: 1px solid;
-			width: 60px;
-			height: 20px;
-			margin-right: 7px;
-			font-size: 12px;
-		}
+  .new {
+    span {
+      border: 1px solid;
+      width: 60px;
+      height: 20px;
+      margin-right: 7px;
+      font-size: 12px;
+    }
 
-		&.second span {
-		}
-	}
+    &.second span {
+    }
+  }
 
-	.date {
-		@extend %breadcrumbs;
-		margin-right: 12px;
-	}
+  .date {
+    @extend %breadcrumbs;
+    margin-right: 12px;
+  }
 }

@@ -1,18 +1,19 @@
-import { MercenariesRoleFilterType } from '../../../../../models/mercenaries/mercenaries-filter-types';
-import { MainWindowStoreEvent } from '../main-window-store-event';
+import {MercenariesRoleFilterType} from '../../../../../models/mercenaries/mercenaries-filter-types';
+import {MainWindowStoreEvent} from '../main-window-store-event';
 
 export class MercenariesRoleFilterSelectedEvent implements MainWindowStoreEvent {
-	constructor(public readonly role: MercenariesRoleFilterType) {}
+    constructor(public readonly role: MercenariesRoleFilterType) {
+    }
 
-	public static eventName(): string {
-		return 'MercenariesRoleFilterSelectedEvent';
-	}
+    public static eventName(): string {
+        return 'MercenariesRoleFilterSelectedEvent';
+    }
 
-	public eventName(): string {
-		return 'MercenariesRoleFilterSelectedEvent';
-	}
+    public eventName(): string {
+        return 'MercenariesRoleFilterSelectedEvent';
+    }
 
-	public isNavigationEvent(): boolean {
-		return false;
-	}
+    public isNavigationEvent(): boolean {
+        return false;
+    }
 }

@@ -1,19 +1,19 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input, Optional } from '@angular/core';
-import { decode } from 'deckstrings';
-import { CardTooltipPositionType } from '../../directives/card-tooltip-position.type';
-import { GameStateEvent } from '../../models/decktracker/game-state-event';
-import { GameEvent } from '../../models/game-event';
-import { DeckstringOverrideEvent } from '../../services/decktracker/event/deckstring-override-event';
-import { LocalizationFacadeService } from '../../services/localization-facade.service';
-import { OverwolfService } from '../../services/overwolf.service';
+import {AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input, Optional} from '@angular/core';
+import {decode} from 'deckstrings';
+import {CardTooltipPositionType} from '../../directives/card-tooltip-position.type';
+import {GameStateEvent} from '../../models/decktracker/game-state-event';
+import {GameEvent} from '../../models/game-event';
+import {DeckstringOverrideEvent} from '../../services/decktracker/event/deckstring-override-event';
+import {LocalizationFacadeService} from '../../services/localization-facade.service';
+import {OverwolfService} from '../../services/overwolf.service';
 
 @Component({
-	selector: 'import-deckstring',
-	styleUrls: [
-		'../../../css/global/components-global.scss',
-		'../../../css/component/decktracker/import-deckstring.component.scss',
-	],
-	template: `
+    selector: 'import-deckstring',
+    styleUrls: [
+        '../../../css/global/components-global.scss',
+        '../../../css/component/decktracker/import-deckstring.component.scss',
+    ],
+    template: `
 		<div
 			class="import-deckstring"
 			[helpTooltip]="'decktracker.import.import-deckstring-tooltip' | owTranslate"
@@ -31,95 +31,93 @@ import { OverwolfService } from '../../services/overwolf.service';
 			<div class="icon" inlineSVG="assets/svg/import_deckstring.svg"></div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImportDeckstringComponent implements AfterViewInit {
-	@Input() set tooltipPosition(value: CardTooltipPositionType) {
-		this._tooltipPosition = value;
-	}
+    @Input() side: 'player' | 'opponent';
+    deckName: string;
+    confirmationTitle = this.i18n.translateString('decktracker.import.confirmation-title');
+    confirmationText = this.i18n.translateString('decktracker.import.confirmation-title');
+    validButtonText = this.i18n.translateString('decktracker.import.button-text');
+    cancelButtonText = this.i18n.translateString('decktracker.import.cancel-text');
+    showOk = true;
+    private deckstring: string;
+    private deckUpdater: EventEmitter<GameEvent | GameStateEvent>;
 
-	@Input() side: 'player' | 'opponent';
+    constructor(private readonly i18n: LocalizationFacadeService, @Optional() private readonly ow: OverwolfService) {
+    }
 
-	deckName: string;
-	_tooltipPosition: CardTooltipPositionType;
+    _tooltipPosition: CardTooltipPositionType;
 
-	confirmationTitle = this.i18n.translateString('decktracker.import.confirmation-title');
-	confirmationText = this.i18n.translateString('decktracker.import.confirmation-title');
-	validButtonText = this.i18n.translateString('decktracker.import.button-text');
-	cancelButtonText = this.i18n.translateString('decktracker.import.cancel-text');
-	showOk = true;
+    @Input() set tooltipPosition(value: CardTooltipPositionType) {
+        this._tooltipPosition = value;
+    }
 
-	private deckstring: string;
+    ngAfterViewInit() {
+        this.deckUpdater = this.ow.getMainWindow().deckUpdater;
+    }
 
-	private deckUpdater: EventEmitter<GameEvent | GameStateEvent>;
+    async importDeckstring() {
+        const clipboardContent = await this.ow.getFromClipboard();
+        const {deckstring, deckName} = this.parseClipboardContent(clipboardContent);
 
-	constructor(private readonly i18n: LocalizationFacadeService, @Optional() private readonly ow: OverwolfService) {}
+        if (!deckstring) {
+            console.warn('invalid clipboard content', clipboardContent);
+            this.confirmationTitle = this.i18n.translateString('decktracker.import.invalid-deck-code-title');
+            this.confirmationText = this.i18n.translateString('decktracker.import.invalid-deck-code-text');
+            this.validButtonText = null;
+            this.cancelButtonText = this.i18n.translateString('decktracker.import.invalid-deck-code-button-text');
+            this.showOk = false;
+        } else {
+            this.deckName = deckName;
+            this.deckstring = deckstring;
+            this.confirmationTitle = this.i18n.translateString('decktracker.import.confirmation-title');
+            this.confirmationText = this.deckName
+                ? this.i18n.translateString('decktracker.import.use-deck-text', {
+                    value: this.deckName,
+                })
+                : this.i18n.translateString('decktracker.import.use-deck-text-default');
+            this.validButtonText = this.i18n.translateString('decktracker.import.button-text');
+            this.cancelButtonText = this.i18n.translateString('decktracker.import.cancel-text');
+            this.showOk = true;
+        }
+    }
 
-	ngAfterViewInit() {
-		this.deckUpdater = this.ow.getMainWindow().deckUpdater;
-	}
+    confirmOverride() {
+        console.debug('confirming override', this.side, this.deckstring);
+        this.deckUpdater.next(
+            new DeckstringOverrideEvent(
+                this.deckName ?? this.i18n.translateString('decktracker.deck-name.unknown-deck'),
+                this.deckstring,
+                this.side ?? 'opponent',
+            ),
+        );
+    }
 
-	async importDeckstring() {
-		const clipboardContent = await this.ow.getFromClipboard();
-		const { deckstring, deckName } = this.parseClipboardContent(clipboardContent);
+    private parseClipboardContent(clipboardContent: string): { deckstring: string; deckName: string } {
+        const lines = clipboardContent.split('\n');
+        const linesReversed = lines.reverse();
+        let deckName = null;
+        let deckstring = null;
+        for (const line of linesReversed) {
+            if (!deckName && line.startsWith('### ')) {
+                deckName = line.split('### ')[1];
+            } else if (!deckstring) {
+                try {
+                    decode(line);
 
-		if (!deckstring) {
-			console.warn('invalid clipboard content', clipboardContent);
-			this.confirmationTitle = this.i18n.translateString('decktracker.import.invalid-deck-code-title');
-			this.confirmationText = this.i18n.translateString('decktracker.import.invalid-deck-code-text');
-			this.validButtonText = null;
-			this.cancelButtonText = this.i18n.translateString('decktracker.import.invalid-deck-code-button-text');
-			this.showOk = false;
-		} else {
-			this.deckName = deckName;
-			this.deckstring = deckstring;
-			this.confirmationTitle = this.i18n.translateString('decktracker.import.confirmation-title');
-			this.confirmationText = this.deckName
-				? this.i18n.translateString('decktracker.import.use-deck-text', {
-						value: this.deckName,
-				  })
-				: this.i18n.translateString('decktracker.import.use-deck-text-default');
-			this.validButtonText = this.i18n.translateString('decktracker.import.button-text');
-			this.cancelButtonText = this.i18n.translateString('decktracker.import.cancel-text');
-			this.showOk = true;
-		}
-	}
-
-	confirmOverride() {
-		console.debug('confirming override', this.side, this.deckstring);
-		this.deckUpdater.next(
-			new DeckstringOverrideEvent(
-				this.deckName ?? this.i18n.translateString('decktracker.deck-name.unknown-deck'),
-				this.deckstring,
-				this.side ?? 'opponent',
-			),
-		);
-	}
-
-	private parseClipboardContent(clipboardContent: string): { deckstring: string; deckName: string } {
-		const lines = clipboardContent.split('\n');
-		const linesReversed = lines.reverse();
-		let deckName = null;
-		let deckstring = null;
-		for (const line of linesReversed) {
-			if (!deckName && line.startsWith('### ')) {
-				deckName = line.split('### ')[1];
-			} else if (!deckstring) {
-				try {
-					decode(line);
-
-					deckstring = line;
-				} catch (e) {
-					// Do nothing, this was not a deckstring line
-				}
-			}
-			if (deckName && deckstring) {
-				break;
-			}
-		}
-		return {
-			deckstring: deckstring,
-			deckName: deckName,
-		};
-	}
+                    deckstring = line;
+                } catch (e) {
+                    // Do nothing, this was not a deckstring line
+                }
+            }
+            if (deckName && deckstring) {
+                break;
+            }
+        }
+        return {
+            deckstring: deckstring,
+            deckName: deckName,
+        };
+    }
 }

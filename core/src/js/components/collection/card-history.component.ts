@@ -1,20 +1,20 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { CardHistory } from '../../models/card-history';
-import { SetCard } from '../../models/set';
-import { LoadMoreCardHistoryEvent } from '../../services/mainwindow/store/events/collection/load-more-card-history-event';
-import { AppUiStoreFacadeService } from '../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../abstract-subscription.component';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
+import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
+import {CardHistory} from '../../models/card-history';
+import {SetCard} from '../../models/set';
+import {LoadMoreCardHistoryEvent} from '../../services/mainwindow/store/events/collection/load-more-card-history-event';
+import {AppUiStoreFacadeService} from '../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../abstract-subscription.component';
 
 @Component({
-	selector: 'card-history',
-	styleUrls: [
-		`../../../css/global/scrollbar.scss`,
-		`../../../css/global/forms.scss`,
-		`../../../css/global/toggle.scss`,
-		`../../../css/component/collection/card-history.component.scss`,
-	],
-	template: `
+    selector: 'card-history',
+    styleUrls: [
+        `../../../css/global/scrollbar.scss`,
+        `../../../css/global/forms.scss`,
+        `../../../css/global/toggle.scss`,
+        `../../../css/component/collection/card-history.component.scss`,
+    ],
+    template: `
 		<div class="card-history">
 			<div class="history">
 				<div class="top-container">
@@ -68,62 +68,60 @@ import { AbstractSubscriptionComponent } from '../abstract-subscription.componen
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardHistoryComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	private readonly MAX_RESULTS_DISPLAYED = 1000;
+    showOnlyNewCards$: Observable<boolean>;
+    shownHistory$: Observable<readonly InternalCardHistory[]>;
+    cardHistory$: Observable<readonly CardHistory[]>;
+    totalHistoryLength$: Observable<number>;
+    selectedCard$$ = new BehaviorSubject<SetCard>(null);
+    private readonly MAX_RESULTS_DISPLAYED = 1000;
 
-	@Input() set selectedCard(selectedCard: SetCard) {
-		this.selectedCard$$.next(selectedCard);
-	}
+    constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
+        super(store, cdr);
+    }
 
-	showOnlyNewCards$: Observable<boolean>;
-	shownHistory$: Observable<readonly InternalCardHistory[]>;
-	cardHistory$: Observable<readonly CardHistory[]>;
-	totalHistoryLength$: Observable<number>;
+    @Input() set selectedCard(selectedCard: SetCard) {
+        this.selectedCard$$.next(selectedCard);
+    }
 
-	selectedCard$$ = new BehaviorSubject<SetCard>(null);
+    ngAfterContentInit() {
+        this.showOnlyNewCards$ = this.listenForBasicPref$((prefs) => prefs.collectionHistoryShowOnlyNewCards);
+        this.cardHistory$ = this.store
+            .listen$(([main, nav, prefs]) => main.binder.cardHistory)
+            .pipe(this.mapData(([cardHistory]) => cardHistory));
+        this.totalHistoryLength$ = this.store
+            .listen$(([main, nav, prefs]) => main.binder.totalHistoryLength)
+            .pipe(this.mapData(([totalHistoryLength]) => totalHistoryLength));
+        this.shownHistory$ = combineLatest(
+            this.showOnlyNewCards$,
+            this.selectedCard$$.asObservable(),
+            this.cardHistory$,
+        ).pipe(
+            this.mapData(([showOnlyNewCards, selectedCard, cardHistory]) =>
+                cardHistory
+                    .filter((card: CardHistory) => !showOnlyNewCards || card.isNewCard)
+                    .map(
+                        (history) =>
+                            ({
+                                ...history,
+                                active: selectedCard && selectedCard.id === history.cardId,
+                            } as InternalCardHistory),
+                    ),
+            ),
+        );
+    }
 
-	constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
-		super(store, cdr);
-	}
+    loadMore() {
+        this.store.send(new LoadMoreCardHistoryEvent(this.MAX_RESULTS_DISPLAYED));
+    }
 
-	ngAfterContentInit() {
-		this.showOnlyNewCards$ = this.listenForBasicPref$((prefs) => prefs.collectionHistoryShowOnlyNewCards);
-		this.cardHistory$ = this.store
-			.listen$(([main, nav, prefs]) => main.binder.cardHistory)
-			.pipe(this.mapData(([cardHistory]) => cardHistory));
-		this.totalHistoryLength$ = this.store
-			.listen$(([main, nav, prefs]) => main.binder.totalHistoryLength)
-			.pipe(this.mapData(([totalHistoryLength]) => totalHistoryLength));
-		this.shownHistory$ = combineLatest(
-			this.showOnlyNewCards$,
-			this.selectedCard$$.asObservable(),
-			this.cardHistory$,
-		).pipe(
-			this.mapData(([showOnlyNewCards, selectedCard, cardHistory]) =>
-				cardHistory
-					.filter((card: CardHistory) => !showOnlyNewCards || card.isNewCard)
-					.map(
-						(history) =>
-							({
-								...history,
-								active: selectedCard && selectedCard.id === history.cardId,
-							} as InternalCardHistory),
-					),
-			),
-		);
-	}
-
-	loadMore() {
-		this.store.send(new LoadMoreCardHistoryEvent(this.MAX_RESULTS_DISPLAYED));
-	}
-
-	trackById(index, history: CardHistory) {
-		return history.creationTimestamp;
-	}
+    trackById(index, history: CardHistory) {
+        return history.creationTimestamp;
+    }
 }
 
 interface InternalCardHistory extends CardHistory {
-	readonly active: boolean;
+    readonly active: boolean;
 }

@@ -1,20 +1,20 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input } from '@angular/core';
-import { CurrentAppType } from '../../../models/mainwindow/current-app.type';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
-import { NextFtueEvent } from '../../../services/mainwindow/store/events/ftue/next-ftue-event';
-import { PreviousFtueEvent } from '../../../services/mainwindow/store/events/ftue/previous-ftue-event';
-import { SkipFtueEvent } from '../../../services/mainwindow/store/events/ftue/skip-ftue-event';
-import { MainWindowStoreEvent } from '../../../services/mainwindow/store/events/main-window-store-event';
-import { OverwolfService } from '../../../services/overwolf.service';
+import {AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input} from '@angular/core';
+import {CurrentAppType} from '../../../models/mainwindow/current-app.type';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
+import {NextFtueEvent} from '../../../services/mainwindow/store/events/ftue/next-ftue-event';
+import {PreviousFtueEvent} from '../../../services/mainwindow/store/events/ftue/previous-ftue-event';
+import {SkipFtueEvent} from '../../../services/mainwindow/store/events/ftue/skip-ftue-event';
+import {MainWindowStoreEvent} from '../../../services/mainwindow/store/events/main-window-store-event';
+import {OverwolfService} from '../../../services/overwolf.service';
 
 @Component({
-	selector: 'ftue',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/global/menu.scss`,
-		`../../../../css/component/main-window/ftue/ftue.component.scss`,
-	],
-	template: `
+    selector: 'ftue',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/global/menu.scss`,
+        `../../../../css/component/main-window/ftue/ftue.component.scss`,
+    ],
+    template: `
 		<div class="ftue">
 			<div class="backdrop"></div>
 			<div class="element" *ngIf="isHome">
@@ -72,94 +72,94 @@ import { OverwolfService } from '../../../services/overwolf.service';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FtueComponent implements AfterViewInit {
-	currentIndex = 0;
-	isHome = true;
-	ftueSteps: FtueStep[] = [
-		{
-			id: 'decktracker',
-			title: this.i18n.translateString('ftue.steps.decktracker.title'),
-			text: this.i18n.translateString('ftue.steps.decktracker.text'),
-			icon: `assets/svg/ftue/decktracker.svg`,
-			progressIndex: 0,
-		},
-		{
-			id: 'battlegrounds',
-			title: this.i18n.translateString('ftue.steps.battlegrounds.title'),
-			text: this.i18n.translateString('ftue.steps.battlegrounds.text'),
-			icon: `assets/svg/ftue/battlegrounds.svg`,
-			progressIndex: 1,
-		},
-		{
-			id: 'duels',
-			title: this.i18n.translateString('ftue.steps.duels.title'),
-			text: this.i18n.translateString('ftue.steps.duels.text'),
-			icon: `assets/svg/ftue/duels.svg`,
-			progressIndex: 2,
-		},
-		{
-			id: 'arena',
-			title: this.i18n.translateString('ftue.steps.arena.title'),
-			text: this.i18n.translateString('ftue.steps.arena.text'),
-			icon: `assets/svg/whatsnew/arena.svg`,
-			progressIndex: 3,
-		},
-		{
-			id: 'replays',
-			title: this.i18n.translateString('ftue.steps.replays.title'),
-			text: this.i18n.translateString('ftue.steps.replays.text'),
-			icon: `assets/svg/ftue/replays.svg`,
-			progressIndex: 4,
-		},
-		{
-			id: 'achievements',
-			title: this.i18n.translateString('ftue.steps.achievements.title'),
-			text: this.i18n.translateString('ftue.steps.achievements.text'),
-			icon: `assets/svg/ftue/achievements.svg`,
-			progressIndex: 5,
-		},
-		{
-			id: 'collection',
-			title: this.i18n.translateString('ftue.steps.collection.title'),
-			text: this.i18n.translateString('ftue.steps.collection.text'),
-			icon: `assets/svg/ftue/collection.svg`,
-			progressIndex: 6,
-		},
-	];
+    currentIndex = 0;
+    isHome = true;
+    ftueSteps: FtueStep[] = [
+        {
+            id: 'decktracker',
+            title: this.i18n.translateString('ftue.steps.decktracker.title'),
+            text: this.i18n.translateString('ftue.steps.decktracker.text'),
+            icon: `assets/svg/ftue/decktracker.svg`,
+            progressIndex: 0,
+        },
+        {
+            id: 'battlegrounds',
+            title: this.i18n.translateString('ftue.steps.battlegrounds.title'),
+            text: this.i18n.translateString('ftue.steps.battlegrounds.text'),
+            icon: `assets/svg/ftue/battlegrounds.svg`,
+            progressIndex: 1,
+        },
+        {
+            id: 'duels',
+            title: this.i18n.translateString('ftue.steps.duels.title'),
+            text: this.i18n.translateString('ftue.steps.duels.text'),
+            icon: `assets/svg/ftue/duels.svg`,
+            progressIndex: 2,
+        },
+        {
+            id: 'arena',
+            title: this.i18n.translateString('ftue.steps.arena.title'),
+            text: this.i18n.translateString('ftue.steps.arena.text'),
+            icon: `assets/svg/whatsnew/arena.svg`,
+            progressIndex: 3,
+        },
+        {
+            id: 'replays',
+            title: this.i18n.translateString('ftue.steps.replays.title'),
+            text: this.i18n.translateString('ftue.steps.replays.text'),
+            icon: `assets/svg/ftue/replays.svg`,
+            progressIndex: 4,
+        },
+        {
+            id: 'achievements',
+            title: this.i18n.translateString('ftue.steps.achievements.title'),
+            text: this.i18n.translateString('ftue.steps.achievements.text'),
+            icon: `assets/svg/ftue/achievements.svg`,
+            progressIndex: 5,
+        },
+        {
+            id: 'collection',
+            title: this.i18n.translateString('ftue.steps.collection.title'),
+            text: this.i18n.translateString('ftue.steps.collection.text'),
+            icon: `assets/svg/ftue/collection.svg`,
+            progressIndex: 6,
+        },
+    ];
+    private stateUpdater: EventEmitter<MainWindowStoreEvent>;
 
-	@Input() set selectedModule(value: CurrentAppType) {
-		const indexes = this.ftueSteps.map((step) => step.id);
-		this.currentIndex = indexes.indexOf(value);
-		this.isHome = this.currentIndex < 0;
-	}
+    constructor(private readonly ow: OverwolfService, private readonly i18n: LocalizationFacadeService) {
+    }
 
-	private stateUpdater: EventEmitter<MainWindowStoreEvent>;
+    @Input() set selectedModule(value: CurrentAppType) {
+        const indexes = this.ftueSteps.map((step) => step.id);
+        this.currentIndex = indexes.indexOf(value);
+        this.isHome = this.currentIndex < 0;
+    }
 
-	constructor(private readonly ow: OverwolfService, private readonly i18n: LocalizationFacadeService) {}
+    ngAfterViewInit() {
+        this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
+    }
 
-	ngAfterViewInit() {
-		this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
-	}
+    next() {
+        this.stateUpdater.next(new NextFtueEvent());
+    }
 
-	next() {
-		this.stateUpdater.next(new NextFtueEvent());
-	}
+    previous(step: CurrentAppType) {
+        this.stateUpdater.next(new PreviousFtueEvent());
+    }
 
-	previous(step: CurrentAppType) {
-		this.stateUpdater.next(new PreviousFtueEvent());
-	}
-
-	skip() {
-		this.stateUpdater.next(new SkipFtueEvent());
-	}
+    skip() {
+        this.stateUpdater.next(new SkipFtueEvent());
+    }
 }
 
 interface FtueStep {
-	readonly id: CurrentAppType;
-	readonly title: string;
-	readonly text: string;
-	readonly icon: string;
-	readonly progressIndex: number;
+    readonly id: CurrentAppType;
+    readonly title: string;
+    readonly text: string;
+    readonly icon: string;
+    readonly progressIndex: number;
 }

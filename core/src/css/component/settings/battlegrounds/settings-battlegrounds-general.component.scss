@@ -1,54 +1,54 @@
 .battlegrounds-general {
-	padding-left: 15px;
-	padding-right: 15px;
-	height: 100%;
-	min-height: 0;
-	overflow: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
 
-	.slider-label {
-		margin-top: 10px;
-		margin-bottom: 10px;
-	}
+  .slider-label {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
 
-	.disabled {
-		opacity: 0.4;
-		pointer-events: none;
-	}
+  .disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
 
-	::ng-deep .settings-p.settings-p.settings-p {
-		width: 270px;
-	}
+  ::ng-deep .settings-p.settings-p.settings-p {
+    width: 270px;
+  }
 
-	::ng-deep .preference-slider {
-		width: 320px;
-	}
+  ::ng-deep .preference-slider {
+    width: 320px;
+  }
 
-	.enable-bgs,
-	.banned-tribes-vertical,
-	.opponent-board-top {
-		::ng-deep .preference-toggle {
-			margin-bottom: 15px;
-			margin-top: 0;
-		}
-	}
+  .enable-bgs,
+  .banned-tribes-vertical,
+  .opponent-board-top {
+    ::ng-deep .preference-toggle {
+      margin-bottom: 15px;
+      margin-top: 0;
+    }
+  }
 
-	::ng-deep preference-toggle.disabled .preference-toggle,
-	::ng-deep preference-slider.disabled .preference-slider {
-		opacity: 0.4;
-		pointer-events: none;
-	}
+  ::ng-deep preference-toggle.disabled .preference-toggle,
+  ::ng-deep preference-slider.disabled .preference-slider {
+    opacity: 0.4;
+    pointer-events: none;
+  }
 
-	// Hack because I can't manage to make the knobs always align perfectly with the snap value
-	::ng-deep preference-slider.simulation-slider {
-		.knobs .knob.knob.knob.knob {
-			padding-right: 7px;
-		}
-	}
+  // Hack because I can't manage to make the knobs always align perfectly with the snap value
+  ::ng-deep preference-slider.simulation-slider {
+    .knobs .knob.knob.knob.knob {
+      padding-right: 7px;
+    }
+  }
 
-	::ng-deep preference-slider.banned-tribes-size-slider,
-	::ng-deep preference-slider.opponent-board-size-slider {
-		.knobs .knob.knob.knob.knob {
-			padding-right: 7px;
-		}
-	}
+  ::ng-deep preference-slider.banned-tribes-size-slider,
+  ::ng-deep preference-slider.opponent-board-size-slider {
+    .knobs .knob.knob.knob.knob {
+      padding-right: 7px;
+    }
+  }
 }

@@ -1,39 +1,39 @@
 .tribes-highlight {
-	display: flex;
-	flex-direction: column;
-	width: 60px;
+  display: flex;
+  flex-direction: column;
+  width: 60px;
 }
 
 .tribe {
-	opacity: 0.8;
-	margin-bottom: -15px;
+  opacity: 0.8;
+  margin-bottom: -15px;
 
-	&.reset {
-		margin: 10px;
-		background: var(--color-4);
-		--icon-color: var(--color-1);
-		position: relative;
-		left: -25px;
-		top: 25px;
+  &.reset {
+    margin: 10px;
+    background: var(--color-4);
+    --icon-color: var(--color-1);
+    position: relative;
+    left: -25px;
+    top: 25px;
 
-		&:hover {
-			background: var(--color-1);
-			--icon-color: var(--color-7);
-		}
-	}
+    &:hover {
+      background: var(--color-1);
+      --icon-color: var(--color-7);
+    }
+  }
 
-	&.highlighted {
-		opacity: 0.9;
-		filter: drop-shadow(0px 0px 10px rgba(159, 182, 215, 0.7)) drop-shadow(0px 0px 10px rgba(159, 182, 215, 0.7));
-	}
+  &.highlighted {
+    opacity: 0.9;
+    filter: drop-shadow(0px 0px 10px rgba(159, 182, 215, 0.7)) drop-shadow(0px 0px 10px rgba(159, 182, 215, 0.7));
+  }
 
-	&:hover {
-		opacity: 1;
-	}
+  &:hover {
+    opacity: 1;
+  }
 }
 
 .icon {
-	width: 100%;
-	clip-path: ellipse(30% 30% at 50% 50%);
-	transform: scale(1.2);
+  width: 100%;
+  clip-path: ellipse(30% 30% at 50% 50%);
+  transform: scale(1.2);
 }

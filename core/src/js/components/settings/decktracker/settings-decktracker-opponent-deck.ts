@@ -1,20 +1,20 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { LocalizationFacadeService } from '@services/localization-facade.service';
-import { Observable } from 'rxjs';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
-import { Knob } from '../preference-slider.component';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {LocalizationFacadeService} from '@services/localization-facade.service';
+import {Observable} from 'rxjs';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
+import {Knob} from '../preference-slider.component';
 
 @Component({
-	selector: 'settings-decktracker-opponent-deck',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/global/scrollbar-settings.scss`,
-		`../../../../css/global/forms.scss`,
-		`../../../../css/component/settings/settings-common.component.scss`,
-		`../../../../css/component/settings/decktracker/settings-decktracker-opponent-deck.component.scss`,
-	],
-	template: `
+    selector: 'settings-decktracker-opponent-deck',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/global/scrollbar-settings.scss`,
+        `../../../../css/global/forms.scss`,
+        `../../../../css/component/settings/settings-common.component.scss`,
+        `../../../../css/component/settings/decktracker/settings-decktracker-opponent-deck.component.scss`,
+    ],
+    template: `
 		<div
 			class="decktracker-appearance"
 			*ngIf="{
@@ -253,58 +253,58 @@ import { Knob } from '../preference-slider.component';
 			</div>
 		</div>
 	`,
-	// dectrackerShowOpponentTurnDraw || dectrackerShowOpponentGuess || dectrackerShowOpponentBuffInHand
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    // dectrackerShowOpponentTurnDraw || dectrackerShowOpponentGuess || dectrackerShowOpponentBuffInHand
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsDecktrackerOpponentDeckComponent
-	extends AbstractSubscriptionComponent
-	implements AfterContentInit {
-	opponentOverlayGroupByZone$: Observable<boolean>;
-	opponentTracker$: Observable<boolean>;
-	dectrackerShowOpponentTurnDraw$: Observable<boolean>;
-	dectrackerShowOpponentGuess$: Observable<boolean>;
-	dectrackerShowOpponentBuffInHand$: Observable<boolean>;
-	secretsHelper$: Observable<boolean>;
+    extends AbstractSubscriptionComponent
+    implements AfterContentInit {
+    opponentOverlayGroupByZone$: Observable<boolean>;
+    opponentTracker$: Observable<boolean>;
+    dectrackerShowOpponentTurnDraw$: Observable<boolean>;
+    dectrackerShowOpponentGuess$: Observable<boolean>;
+    dectrackerShowOpponentBuffInHand$: Observable<boolean>;
+    secretsHelper$: Observable<boolean>;
 
-	sizeKnobs: readonly Knob[] = [
-		{
-			percentageValue: 0,
-			label: this.i18n.translateString('settings.global.knob-sizes.small'),
-		},
-		{
-			percentageValue: 50,
-			label: this.i18n.translateString('settings.global.knob-sizes.medium'),
-		},
-		{
-			percentageValue: 100,
-			label: this.i18n.translateString('settings.global.knob-sizes.large'),
-		},
-	];
-	handSizeKnobs: readonly Knob[] = [
-		{
-			absoluteValue: 100,
-			label: this.i18n.translateString('settings.global.knob-sizes.default'),
-		},
-	];
+    sizeKnobs: readonly Knob[] = [
+        {
+            percentageValue: 0,
+            label: this.i18n.translateString('settings.global.knob-sizes.small'),
+        },
+        {
+            percentageValue: 50,
+            label: this.i18n.translateString('settings.global.knob-sizes.medium'),
+        },
+        {
+            percentageValue: 100,
+            label: this.i18n.translateString('settings.global.knob-sizes.large'),
+        },
+    ];
+    handSizeKnobs: readonly Knob[] = [
+        {
+            absoluteValue: 100,
+            label: this.i18n.translateString('settings.global.knob-sizes.default'),
+        },
+    ];
 
-	constructor(
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-		private readonly i18n: LocalizationFacadeService,
-	) {
-		super(store, cdr);
-	}
+    constructor(
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+        private readonly i18n: LocalizationFacadeService,
+    ) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.opponentTracker$ = this.listenForBasicPref$((prefs) => prefs.opponentTracker);
-		this.secretsHelper$ = this.listenForBasicPref$((prefs) => prefs.secretsHelper);
-		this.opponentOverlayGroupByZone$ = this.listenForBasicPref$((prefs) => prefs.opponentOverlayGroupByZone);
-		this.dectrackerShowOpponentTurnDraw$ = this.listenForBasicPref$(
-			(prefs) => prefs.dectrackerShowOpponentTurnDraw,
-		);
-		this.dectrackerShowOpponentGuess$ = this.listenForBasicPref$((prefs) => prefs.dectrackerShowOpponentGuess);
-		this.dectrackerShowOpponentBuffInHand$ = this.listenForBasicPref$(
-			(prefs) => prefs.dectrackerShowOpponentBuffInHand,
-		);
-	}
+    ngAfterContentInit() {
+        this.opponentTracker$ = this.listenForBasicPref$((prefs) => prefs.opponentTracker);
+        this.secretsHelper$ = this.listenForBasicPref$((prefs) => prefs.secretsHelper);
+        this.opponentOverlayGroupByZone$ = this.listenForBasicPref$((prefs) => prefs.opponentOverlayGroupByZone);
+        this.dectrackerShowOpponentTurnDraw$ = this.listenForBasicPref$(
+            (prefs) => prefs.dectrackerShowOpponentTurnDraw,
+        );
+        this.dectrackerShowOpponentGuess$ = this.listenForBasicPref$((prefs) => prefs.dectrackerShowOpponentGuess);
+        this.dectrackerShowOpponentBuffInHand$ = this.listenForBasicPref$(
+            (prefs) => prefs.dectrackerShowOpponentBuffInHand,
+        );
+    }
 }

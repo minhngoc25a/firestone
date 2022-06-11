@@ -1,161 +1,165 @@
 :host() {
-	display: flex;
+  display: flex;
 }
 
 .bgs-battle-recap {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	height: 100px;
-	padding-left: 10px;
-	background: rgba(255, 255, 255, 0.08);
-	position: relative;
-	width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100px;
+  padding-left: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  position: relative;
+  width: 100%;
 
-	&.selectable:hover {
-		background: rgba(255, 255, 255, 0.12);
-	}
+  &.selectable:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
 
-	.turn-label {
-		position: absolute;
-		top: 3px;
-		left: 85px;
-		display: flex;
-		font-size: 12px;
-		margin-bottom: 10px;
-		color: var(--default-title-color);
+  .turn-label {
+    position: absolute;
+    top: 3px;
+    left: 85px;
+    display: flex;
+    font-size: 12px;
+    margin-bottom: 10px;
+    color: var(--default-title-color);
 
-		.turn {
-		}
+    .turn {
+    }
 
-		.result {
-			&.won {
-				color: #61ff47;
-			}
-			&.lost {
-				color: #ff4747;
-			}
+    .result {
+      &.won {
+        color: #61ff47;
+      }
 
-			&:before {
-				content: '-';
-				color: var(--default-text-color);
-				margin-left: 5px;
-				margin-right: 5px;
-			}
-		}
-	}
+      &.lost {
+        color: #ff4747;
+      }
 
-	.battle-content {
-		display: flex;
-		position: relative;
-		top: 2px;
+      &:before {
+        content: '-';
+        color: var(--default-text-color);
+        margin-left: 5px;
+        margin-right: 5px;
+      }
+    }
+  }
 
-		.group {
-			display: flex;
-			flex-grow: 1;
-			justify-content: flex-start;
+  .battle-content {
+    display: flex;
+    position: relative;
+    top: 2px;
 
-			.hero {
-				display: flex;
-				width: 62px;
-				margin-right: 10px;
-				position: relative;
+    .group {
+      display: flex;
+      flex-grow: 1;
+      justify-content: flex-start;
 
-				bgs-hero-portrait ::ng-deep {
-					.hero-portrait-frame {
-						width: 62px;
-						height: 71px;
-					}
+      .hero {
+        display: flex;
+        width: 62px;
+        margin-right: 10px;
+        position: relative;
 
-					.health .value {
-						font-size: 18px;
-					}
-				}
+        bgs-hero-portrait ::ng-deep {
+          .hero-portrait-frame {
+            width: 62px;
+            height: 71px;
+          }
 
-				.tavern {
-					position: absolute;
-					width: 25px;
-					height: 25px;
-					top: 15%;
-					right: -8%;
-					z-index: 1;
-				}
-			}
+          .health .value {
+            font-size: 18px;
+          }
+        }
 
-			.board {
-				display: flex;
-				margin-right: 20px;
-				align-items: center;
-				width: 270px;
-				flex-shrink: 0;
+        .tavern {
+          position: absolute;
+          width: 25px;
+          height: 25px;
+          top: 15%;
+          right: -8%;
+          z-index: 1;
+        }
+      }
 
-				.minion-container {
-					width: 34px;
-					height: 50px;
-					margin-right: 4px;
-					flex-shrink: 0;
+      .board {
+        display: flex;
+        margin-right: 20px;
+        align-items: center;
+        width: 270px;
+        flex-shrink: 0;
 
-					::ng-deep board-card-stats .stat .value.value.value.value.value {
-						font-size: 14px;
-					}
-				}
-			}
+        .minion-container {
+          width: 34px;
+          height: 50px;
+          margin-right: 4px;
+          flex-shrink: 0;
 
-			&.opponent {
-				justify-content: flex-end;
+          ::ng-deep board-card-stats .stat .value.value.value.value.value {
+            font-size: 14px;
+          }
+        }
+      }
 
-				.board {
-					justify-content: flex-end;
-					margin-right: 5px;
-				}
-			}
-		}
+      &.opponent {
+        justify-content: flex-end;
 
-		.results {
-			border: none;
-			align-items: center;
+        .board {
+          justify-content: flex-end;
+          margin-right: 5px;
+        }
+      }
+    }
 
-			::ng-deep .damage-container {
-				display: none;
-			}
-			::ng-deep .replay-icon {
-				display: none;
-			}
-			::ng-deep .probas {
-				border: none;
-				padding-left: 0;
-				padding-right: 10px;
-				width: 140px;
-			}
-			::ng-deep .warning {
-				display: none;
-			}
-		}
-	}
+    .results {
+      border: none;
+      align-items: center;
+
+      ::ng-deep .damage-container {
+        display: none;
+      }
+
+      ::ng-deep .replay-icon {
+        display: none;
+      }
+
+      ::ng-deep .probas {
+        border: none;
+        padding-left: 0;
+        padding-right: 10px;
+        width: 140px;
+      }
+
+      ::ng-deep .warning {
+        display: none;
+      }
+    }
+  }
 }
 
 @media (min-width: 1370px) {
-	.bgs-battle-recap .battle-content {
-		bgs-battle-status.results {
-			::ng-deep {
-				.damage-container:not(.lethal) {
-					display: flex;
-					margin-left: 15px;
-				}
-			}
-		}
-	}
+  .bgs-battle-recap .battle-content {
+    bgs-battle-status.results {
+      ::ng-deep {
+        .damage-container:not(.lethal) {
+          display: flex;
+          margin-left: 15px;
+        }
+      }
+    }
+  }
 }
 
 @media (min-width: 1480px) {
-	.bgs-battle-recap .battle-content {
-		bgs-battle-status.results {
-			::ng-deep {
-				.damage-container.lethal {
-					display: flex;
-					margin-left: 15px;
-				}
-			}
-		}
-	}
+  .bgs-battle-recap .battle-content {
+    bgs-battle-status.results {
+      ::ng-deep {
+        .damage-container.lethal {
+          display: flex;
+          margin-left: 15px;
+        }
+      }
+    }
+  }
 }

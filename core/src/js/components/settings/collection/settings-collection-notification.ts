@@ -1,20 +1,20 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { LocalizationFacadeService } from '@services/localization-facade.service';
-import { Observable } from 'rxjs';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
-import { Knob } from '../preference-slider.component';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {LocalizationFacadeService} from '@services/localization-facade.service';
+import {Observable} from 'rxjs';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
+import {Knob} from '../preference-slider.component';
 
 @Component({
-	selector: 'settings-collection-notification',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/global/scrollbar-settings.scss`,
-		`../../../../css/global/forms.scss`,
-		`../../../../css/component/settings/settings-common.component.scss`,
-		`../../../../css/component/settings/collection/settings-collection-notification.component.scss`,
-	],
-	template: `
+    selector: 'settings-collection-notification',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/global/scrollbar-settings.scss`,
+        `../../../../css/global/forms.scss`,
+        `../../../../css/component/settings/settings-common.component.scss`,
+        `../../../../css/component/settings/collection/settings-collection-notification.component.scss`,
+    ],
+    template: `
 		<div class="collection-notification">
 			<section class="settings-group toggle-label">
 				<h2 class="modes" [owTranslate]="'settings.collection.general.title'"></h2>
@@ -72,35 +72,35 @@ import { Knob } from '../preference-slider.component';
 			</section>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsCollectionNotificationComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	enableNotifications$: Observable<boolean>;
+    enableNotifications$: Observable<boolean>;
 
-	cardSizeKnobs: readonly Knob[] = [
-		{
-			absoluteValue: 75,
-			label: this.i18n.translateString('settings.global.knob-sizes.small'),
-		},
-		{
-			absoluteValue: 100,
-			label: this.i18n.translateString('settings.global.knob-sizes.medium'),
-		},
-		{
-			absoluteValue: 150,
-			label: this.i18n.translateString('settings.global.knob-sizes.large'),
-		},
-	];
+    cardSizeKnobs: readonly Knob[] = [
+        {
+            absoluteValue: 75,
+            label: this.i18n.translateString('settings.global.knob-sizes.small'),
+        },
+        {
+            absoluteValue: 100,
+            label: this.i18n.translateString('settings.global.knob-sizes.medium'),
+        },
+        {
+            absoluteValue: 150,
+            label: this.i18n.translateString('settings.global.knob-sizes.large'),
+        },
+    ];
 
-	constructor(
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-		private readonly i18n: LocalizationFacadeService,
-	) {
-		super(store, cdr);
-	}
+    constructor(
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+        private readonly i18n: LocalizationFacadeService,
+    ) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.enableNotifications$ = this.listenForBasicPref$((prefs) => prefs.collectionEnableNotifications);
-	}
+    ngAfterContentInit() {
+        this.enableNotifications$ = this.listenForBasicPref$((prefs) => prefs.collectionEnableNotifications);
+    }
 }

@@ -1,246 +1,247 @@
 :host() {
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .container {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	width: 710px;
-	min-height: 580px;
-	max-height: calc(100% - 100px);
-	color: var(--default-text-color);
-	background: var(--popup-background-image);
-	font-size: 14px;
-	font-family: Open Sans;
-	pointer-events: all;
-	padding: 15px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 710px;
+  min-height: 580px;
+  max-height: calc(100% - 100px);
+  color: var(--default-text-color);
+  background: var(--popup-background-image);
+  font-size: 14px;
+  font-family: Open Sans;
+  pointer-events: all;
+  padding: 15px;
 
-	.close-button {
-		position: absolute;
-		top: 0;
-		right: 0;
-	}
+  .close-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
 
-	.title {
-		color: var(--default-title-color);
-		font-size: 20px;
-		margin-bottom: 15px;
-	}
+  .title {
+    color: var(--default-title-color);
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
 
-	.current-hero {
-		display: flex;
-		margin-bottom: 15px;
-		border-bottom: 1px solid var(--color-4);
-		justify-content: center;
+  .current-hero {
+    display: flex;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--color-4);
+    justify-content: center;
 
-		.description {
-			width: 300px;
-			margin-top: 5px;
+    .description {
+      width: 300px;
+      margin-top: 5px;
 
-			.name {
-				color: var(--default-title-color);
-				font-size: 16px;
-			}
-			.hero-power {
-			}
+      .name {
+        color: var(--default-title-color);
+        font-size: 16px;
+      }
 
-			.input {
-				margin-top: 10px;
-			}
-		}
-	}
+      .hero-power {
+      }
 
-	.hero-portrait-frame {
-		position: relative;
-		width: 138px;
-		height: 190px;
-		filter: drop-shadow(0px 0px 8px rgba(223, 179, 211, 0.7));
-		margin-right: 20px;
-		top: -15px;
+      .input {
+        margin-top: 10px;
+      }
+    }
+  }
 
-		.icon {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			// clip-path: polygon(0% 100%, 0% 56%, 15% 20%, 50% 5%, 80% 20%, 90% 56%, 90% 100%);
-		}
-	}
+  .hero-portrait-frame {
+    position: relative;
+    width: 138px;
+    height: 190px;
+    filter: drop-shadow(0px 0px 8px rgba(223, 179, 211, 0.7));
+    margin-right: 20px;
+    top: -15px;
 
-	.hero-selection {
-		display: flex;
-		flex-direction: column;
-		margin-top: 15px;
-		position: relative;
-		min-height: 0;
+    .icon {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      // clip-path: polygon(0% 100%, 0% 56%, 15% 20%, 50% 5%, 80% 20%, 90% 56%, 90% 100%);
+    }
+  }
 
-		.header {
-			font-size: 16px;
-			margin-bottom: 15px;
-		}
+  .hero-selection {
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;
+    position: relative;
+    min-height: 0;
 
-		.search {
-			position: absolute;
-			top: 0;
-			right: 0;
-			width: 210px;
-			height: 30px;
+    .header {
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
 
-			.icon {
-				--icon-color: var(--color-2);
-			}
+    .search {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 210px;
+      height: 30px;
 
-			label {
-				width: 100%;
-				height: 100%;
-				outline: 1px solid var(--color-3);
-				display: flex;
-				color: var(--color-3);
+      .icon {
+        --icon-color: var(--color-2);
+      }
 
-				&:focus-within,
-				&:hover {
-					// outline: none;
-					background: rgba(255, 255, 255, 0.08);
-				}
-			}
+      label {
+        width: 100%;
+        height: 100%;
+        outline: 1px solid var(--color-3);
+        display: flex;
+        color: var(--color-3);
 
-			input {
-				background: transparent;
-				border: none;
-				cursor: text;
-				flex-grow: 1;
-				color: var(--color-3);
+        &:focus-within,
+        &:hover {
+          // outline: none;
+          background: rgba(255, 255, 255, 0.08);
+        }
+      }
 
-				&:focus {
-					outline: none;
-					color: var(--color-2);
-				}
-			}
+      input {
+        background: transparent;
+        border: none;
+        cursor: text;
+        flex-grow: 1;
+        color: var(--color-3);
 
-			label.search-active {
-				input {
-					outline: none;
-					color: var(--color-2);
-				}
-			}
+        &:focus {
+          outline: none;
+          color: var(--color-2);
+        }
+      }
 
-			::selection {
-				background-color: var(--color-4);
-			}
+      label.search-active {
+        input {
+          outline: none;
+          color: var(--color-2);
+        }
+      }
 
-			::-webkit-input-placeholder {
-				color: var(--color-3);
-			}
-		}
+      ::selection {
+        background-color: var(--color-4);
+      }
 
-		.heroes {
-			min-height: 0;
-			overflow-y: scroll;
-			display: flex;
-			flex-wrap: wrap;
-			padding: 15px;
+      ::-webkit-input-placeholder {
+        color: var(--color-3);
+      }
+    }
 
-			.hero-portrait-frame {
-				width: 119px;
-				height: 164px;
-				margin-right: 10px;
-			}
+    .heroes {
+      min-height: 0;
+      overflow-y: scroll;
+      display: flex;
+      flex-wrap: wrap;
+      padding: 15px;
 
-			.hero-portrait-frame:not(.selected):not(:hover) {
-				filter: none;
-			}
-		}
-	}
+      .hero-portrait-frame {
+        width: 119px;
+        height: 164px;
+        margin-right: 10px;
+      }
 
-	.controls {
-		margin-top: 15px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+      .hero-portrait-frame:not(.selected):not(:hover) {
+        filter: none;
+      }
+    }
+  }
 
-		.button {
-			width: 100px;
-			height: 30px;
-			background: var(--color-2);
-			color: var(--color-5);
-			border: none;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			font-family: 'Open Sans', sans-serif;
+  .controls {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-			&:hover {
-				background: var(--color-1);
-				color: var(--on-confirmation-text-color);
-			}
-		}
-	}
+    .button {
+      width: 100px;
+      height: 30px;
+      background: var(--color-2);
+      color: var(--color-5);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Open Sans', sans-serif;
 
-	.input {
-		display: flex;
-		align-items: center;
-		margin-right: 15px;
+      &:hover {
+        background: var(--color-1);
+        color: var(--on-confirmation-text-color);
+      }
+    }
+  }
 
-		.label {
-			margin-right: 6px;
-		}
+  .input {
+    display: flex;
+    align-items: center;
+    margin-right: 15px;
 
-		input {
-			background: var(--color-7);
-			width: 60px;
-			height: 25px;
-			border: 1px solid var(--color-3);
-			color: var(--color-3);
-			padding-left: 6px;
-			appearance: textfield;
-			cursor: text;
+    .label {
+      margin-right: 6px;
+    }
 
-			&:focus {
-				outline: none;
-				border-color: var(--color-2);
-				color: var(--color-2);
-			}
+    input {
+      background: var(--color-7);
+      width: 60px;
+      height: 25px;
+      border: 1px solid var(--color-3);
+      color: var(--color-3);
+      padding-left: 6px;
+      appearance: textfield;
+      cursor: text;
 
-			&:hover {
-				border-color: var(--color-2);
-				cursor: text;
-			}
-		}
+      &:focus {
+        outline: none;
+        border-color: var(--color-2);
+        color: var(--color-2);
+      }
 
-		// Use custom buttons instead
-		input[type='number']::-webkit-inner-spin-button,
-		input[type='number']::-webkit-outer-spin-button {
-			-webkit-appearance: none;
-		}
+      &:hover {
+        border-color: var(--color-2);
+        cursor: text;
+      }
+    }
 
-		.buttons {
-			left: -20px;
-			position: relative;
-			display: flex;
-			flex-direction: column;
+    // Use custom buttons instead
+    input[type='number']::-webkit-inner-spin-button,
+    input[type='number']::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+    }
 
-			.arrow {
-				--icon-color: var(--color-3);
-				background: transparent;
-				width: 8px;
-				height: 5px;
-				margin-bottom: 2px;
+    .buttons {
+      left: -20px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
 
-				&.up {
-				}
+      .arrow {
+        --icon-color: var(--color-3);
+        background: transparent;
+        width: 8px;
+        height: 5px;
+        margin-bottom: 2px;
 
-				&.down {
-					transform: scale(-1);
-				}
+        &.up {
+        }
 
-				&:hover {
-					background: transparent;
-					--icon-color: var(--color-2);
-				}
-			}
-		}
-	}
+        &.down {
+          transform: scale(-1);
+        }
+
+        &:hover {
+          background: transparent;
+          --icon-color: var(--color-2);
+        }
+      }
+    }
+  }
 }

@@ -1,157 +1,159 @@
 .hero-overview {
-	display: flex;
-	flex-direction: column;
-	background: rgba(255, 255, 255, 0.08);
-	height: 100%;
-	align-items: center;
-	padding: 10px;
-	padding-left: 10%;
-	padding-right: 10%;
-	position: relative;
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.08);
+  height: 100%;
+  align-items: center;
+  padding: 10px;
+  padding-left: 10%;
+  padding-right: 10%;
+  position: relative;
 
-	.name {
-		color: var(--default-title-color);
-		font-size: var(--variable-title-font-size);
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		width: 100%;
-		text-align: center;
-		padding-left: 10px;
-		padding-right: 10px;
-	}
+  .name {
+    color: var(--default-title-color);
+    font-size: var(--variable-title-font-size);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    text-align: center;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 
-	.tier {
-		border: 1px solid;
-		border-radius: 50%;
-		position: absolute;
-		top: 6px;
-		left: 6px;
-		width: 22px;
-		height: 22px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+  .tier {
+    border: 1px solid;
+    border-radius: 50%;
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-		&.s {
-			color: #b5bcfb;
-		}
+    &.s {
+      color: #b5bcfb;
+    }
 
-		&.a {
-			color: #ce73b4;
-		}
+    &.a {
+      color: #ce73b4;
+    }
 
-		&.b {
-			color: #a2ccb0;
-		}
+    &.b {
+      color: #a2ccb0;
+    }
 
-		&.c {
-			color: #ffb948;
-		}
+    &.c {
+      color: #ffb948;
+    }
 
-		&.d {
-			color: #ff4747;
-		}
+    &.d {
+      color: #ff4747;
+    }
 
-		&.e {
-			color: #b34100;
-		}
-	}
+    &.e {
+      color: #b34100;
+    }
+  }
 
-	.portrait-tooltip {
-		display: none;
-	}
+  .portrait-tooltip {
+    display: none;
+  }
 
-	.portrait-container {
-		width: 12vh;
-		margin-top: 10px;
-		margin-bottom: 10px;
-		position: relative;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex-direction: column;
+  .portrait-container {
+    width: 12vh;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 
-		::ng-deep bgs-hero-portrait {
-			.hero-portrait-frame {
-				width: 85px;
-			}
-			.health {
-				.icon {
-					display: none;
-				}
-				.value {
-					font-size: 16px;
-					margin-top: 0;
-					position: relative;
-					top: -4px;
-				}
-			}
-		}
+    ::ng-deep bgs-hero-portrait {
+      .hero-portrait-frame {
+        width: 85px;
+      }
 
-		.achievements {
-			width: calc(100% + 40px);
-			height: 50px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			margin-top: -10px;
-			margin-bottom: -10px;
-			position: relative;
+      .health {
+        .icon {
+          display: none;
+        }
 
-			.achievement {
-				width: 50px;
-				height: 50px;
-				margin-left: -8px;
-				margin-right: -8px;
+        .value {
+          font-size: 16px;
+          margin-top: 0;
+          position: relative;
+          top: -4px;
+        }
+      }
+    }
 
-				.icon {
-					width: 100%;
-					height: 100%;
+    .achievements {
+      width: calc(100% + 40px);
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: -10px;
+      margin-bottom: -10px;
+      position: relative;
 
-					::ng-deep svg {
-						margin-top: 0 !important;
-					}
-				}
+      .achievement {
+        width: 50px;
+        height: 50px;
+        margin-left: -8px;
+        margin-right: -8px;
 
-				&:not(.completed) {
-					.icon {
-						opacity: 0.4;
-					}
-				}
-			}
-		}
-	}
+        .icon {
+          width: 100%;
+          height: 100%;
 
-	&.empty {
-		display: flex;
-		align-items: center;
-		justify-content: center;
+          ::ng-deep svg {
+            margin-top: 0 !important;
+          }
+        }
 
-		i {
-			--icon-color: var(--color-5);
-			width: 50%;
-			height: 5000px; // Just a big value so that we can use the width as a constraint
-		}
-	}
+        &:not(.completed) {
+          .icon {
+            opacity: 0.4;
+          }
+        }
+      }
+    }
+  }
+
+  &.empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      --icon-color: var(--color-5);
+      width: 50%;
+      height: 5000px; // Just a big value so that we can use the width as a constraint
+    }
+  }
 }
 
 @media (max-height: 840px) {
-	.tribes-overview.tribes-overview.tribes-overview.tribes-overview.tribes-overview {
-		display: none;
-	}
+  .tribes-overview.tribes-overview.tribes-overview.tribes-overview.tribes-overview {
+    display: none;
+  }
 }
 
 @media (min-height: 840px) {
-	.tribes-overview.tribes-overview.tribes-overview.tribes-overview.tribes-overview ::ng-deep.composition {
-		max-height: 125px;
-		overflow: hidden;
-	}
+  .tribes-overview.tribes-overview.tribes-overview.tribes-overview.tribes-overview ::ng-deep.composition {
+    max-height: 125px;
+    overflow: hidden;
+  }
 }
 
 @media (min-height: 1000px) {
-	.tribes-overview.tribes-overview.tribes-overview.tribes-overview.tribes-overview ::ng-deep.composition {
-		max-height: fit-content;
-	}
+  .tribes-overview.tribes-overview.tribes-overview.tribes-overview.tribes-overview ::ng-deep.composition {
+    max-height: fit-content;
+  }
 }
 
 // @media (max-width: 1400px) {

@@ -1,36 +1,36 @@
 import {
-	AfterContentInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	ElementRef,
-	HostListener,
-	Input,
-	OnDestroy,
-	Renderer2,
-	ViewRef,
+    AfterContentInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    HostListener,
+    Input,
+    OnDestroy,
+    Renderer2,
+    ViewRef,
 } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
-import { debounceTime, filter, map, takeUntil, tap } from 'rxjs/operators';
-import { CardTooltipPositionType } from '../../../../directives/card-tooltip-position.type';
-import { MercenariesBattleTeam } from '../../../../models/mercenaries/mercenaries-battle-state';
-import { Preferences } from '../../../../models/preferences';
-import { isMercenariesPvP } from '../../../../services/mercenaries/mercenaries-utils';
-import { OverwolfService } from '../../../../services/overwolf.service';
-import { PreferencesService } from '../../../../services/preferences.service';
-import { AppUiStoreFacadeService } from '../../../../services/ui-store/app-ui-store-facade.service';
-import { cdLog } from '../../../../services/ui-store/app-ui-store.service';
-import { AbstractSubscriptionComponent } from '../../../abstract-subscription.component';
+import {BehaviorSubject, combineLatest, Observable, Subscription} from 'rxjs';
+import {debounceTime, filter, map, takeUntil, tap} from 'rxjs/operators';
+import {CardTooltipPositionType} from '../../../../directives/card-tooltip-position.type';
+import {MercenariesBattleTeam} from '../../../../models/mercenaries/mercenaries-battle-state';
+import {Preferences} from '../../../../models/preferences';
+import {isMercenariesPvP} from '../../../../services/mercenaries/mercenaries-utils';
+import {OverwolfService} from '../../../../services/overwolf.service';
+import {PreferencesService} from '../../../../services/preferences.service';
+import {AppUiStoreFacadeService} from '../../../../services/ui-store/app-ui-store-facade.service';
+import {cdLog} from '../../../../services/ui-store/app-ui-store.service';
+import {AbstractSubscriptionComponent} from '../../../abstract-subscription.component';
 
 @Component({
-	selector: 'mercenaries-team-root',
-	styleUrls: [
-		'../../../../../css/global/components-global.scss',
-		`../../../../../css/global/cdk-overlay.scss`,
-		`../../../../../css/themes/decktracker-theme.scss`,
-		'../../../../../css/component/mercenaries/overlay/teams/mercenaries-team-root.component.scss',
-	],
-	template: `
+    selector: 'mercenaries-team-root',
+    styleUrls: [
+        '../../../../../css/global/components-global.scss',
+        `../../../../../css/global/cdk-overlay.scss`,
+        `../../../../../css/themes/decktracker-theme.scss`,
+        '../../../../../css/component/mercenaries/overlay/teams/mercenaries-team-root.component.scss',
+    ],
+    template: `
 		<div class="root {{ side }}">
 			<!-- Never remove the scalable from the DOM so that we can perform resizing even when not visible -->
 			<div class="scalable">
@@ -106,169 +106,166 @@ import { AbstractSubscriptionComponent } from '../../../abstract-subscription.co
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MercenariesTeamRootComponent extends AbstractSubscriptionComponent implements AfterContentInit, OnDestroy {
-	@Input() side: 'player' | 'opponent' | 'out-of-combat-player';
-	@Input() showTasksExtractor: (prefs: Preferences) => boolean;
-	@Input() scaleExtractor: (prefs: Preferences) => number;
+    @Input() side: 'player' | 'opponent' | 'out-of-combat-player';
+    @Input() showTasksExtractor: (prefs: Preferences) => boolean;
+    @Input() scaleExtractor: (prefs: Preferences) => number;
+    @Input() tooltipPosition: CardTooltipPositionType = 'left';
+    showColorChart$: Observable<boolean>;
+    showTasks$: Observable<boolean>;
+    showTaskList$: Observable<boolean>;
+    overlayWidthInPx = 225;
+    taskListBottomPx = 0;
+    private scale: Subscription;
+    private showTaskList$$ = new BehaviorSubject<boolean>(false);
 
-	@Input() set team(value: MercenariesBattleTeam) {
-		// console.debug('set team in root', value);
-		this._team = value;
-		this.updateTaskListBottomPx();
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    constructor(
+        private readonly ow: OverwolfService,
+        private readonly prefs: PreferencesService,
+        private readonly el: ElementRef,
+        private readonly renderer: Renderer2,
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+    ) {
+        super(store, cdr);
+    }
 
-	@Input() set tasks(value: readonly Task[]) {
-		if (!value) {
-			return;
-		}
-		// this._tasks = [];
-		// if (!(this.cdr as ViewRef)?.destroyed) {
-		// 	this.cdr.detectChanges();
-		// }
+    _team: MercenariesBattleTeam;
 
-		// // Avoids the "Cannot read property 'destroyed' of null" error
-		// // This might be caused by the "detectChanges" calls done in mapData. However if I remove them then
-		// // some data is sometimes not updated, so I'm not sure what the correct approach should be
-		// setTimeout(() => {
-		this._tasks = value;
-		this.updateTaskListBottomPx();
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-		// });
-	}
+    @Input() set team(value: MercenariesBattleTeam) {
+        // console.debug('set team in root', value);
+        this._team = value;
+        this.updateTaskListBottomPx();
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	@Input() tooltipPosition: CardTooltipPositionType = 'left';
+    _tasks: readonly Task[];
 
-	showColorChart$: Observable<boolean>;
-	showTasks$: Observable<boolean>;
-	showTaskList$: Observable<boolean>;
+    @Input() set tasks(value: readonly Task[]) {
+        if (!value) {
+            return;
+        }
+        // this._tasks = [];
+        // if (!(this.cdr as ViewRef)?.destroyed) {
+        // 	this.cdr.detectChanges();
+        // }
 
-	_team: MercenariesBattleTeam;
-	_tasks: readonly Task[];
+        // // Avoids the "Cannot read property 'destroyed' of null" error
+        // // This might be caused by the "detectChanges" calls done in mapData. However if I remove them then
+        // // some data is sometimes not updated, so I'm not sure what the correct approach should be
+        // setTimeout(() => {
+        this._tasks = value;
+        this.updateTaskListBottomPx();
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+        // });
+    }
 
-	overlayWidthInPx = 225;
-	taskListBottomPx = 0;
+    ngAfterContentInit(): void {
+        this.showColorChart$ = this.store
+            .listenPrefs$((prefs) => prefs.mercenariesShowColorChartButton)
+            .pipe(
+                map(([pref]) => pref),
+                // FIXME
+                tap((filter) => setTimeout(() => this.cdr.detectChanges(), 0)),
+                tap((filter) => cdLog('emitting showColorChart in ', this.constructor.name, filter)),
+                takeUntil(this.destroyed$),
+            );
+        this.scale = this.store
+            .listenPrefs$((prefs) => (!!this.scaleExtractor ? this.scaleExtractor(prefs) : null))
+            .pipe(
+                debounceTime(100),
+                map(([pref]) => pref),
+                filter((scale) => !!scale),
+                takeUntil(this.destroyed$),
+            )
+            .subscribe((scale) => {
+                this.el.nativeElement.style.setProperty('--decktracker-scale', scale / 100);
+                this.el.nativeElement.style.setProperty('--decktracker-max-height', '90vh');
+                const newScale = scale / 100;
+                const element = this.el.nativeElement.querySelector('.scalable');
+                this.renderer.setStyle(element, 'transform', `scale(${newScale})`);
+                if (!(this.cdr as ViewRef)?.destroyed) {
+                    this.cdr.detectChanges();
+                }
+            });
+        this.showTasks$ = combineLatest(
+            this.store.listenMercenaries$(([battleState, prefs]) => battleState?.gameMode),
+            this.store.listenPrefs$((prefs) => (this.showTasksExtractor ? this.showTasksExtractor(prefs) : null)),
+        ).pipe(
+            // Because when out of combat
+            map(([[gameMode], [pref]]) => pref && !isMercenariesPvP(gameMode)),
+            // FIXME
+            tap((filter) => setTimeout(() => this.cdr.detectChanges(), 0)),
+            tap((filter) => cdLog('emitting showTasks in ', this.constructor.name, filter)),
+            takeUntil(this.destroyed$),
+        );
+        this.showTaskList$ = this.showTaskList$$.asObservable().pipe(
+            map((info) => info),
+            tap((filter) => setTimeout(() => this.cdr.detectChanges(), 0)),
+            tap((filter) => cdLog('emitting showTaskList in ', this.constructor.name, filter)),
+            takeUntil(this.destroyed$),
+        );
+    }
 
-	private scale: Subscription;
-	private showTaskList$$ = new BehaviorSubject<boolean>(false);
+    trackByTaskFn(index: number, task: Task) {
+        return task.description;
+    }
 
-	constructor(
-		private readonly ow: OverwolfService,
-		private readonly prefs: PreferencesService,
-		private readonly el: ElementRef,
-		private readonly renderer: Renderer2,
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-	) {
-		super(store, cdr);
-	}
+    @HostListener('window:beforeunload')
+    ngOnDestroy() {
+        super.ngOnDestroy();
+        this.scale?.unsubscribe();
+    }
 
-	ngAfterContentInit(): void {
-		this.showColorChart$ = this.store
-			.listenPrefs$((prefs) => prefs.mercenariesShowColorChartButton)
-			.pipe(
-				map(([pref]) => pref),
-				// FIXME
-				tap((filter) => setTimeout(() => this.cdr.detectChanges(), 0)),
-				tap((filter) => cdLog('emitting showColorChart in ', this.constructor.name, filter)),
-				takeUntil(this.destroyed$),
-			);
-		this.scale = this.store
-			.listenPrefs$((prefs) => (!!this.scaleExtractor ? this.scaleExtractor(prefs) : null))
-			.pipe(
-				debounceTime(100),
-				map(([pref]) => pref),
-				filter((scale) => !!scale),
-				takeUntil(this.destroyed$),
-			)
-			.subscribe((scale) => {
-				this.el.nativeElement.style.setProperty('--decktracker-scale', scale / 100);
-				this.el.nativeElement.style.setProperty('--decktracker-max-height', '90vh');
-				const newScale = scale / 100;
-				const element = this.el.nativeElement.querySelector('.scalable');
-				this.renderer.setStyle(element, 'transform', `scale(${newScale})`);
-				if (!(this.cdr as ViewRef)?.destroyed) {
-					this.cdr.detectChanges();
-				}
-			});
-		this.showTasks$ = combineLatest(
-			this.store.listenMercenaries$(([battleState, prefs]) => battleState?.gameMode),
-			this.store.listenPrefs$((prefs) => (this.showTasksExtractor ? this.showTasksExtractor(prefs) : null)),
-		).pipe(
-			// Because when out of combat
-			map(([[gameMode], [pref]]) => pref && !isMercenariesPvP(gameMode)),
-			// FIXME
-			tap((filter) => setTimeout(() => this.cdr.detectChanges(), 0)),
-			tap((filter) => cdLog('emitting showTasks in ', this.constructor.name, filter)),
-			takeUntil(this.destroyed$),
-		);
-		this.showTaskList$ = this.showTaskList$$.asObservable().pipe(
-			map((info) => info),
-			tap((filter) => setTimeout(() => this.cdr.detectChanges(), 0)),
-			tap((filter) => cdLog('emitting showTaskList in ', this.constructor.name, filter)),
-			takeUntil(this.destroyed$),
-		);
-	}
+    showTasks() {
+        this.showTaskList$$.next(true);
+    }
 
-	trackByTaskFn(index: number, task: Task) {
-		return task.description;
-	}
+    hideTasks() {
+        this.showTaskList$$.next(false);
+    }
 
-	private updateTaskListBottomPx() {
-		setTimeout(() => {
-			const taskListEl = this.el.nativeElement.querySelector('.task-list');
-			if (!taskListEl) {
-				return;
-			}
+    private updateTaskListBottomPx() {
+        setTimeout(() => {
+            const taskListEl = this.el.nativeElement.querySelector('.task-list');
+            if (!taskListEl) {
+                return;
+            }
 
-			const taskEls = this.el.nativeElement.querySelectorAll('.task');
-			if (taskEls?.length != this._tasks?.length) {
-				setTimeout(() => this.updateTaskListBottomPx(), 100);
-				return;
-			}
+            const taskEls = this.el.nativeElement.querySelectorAll('.task');
+            if (taskEls?.length != this._tasks?.length) {
+                setTimeout(() => this.updateTaskListBottomPx(), 100);
+                return;
+            }
 
-			const rect = taskListEl.getBoundingClientRect();
-			const taskListHeight = rect.height;
-			const widgetEl = this.el.nativeElement.querySelector('.team-container');
-			const widgetRect = widgetEl.getBoundingClientRect();
-			const widgetHeight = widgetRect.height;
-			this.taskListBottomPx = widgetHeight > taskListHeight ? 0 : widgetHeight - taskListHeight;
-			if (!(this.cdr as ViewRef)?.destroyed) {
-				this.cdr.detectChanges();
-			}
-		}, 100);
-	}
-
-	@HostListener('window:beforeunload')
-	ngOnDestroy() {
-		super.ngOnDestroy();
-		this.scale?.unsubscribe();
-	}
-
-	showTasks() {
-		this.showTaskList$$.next(true);
-	}
-
-	hideTasks() {
-		this.showTaskList$$.next(false);
-	}
+            const rect = taskListEl.getBoundingClientRect();
+            const taskListHeight = rect.height;
+            const widgetEl = this.el.nativeElement.querySelector('.team-container');
+            const widgetRect = widgetEl.getBoundingClientRect();
+            const widgetHeight = widgetRect.height;
+            this.taskListBottomPx = widgetHeight > taskListHeight ? 0 : widgetHeight - taskListHeight;
+            if (!(this.cdr as ViewRef)?.destroyed) {
+                this.cdr.detectChanges();
+            }
+        }, 100);
+    }
 }
 
 export interface Task {
-	readonly mercenaryCardId: string;
-	readonly mercenaryRole: 'TANK' | 'CASTER' | 'FIGHTER';
-	readonly mercenaryName: string;
-	readonly title: string;
-	readonly header: string;
-	readonly description: string;
-	readonly taskChainProgress: number;
-	readonly progress: number;
-	readonly portraitUrl?: string;
-	readonly frameUrl?: string;
+    readonly mercenaryCardId: string;
+    readonly mercenaryRole: 'TANK' | 'CASTER' | 'FIGHTER';
+    readonly mercenaryName: string;
+    readonly title: string;
+    readonly header: string;
+    readonly description: string;
+    readonly taskChainProgress: number;
+    readonly progress: number;
+    readonly portraitUrl?: string;
+    readonly frameUrl?: string;
 }

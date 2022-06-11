@@ -1,32 +1,32 @@
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { ComponentType } from '@angular/cdk/portal';
+import {CdkDragDrop} from '@angular/cdk/drag-drop';
+import {ComponentType} from '@angular/cdk/portal';
 import {
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
-	Input,
-	Output,
-	ViewRef,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    Output,
+    ViewRef,
 } from '@angular/core';
-import { GameType } from '@firestone-hs/reference-data';
-import { Entity } from '@firestone-hs/replay-parser';
-import { BgsBoardInfo } from '@firestone-hs/simulate-bgs-battle/dist/bgs-board-info';
-import { CardsFacadeService } from '@services/cards-facade.service';
-import { buildEntityFromBoardEntity } from '../../../services/battlegrounds/bgs-utils';
-import { defaultStartingHp } from '../../../services/hs-utils';
-import { BgsCardTooltipComponent } from '../bgs-card-tooltip.component';
+import {GameType} from '@firestone-hs/reference-data';
+import {Entity} from '@firestone-hs/replay-parser';
+import {BgsBoardInfo} from '@firestone-hs/simulate-bgs-battle/dist/bgs-board-info';
+import {CardsFacadeService} from '@services/cards-facade.service';
+import {buildEntityFromBoardEntity} from '../../../services/battlegrounds/bgs-utils';
+import {defaultStartingHp} from '../../../services/hs-utils';
+import {BgsCardTooltipComponent} from '../bgs-card-tooltip.component';
 
 @Component({
-	selector: 'bgs-battle-side',
-	styleUrls: [
-		`../../../../css/global/reset-styles.scss`,
-		`../../../../css/global/scrollbar.scss`,
-		`../../../../css/component/controls/controls.scss`,
-		`../../../../css/component/controls/control-close.component.scss`,
-		`../../../../css/component/battlegrounds/battles/bgs-battle-side.component.scss`,
-	],
-	template: `
+    selector: 'bgs-battle-side',
+    styleUrls: [
+        `../../../../css/global/reset-styles.scss`,
+        `../../../../css/global/scrollbar.scss`,
+        `../../../../css/component/controls/controls.scss`,
+        `../../../../css/component/controls/control-close.component.scss`,
+        `../../../../css/component/battlegrounds/battles/bgs-battle-side.component.scss`,
+    ],
+    template: `
 		<div class="bgs-battle-side" [ngClass]="{ 'full-screen-mode': fullScreenMode }">
 			<div class="hero">
 				<bgs-hero-portrait-simulator
@@ -90,106 +90,104 @@ import { BgsCardTooltipComponent } from '../bgs-card-tooltip.component';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsBattleSideComponent {
-	componentType: ComponentType<any> = BgsCardTooltipComponent;
+    componentType: ComponentType<any> = BgsCardTooltipComponent;
 
-	@Output() addMinionRequested: EventEmitter<ChangeMinionRequest> = new EventEmitter<ChangeMinionRequest>();
-	@Output() updateMinionRequested: EventEmitter<ChangeMinionRequest> = new EventEmitter<ChangeMinionRequest>();
-	@Output() removeMinionRequested: EventEmitter<ChangeMinionRequest> = new EventEmitter<ChangeMinionRequest>();
-	@Output() entitiesUpdated: EventEmitter<readonly Entity[]> = new EventEmitter<readonly Entity[]>();
-	@Output() portraitChangeRequested: EventEmitter<void> = new EventEmitter<void>();
-	@Output() heroPowerChangeRequested: EventEmitter<void> = new EventEmitter<void>();
+    @Output() addMinionRequested: EventEmitter<ChangeMinionRequest> = new EventEmitter<ChangeMinionRequest>();
+    @Output() updateMinionRequested: EventEmitter<ChangeMinionRequest> = new EventEmitter<ChangeMinionRequest>();
+    @Output() removeMinionRequested: EventEmitter<ChangeMinionRequest> = new EventEmitter<ChangeMinionRequest>();
+    @Output() entitiesUpdated: EventEmitter<readonly Entity[]> = new EventEmitter<readonly Entity[]>();
+    @Output() portraitChangeRequested: EventEmitter<void> = new EventEmitter<void>();
+    @Output() heroPowerChangeRequested: EventEmitter<void> = new EventEmitter<void>();
+    @Input() allowClickToAdd: boolean;
+    @Input() clickToChange = false;
+    @Input() closeOnMinion = false;
+    @Input() showTavernTier = false;
+    @Input() fullScreenMode = false;
+    @Input() tooltipPosition: string;
+    heroCardId: string;
+    heroPowerCardId: string;
+    health: number;
+    maxHealth: number;
+    tavernTier: number;
+    entities: readonly Entity[];
 
-	@Input() set player(value: BgsBoardInfo) {
-		this._player = value;
-		console.debug('setting player battle side', value);
-		this.updateInfo();
-	}
+    constructor(private readonly cdr: ChangeDetectorRef, private readonly allCards: CardsFacadeService) {
+    }
 
-	@Input() allowClickToAdd: boolean;
-	@Input() clickToChange = false;
-	@Input() closeOnMinion = false;
-	@Input() showTavernTier = false;
-	@Input() fullScreenMode = false;
-	@Input() tooltipPosition: string;
+    _player: BgsBoardInfo;
 
-	_player: BgsBoardInfo;
+    @Input() set player(value: BgsBoardInfo) {
+        this._player = value;
+        console.debug('setting player battle side', value);
+        this.updateInfo();
+    }
 
-	heroCardId: string;
-	heroPowerCardId: string;
-	health: number;
-	maxHealth: number;
-	tavernTier: number;
+    trackByFn(index, item: Entity) {
+        return item.id;
+    }
 
-	entities: readonly Entity[];
+    preventAppDrag(event: MouseEvent) {
+        event.stopPropagation();
+    }
 
-	constructor(private readonly cdr: ChangeDetectorRef, private readonly allCards: CardsFacadeService) {}
+    drop(event: CdkDragDrop<number>) {
+        const movedElement: Entity = event.item.data;
+        const movedElementNewIndex = event.container.data;
+        const entitiesWithoutMovedElement: Entity[] = this.entities.filter((entity) => entity.id !== movedElement.id);
+        entitiesWithoutMovedElement.splice(movedElementNewIndex, 0, movedElement);
+        this.entities = entitiesWithoutMovedElement;
+        this.entitiesUpdated.next(this.entities);
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	trackByFn(index, item: Entity) {
-		return item.id;
-	}
+    onPortraitClick() {
+        this.portraitChangeRequested.next();
+    }
 
-	preventAppDrag(event: MouseEvent) {
-		event.stopPropagation();
-	}
+    onHeroPowerClick() {
+        this.heroPowerChangeRequested.next();
+    }
 
-	drop(event: CdkDragDrop<number>) {
-		const movedElement: Entity = event.item.data;
-		const movedElementNewIndex = event.container.data;
-		const entitiesWithoutMovedElement: Entity[] = this.entities.filter((entity) => entity.id !== movedElement.id);
-		entitiesWithoutMovedElement.splice(movedElementNewIndex, 0, movedElement);
-		this.entities = entitiesWithoutMovedElement;
-		this.entitiesUpdated.next(this.entities);
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    addMinion() {
+        this.addMinionRequested.next(null);
+    }
 
-	onPortraitClick() {
-		this.portraitChangeRequested.next();
-	}
+    updateMinion(entity: Entity, index: number) {
+        this.updateMinionRequested.next({
+            index: index,
+        });
+    }
 
-	onHeroPowerClick() {
-		this.heroPowerChangeRequested.next();
-	}
+    removeMinion(entity: Entity, index: number) {
+        this.removeMinionRequested.next({
+            index: index,
+        });
+    }
 
-	addMinion() {
-		this.addMinionRequested.next(null);
-	}
+    private updateInfo() {
+        if (!this._player) {
+            return;
+        }
 
-	updateMinion(entity: Entity, index: number) {
-		this.updateMinionRequested.next({
-			index: index,
-		});
-	}
+        this.heroCardId = this._player.player?.cardId;
+        this.heroPowerCardId = this._player.player?.heroPowerId;
+        this.health = this._player.player.hpLeft;
+        this.maxHealth = defaultStartingHp(GameType.GT_BATTLEGROUNDS, this._player.player?.cardId);
+        this.tavernTier = this._player.player.tavernTier;
 
-	removeMinion(entity: Entity, index: number) {
-		this.removeMinionRequested.next({
-			index: index,
-		});
-	}
-
-	private updateInfo() {
-		if (!this._player) {
-			return;
-		}
-
-		this.heroCardId = this._player.player?.cardId;
-		this.heroPowerCardId = this._player.player?.heroPowerId;
-		this.health = this._player.player.hpLeft;
-		this.maxHealth = defaultStartingHp(GameType.GT_BATTLEGROUNDS, this._player.player?.cardId);
-		this.tavernTier = this._player.player.tavernTier;
-
-		this.entities = (this._player.board ?? []).map((minion) => buildEntityFromBoardEntity(minion, this.allCards));
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+        this.entities = (this._player.board ?? []).map((minion) => buildEntityFromBoardEntity(minion, this.allCards));
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 }
 
 export interface ChangeMinionRequest {
-	// entity: Entity;
-	index: number;
+    // entity: Entity;
+    index: number;
 }

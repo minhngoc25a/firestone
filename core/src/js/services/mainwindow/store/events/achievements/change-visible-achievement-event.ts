@@ -1,24 +1,25 @@
-import { MainWindowStoreEvent } from '../main-window-store-event';
+import {MainWindowStoreEvent} from '../main-window-store-event';
 
 export class ChangeVisibleAchievementEvent implements MainWindowStoreEvent {
-	constructor(achievementId: string) {
-		this.achievementId = achievementId;
-	}
-	readonly achievementId: string;
+    readonly achievementId: string;
 
-	public static eventName(): string {
-		return 'ChangeVisibleAchievementEvent';
-	}
+    constructor(achievementId: string) {
+        this.achievementId = achievementId;
+    }
 
-	public eventName(): string {
-		return 'ChangeVisibleAchievementEvent';
-	}
+    public static eventName(): string {
+        return 'ChangeVisibleAchievementEvent';
+    }
 
-	public isNavigationEvent(): boolean {
-		return true;
-	}
+    public eventName(): string {
+        return 'ChangeVisibleAchievementEvent';
+    }
 
-	public isResetHistoryEvent(): boolean {
-		return false;
-	}
+    public isNavigationEvent(): boolean {
+        return true;
+    }
+
+    public isResetHistoryEvent(): boolean {
+        return false;
+    }
 }

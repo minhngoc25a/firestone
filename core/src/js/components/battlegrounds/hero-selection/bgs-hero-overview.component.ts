@@ -1,21 +1,21 @@
-import { ComponentType } from '@angular/cdk/portal';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef } from '@angular/core';
-import { GameType } from '@firestone-hs/reference-data';
-import { BgsPlayer } from '../../../models/battlegrounds/bgs-player';
-import { BgsHeroStat, BgsHeroTier } from '../../../models/battlegrounds/stats/bgs-hero-stat';
-import { VisualAchievement } from '../../../models/visual-achievement';
-import { defaultStartingHp } from '../../../services/hs-utils';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
-import { BgsHeroSelectionTooltipComponent } from './bgs-hero-selection-tooltip.component';
+import {ComponentType} from '@angular/cdk/portal';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef} from '@angular/core';
+import {GameType} from '@firestone-hs/reference-data';
+import {BgsPlayer} from '../../../models/battlegrounds/bgs-player';
+import {BgsHeroStat, BgsHeroTier} from '../../../models/battlegrounds/stats/bgs-hero-stat';
+import {VisualAchievement} from '../../../models/visual-achievement';
+import {defaultStartingHp} from '../../../services/hs-utils';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
+import {BgsHeroSelectionTooltipComponent} from './bgs-hero-selection-tooltip.component';
 
 @Component({
-	selector: 'bgs-hero-overview',
-	styleUrls: [
-		`../../../../css/global/reset-styles.scss`,
-		`../../../../css/component/battlegrounds/hero-selection/bgs-hero-selection-layout.component.scss`,
-		`../../../../css/component/battlegrounds/hero-selection/bgs-hero-overview.component.scss`,
-	],
-	template: `
+    selector: 'bgs-hero-overview',
+    styleUrls: [
+        `../../../../css/global/reset-styles.scss`,
+        `../../../../css/component/battlegrounds/hero-selection/bgs-hero-selection-layout.component.scss`,
+        `../../../../css/component/battlegrounds/hero-selection/bgs-hero-overview.component.scss`,
+    ],
+    template: `
 		<div class="hero-overview" *ngIf="_hero">
 			<div class="name">{{ _hero.name }}</div>
 			<div class="tier {{ tier?.toLowerCase() }}">{{ tier }}</div>
@@ -61,81 +61,82 @@ import { BgsHeroSelectionTooltipComponent } from './bgs-hero-selection-tooltip.c
 			</i>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsHeroOverviewComponent {
-	componentType: ComponentType<any> = BgsHeroSelectionTooltipComponent;
+    componentType: ComponentType<any> = BgsHeroSelectionTooltipComponent;
 
-	@Input() hideEmptyState: boolean;
-	@Input() heroTooltipPosition = 'right';
-	@Input() tooltipAdditionalClass: string;
+    @Input() hideEmptyState: boolean;
+    @Input() heroTooltipPosition = 'right';
+    @Input() tooltipAdditionalClass: string;
+    player: BgsPlayer;
+    health: number;
+    tier: BgsHeroTier;
+    achievementsToDisplay: readonly InternalAchievement[] = [];
 
-	_hero: BgsHeroStat;
-	player: BgsPlayer;
-	health: number;
-	tier: BgsHeroTier;
-	achievementsToDisplay: readonly InternalAchievement[] = [];
+    constructor(private readonly cdr: ChangeDetectorRef, private readonly i18n: LocalizationFacadeService) {
+    }
 
-	@Input() set hero(value: BgsHeroStat) {
-		this._hero = value;
-		if (!value) {
-			return;
-		}
+    _hero: BgsHeroStat;
 
-		this.health = defaultStartingHp(GameType.GT_BATTLEGROUNDS, value.baseCardId);
-		this.player = BgsPlayer.create({
-			cardId: value.baseCardId,
-		} as BgsPlayer);
-		this.tier = value.tier;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    @Input() set hero(value: BgsHeroStat) {
+        this._hero = value;
+        if (!value) {
+            return;
+        }
 
-	@Input() set achievements(value: readonly VisualAchievement[]) {
-		if (!value) {
-			return;
-		}
+        this.health = defaultStartingHp(GameType.GT_BATTLEGROUNDS, value.baseCardId);
+        this.player = BgsPlayer.create({
+            cardId: value.baseCardId,
+        } as BgsPlayer);
+        this.tier = value.tier;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-		this.achievementsToDisplay = value
-			.filter((ach) => ach)
-			.map((ach) => ach.completionSteps)
-			.reduce((a, b) => a.concat(b), [])
-			.filter((step) => step)
-			.map((step) => ({
-				completed: !!step.numberOfCompletions,
-				text: `${
-					!!step.numberOfCompletions
-						? this.i18n.translateString('battlegrounds.hero-selection.achievement-completed')
-						: this.i18n.translateString('battlegrounds.hero-selection.achievement-missing')
-				}: ${step.completedText}`,
-			}))
-			.sort((a, b) => {
-				if (a.completed) {
-					return 1;
-				}
-				if (b.completed) {
-					return -1;
-				}
-				return 0;
-			})
-			.slice(0, 4);
-		if (!this.achievementsToDisplay?.length) {
-			console.warn('could not find any achievements to display', value?.length, value);
-		}
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    @Input() set achievements(value: readonly VisualAchievement[]) {
+        if (!value) {
+            return;
+        }
 
-	constructor(private readonly cdr: ChangeDetectorRef, private readonly i18n: LocalizationFacadeService) {}
+        this.achievementsToDisplay = value
+            .filter((ach) => ach)
+            .map((ach) => ach.completionSteps)
+            .reduce((a, b) => a.concat(b), [])
+            .filter((step) => step)
+            .map((step) => ({
+                completed: !!step.numberOfCompletions,
+                text: `${
+                    !!step.numberOfCompletions
+                        ? this.i18n.translateString('battlegrounds.hero-selection.achievement-completed')
+                        : this.i18n.translateString('battlegrounds.hero-selection.achievement-missing')
+                }: ${step.completedText}`,
+            }))
+            .sort((a, b) => {
+                if (a.completed) {
+                    return 1;
+                }
+                if (b.completed) {
+                    return -1;
+                }
+                return 0;
+            })
+            .slice(0, 4);
+        if (!this.achievementsToDisplay?.length) {
+            console.warn('could not find any achievements to display', value?.length, value);
+        }
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	trackByFn(index, item: InternalAchievement) {
-		return index;
-	}
+    trackByFn(index, item: InternalAchievement) {
+        return index;
+    }
 }
 
 interface InternalAchievement {
-	readonly completed: boolean;
-	readonly text: string;
+    readonly completed: boolean;
+    readonly text: string;
 }

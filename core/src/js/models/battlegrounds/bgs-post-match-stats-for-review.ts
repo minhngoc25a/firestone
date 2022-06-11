@@ -1,6 +1,6 @@
-import { BgsPostMatchStats as IBgsPostMatchStats } from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
+import {BgsPostMatchStats as IBgsPostMatchStats} from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
 
 export interface BgsPostMatchStatsForReview {
-	readonly reviewId: string;
-	readonly stats: IBgsPostMatchStats;
+    readonly reviewId: string;
+    readonly stats: IBgsPostMatchStats;
 }

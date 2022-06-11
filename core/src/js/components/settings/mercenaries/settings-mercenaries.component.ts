@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 
 @Component({
-	selector: 'settings-mercenaries',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/settings/mercenaries/settings-mercenaries.component.scss`,
-	],
-	template: `
+    selector: 'settings-mercenaries',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/settings/mercenaries/settings-mercenaries.component.scss`,
+    ],
+    template: `
 		<div class="mercenaries">
 			<settings-mercenaries-menu [selectedMenu]="_selectedMenu" (onMenuSelected)="onMenuSelected($event)">
 			</settings-mercenaries-menu>
@@ -15,15 +15,15 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 			</ng-container>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsMercenariesComponent {
-	_selectedMenu: string;
-	@Input() set selectedMenu(value: string) {
-		this._selectedMenu = value || 'general';
-	}
+    _selectedMenu: string;
+    @Input() set selectedMenu(value: string) {
+        this._selectedMenu = value || 'general';
+    }
 
-	onMenuSelected(selectedMenuItem) {
-		this.selectedMenu = selectedMenuItem;
-	}
+    onMenuSelected(selectedMenuItem) {
+        this.selectedMenu = selectedMenuItem;
+    }
 }

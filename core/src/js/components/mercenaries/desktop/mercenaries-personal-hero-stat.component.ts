@@ -1,21 +1,25 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef } from '@angular/core';
-import { CardRarity } from '@firestone-hs/reference-data';
-import { LocalizationFacadeService } from '@services/localization-facade.service';
-import { FeatureFlags } from '../../../services/feature-flags';
-import { MercenariesTaskUpdateCurrentStepEvent } from '../../../services/mainwindow/store/events/mercenaries/mercenaries-task-update-current-step-event';
-import { MercenariesViewMercDetailsEvent } from '../../../services/mainwindow/store/events/mercenaries/mercenaries-view-merc-details-event';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { areDeepEqual } from '../../../services/utils';
-import { PersonalHeroStat } from './mercenaries-personal-hero-stats.component';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef} from '@angular/core';
+import {CardRarity} from '@firestone-hs/reference-data';
+import {LocalizationFacadeService} from '@services/localization-facade.service';
+import {FeatureFlags} from '../../../services/feature-flags';
+import {
+    MercenariesTaskUpdateCurrentStepEvent
+} from '../../../services/mainwindow/store/events/mercenaries/mercenaries-task-update-current-step-event';
+import {
+    MercenariesViewMercDetailsEvent
+} from '../../../services/mainwindow/store/events/mercenaries/mercenaries-view-merc-details-event';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {areDeepEqual} from '../../../services/utils';
+import {PersonalHeroStat} from './mercenaries-personal-hero-stats.component';
 
 @Component({
-	selector: 'mercenaries-personal-hero-stat',
-	styleUrls: [
-		`../../../../css/component/app-section.component.scss`,
-		`../../../../css/component/menu-selection.component.scss`,
-		`../../../../css/component/mercenaries/desktop/mercenaries-personal-hero-stat.component.scss`,
-	],
-	template: `
+    selector: 'mercenaries-personal-hero-stat',
+    styleUrls: [
+        `../../../../css/component/app-section.component.scss`,
+        `../../../../css/component/menu-selection.component.scss`,
+        `../../../../css/component/mercenaries/desktop/mercenaries-personal-hero-stat.component.scss`,
+    ],
+    template: `
 		<div
 			class="mercenaries-personal-hero-stat"
 			[ngClass]="{ 'missing': !owned, 'fully-upgraded': fullyUpgraded }"
@@ -139,202 +143,198 @@ import { PersonalHeroStat } from './mercenaries-personal-hero-stats.component';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MercenariesPersonalHeroStatComponent {
-	@Input() set stat(value: PersonalHeroStat) {
-		if (areDeepEqual(this._stat, value)) {
-			return;
-		}
-		console.debug('setting stat', value.name, value);
-		this._stat = value;
-		this.cardId = value.cardId;
-		this.mercenaryId = value.mercenaryId;
-		this.owned = value.owned;
-		this.fullyUpgraded = value.isFullyUpgraded;
+    cardId: string;
+    owned: boolean;
+    fullyUpgraded: boolean;
+    name: string;
+    role: string;
+    level: number;
+    rarityImg: string;
+    portraitUrl: string;
+    frameUrl: string;
+    xpInCurrentLevel: number;
+    xpNeededForLevel: number;
+    fullTotalTooltip: string;
+    totalCoinsLeft: number;
+    totalCoinsNeeded: number;
+    totalCoinsToFarm: number;
+    currentTaskLabel: string;
+    currentTaskTooltip: string;
+    coinsNeededTooltip: string;
+    coinsToFarmTooltip: string;
+    abilities: readonly VisualAbility[];
+    equipments: readonly VisualEquipment[];
+    private mercenaryId: number;
 
-		this.rarityImg = `assets/images/rarity/rarity-${CardRarity[value.rarity]?.toLowerCase()}.png`;
-		this.level = value.currentLevel;
+    constructor(
+        private readonly cdr: ChangeDetectorRef,
+        private readonly store: AppUiStoreFacadeService,
+        private readonly i18n: LocalizationFacadeService,
+    ) {
+    }
 
-		this.portraitUrl = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.cardId}.jpg`;
-		this.frameUrl = this.buildHeroFrame(value.role, value.premium);
+    private _stat: PersonalHeroStat;
 
-		this.name = value.name;
+    @Input() set stat(value: PersonalHeroStat) {
+        if (areDeepEqual(this._stat, value)) {
+            return;
+        }
+        console.debug('setting stat', value.name, value);
+        this._stat = value;
+        this.cardId = value.cardId;
+        this.mercenaryId = value.mercenaryId;
+        this.owned = value.owned;
+        this.fullyUpgraded = value.isFullyUpgraded;
 
-		this.xpInCurrentLevel = value.xpInCurrentLevel;
-		this.xpNeededForLevel = value.xpNeededForLevel + value.xpInCurrentLevel;
-		this.fullTotalTooltip = this.i18n.translateString('mercenaries.hero-stats.xp-tooltip', {
-			value: value.totalXp.toLocaleString(this.i18n.formatCurrentLocale()),
-		});
+        this.rarityImg = `assets/images/rarity/rarity-${CardRarity[value.rarity]?.toLowerCase()}.png`;
+        this.level = value.currentLevel;
 
-		this.totalCoinsLeft = value.totalCoinsLeft;
-		this.totalCoinsNeeded = value.totalCoinsNeeded;
-		this.totalCoinsToFarm = value.totalCoinsToFarm;
+        this.portraitUrl = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.cardId}.jpg`;
+        this.frameUrl = this.buildHeroFrame(value.role, value.premium);
 
-		this.currentTaskLabel = '???';
-		this.currentTaskTooltip = this.i18n.translateString('mercenaries.hero-stats.current-task-tooltip');
-		if (value.currentTask != null) {
-			if (value.currentTask >= value.totalTasks) {
-				this.currentTaskLabel = this.i18n.translateString('mercenaries.hero-stats.maxed');
-				this.currentTaskTooltip = null;
-			} else {
-				this.currentTaskLabel = `${value.currentTask}/${value.totalTasks}`;
-				this.currentTaskTooltip = value.currentTaskDescription;
-			}
-		}
-		this.coinsNeededTooltip = this.buildCoinsNeededTooltip(value);
-		this.coinsToFarmTooltip = this.buildCoinsToFarmTooltip(value, this.totalCoinsToFarm);
+        this.name = value.name;
 
-		this.abilities = [];
-		this.equipments = [];
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr?.detectChanges();
-		}
+        this.xpInCurrentLevel = value.xpInCurrentLevel;
+        this.xpNeededForLevel = value.xpNeededForLevel + value.xpInCurrentLevel;
+        this.fullTotalTooltip = this.i18n.translateString('mercenaries.hero-stats.xp-tooltip', {
+            value: value.totalXp.toLocaleString(this.i18n.formatCurrentLocale()),
+        });
 
-		setTimeout(() => {
-			this.abilities = value.abilities.map((info) => {
-				return {
-					cardId: info.cardId,
-					owned: info.owned,
-					speed: info.speed,
-					cooldown: info.cooldown,
-					tier: info.tier,
-					artUrl: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${info.cardId}.jpg`,
-				};
-			});
-			this.equipments = value.equipments.map((info) => {
-				return {
-					cardId: info.cardId,
-					owned: info.owned,
-					equipped: info.isEquipped,
-					tier: info.tier,
-					artUrl: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${info.cardId}.jpg`,
-				};
-			});
-			if (!(this.cdr as ViewRef)?.destroyed) {
-				this.cdr?.detectChanges();
-			}
-		});
-	}
+        this.totalCoinsLeft = value.totalCoinsLeft;
+        this.totalCoinsNeeded = value.totalCoinsNeeded;
+        this.totalCoinsToFarm = value.totalCoinsToFarm;
 
-	cardId: string;
-	owned: boolean;
-	fullyUpgraded: boolean;
-	name: string;
-	role: string;
-	level: number;
-	rarityImg: string;
-	portraitUrl: string;
-	frameUrl: string;
+        this.currentTaskLabel = '???';
+        this.currentTaskTooltip = this.i18n.translateString('mercenaries.hero-stats.current-task-tooltip');
+        if (value.currentTask != null) {
+            if (value.currentTask >= value.totalTasks) {
+                this.currentTaskLabel = this.i18n.translateString('mercenaries.hero-stats.maxed');
+                this.currentTaskTooltip = null;
+            } else {
+                this.currentTaskLabel = `${value.currentTask}/${value.totalTasks}`;
+                this.currentTaskTooltip = value.currentTaskDescription;
+            }
+        }
+        this.coinsNeededTooltip = this.buildCoinsNeededTooltip(value);
+        this.coinsToFarmTooltip = this.buildCoinsToFarmTooltip(value, this.totalCoinsToFarm);
 
-	xpInCurrentLevel: number;
-	xpNeededForLevel: number;
-	fullTotalTooltip: string;
+        this.abilities = [];
+        this.equipments = [];
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr?.detectChanges();
+        }
 
-	totalCoinsLeft: number;
-	totalCoinsNeeded: number;
-	totalCoinsToFarm: number;
+        setTimeout(() => {
+            this.abilities = value.abilities.map((info) => {
+                return {
+                    cardId: info.cardId,
+                    owned: info.owned,
+                    speed: info.speed,
+                    cooldown: info.cooldown,
+                    tier: info.tier,
+                    artUrl: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${info.cardId}.jpg`,
+                };
+            });
+            this.equipments = value.equipments.map((info) => {
+                return {
+                    cardId: info.cardId,
+                    owned: info.owned,
+                    equipped: info.isEquipped,
+                    tier: info.tier,
+                    artUrl: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${info.cardId}.jpg`,
+                };
+            });
+            if (!(this.cdr as ViewRef)?.destroyed) {
+                this.cdr?.detectChanges();
+            }
+        });
+    }
 
-	currentTaskLabel: string;
-	currentTaskTooltip: string;
+    buildPercents(value: number): string {
+        return value == null ? '-' : value.toFixed(1) + '%';
+    }
 
-	coinsNeededTooltip: string;
-	coinsToFarmTooltip: string;
+    buildValue(value: number, decimal = 2): string {
+        return value == null ? '-' : value === 0 ? '0' : value.toFixed(decimal);
+    }
 
-	abilities: readonly VisualAbility[];
-	equipments: readonly VisualEquipment[];
+    buildHeroFrame(role: string, premium: number): string {
+        switch (premium) {
+            case 1:
+                return `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_hero_frame_golden_${role}.png?v=5`;
+            case 2:
+                return `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_hero_frame_diamond_${role}.png?v=5`;
+            case 0:
+                return `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_hero_frame_${role}.png?v=5`;
+        }
+    }
 
-	private mercenaryId: number;
-	private _stat: PersonalHeroStat;
+    onTaskClick(event: MouseEvent) {
+        const operation = event.ctrlKey ? 'add' : event.altKey ? 'remove' : null;
+        if (operation) {
+            this.store.send(new MercenariesTaskUpdateCurrentStepEvent(this.mercenaryId, operation));
+            event.stopPropagation();
+        }
+    }
 
-	constructor(
-		private readonly cdr: ChangeDetectorRef,
-		private readonly store: AppUiStoreFacadeService,
-		private readonly i18n: LocalizationFacadeService,
-	) {}
+    select() {
+        if (FeatureFlags.ENABLE_DETAILED_MERC) {
+            this.store.send(new MercenariesViewMercDetailsEvent(this.mercenaryId));
+        }
+    }
 
-	buildPercents(value: number): string {
-		return value == null ? '-' : value.toFixed(1) + '%';
-	}
+    private buildCoinsNeededTooltip(value: PersonalHeroStat): string {
+        if (!value.bountiesWithRewards?.length) {
+            return '';
+        }
 
-	buildValue(value: number, decimal = 2): string {
-		return value == null ? '-' : value === 0 ? '0' : value.toFixed(decimal);
-	}
-
-	buildHeroFrame(role: string, premium: number): string {
-		switch (premium) {
-			case 1:
-				return `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_hero_frame_golden_${role}.png?v=5`;
-			case 2:
-				return `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_hero_frame_diamond_${role}.png?v=5`;
-			case 0:
-				return `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_hero_frame_${role}.png?v=5`;
-		}
-	}
-
-	onTaskClick(event: MouseEvent) {
-		const operation = event.ctrlKey ? 'add' : event.altKey ? 'remove' : null;
-		if (operation) {
-			this.store.send(new MercenariesTaskUpdateCurrentStepEvent(this.mercenaryId, operation));
-			event.stopPropagation();
-		}
-	}
-
-	select() {
-		if (FeatureFlags.ENABLE_DETAILED_MERC) {
-			this.store.send(new MercenariesViewMercDetailsEvent(this.mercenaryId));
-		}
-	}
-
-	private buildCoinsNeededTooltip(value: PersonalHeroStat): string {
-		if (!value.bountiesWithRewards?.length) {
-			return '';
-		}
-
-		const bounties: readonly string[] = value.bountiesWithRewards.map(
-			(bounty) => `
+        const bounties: readonly string[] = value.bountiesWithRewards.map(
+            (bounty) => `
 				<div class="bounty">
 					<div class="bounty-zone">${bounty.bountySetName}</div>
 					<div class="bounty-name">${bounty.bountyName}</div>
 				</div>
 			`,
-		);
-		return `
+        );
+        return `
 			<div class="container">
 				<div class="header">Where to farm coins</div>
 				${bounties.join('')}
 			</div>
 		`;
-	}
+    }
 
-	private buildCoinsToFarmTooltip(value: PersonalHeroStat, totalCoinsToFarm: number): string {
-		const message = this.i18n.translateString('mercenaries.hero-stats.coins-to-farm-tooltip', {
-			value: value.coinsMissingFromTasks,
-		});
-		// Don't show the tooltip if the user already has enough coins to max the merc
-		return !!totalCoinsToFarm
-			? `
+    private buildCoinsToFarmTooltip(value: PersonalHeroStat, totalCoinsToFarm: number): string {
+        const message = this.i18n.translateString('mercenaries.hero-stats.coins-to-farm-tooltip', {
+            value: value.coinsMissingFromTasks,
+        });
+        // Don't show the tooltip if the user already has enough coins to max the merc
+        return !!totalCoinsToFarm
+            ? `
 			<div class="container">
 				${message}
 			</div>
 		`
-			: null;
-	}
+            : null;
+    }
 }
 
 interface VisualAbility {
-	readonly cardId: string;
-	readonly owned: boolean;
-	readonly speed: number;
-	readonly cooldown: number;
-	readonly artUrl: string;
-	readonly tier: number;
+    readonly cardId: string;
+    readonly owned: boolean;
+    readonly speed: number;
+    readonly cooldown: number;
+    readonly artUrl: string;
+    readonly tier: number;
 }
 
 interface VisualEquipment {
-	readonly cardId: string;
-	readonly owned: boolean;
-	readonly equipped: boolean;
-	readonly artUrl: string;
-	readonly tier: number;
+    readonly cardId: string;
+    readonly owned: boolean;
+    readonly equipped: boolean;
+    readonly artUrl: string;
+    readonly tier: number;
 }

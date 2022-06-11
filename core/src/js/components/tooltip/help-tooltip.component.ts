@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, ViewRef } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, ViewRef} from '@angular/core';
+import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 
 @Component({
-	selector: 'help-tooltip',
-	styleUrls: [`../../../css/component/tooltip/help-tooltip.component.scss`],
-	template: `
+    selector: 'help-tooltip',
+    styleUrls: [`../../../css/component/tooltip/help-tooltip.component.scss`],
+    template: `
 		<div class="help-tooltip {{ _classes }}">
 			<div class="text" [innerHTML]="_text"></div>
 			<svg
@@ -20,78 +20,80 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 			</svg>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HelpTooltipComponent {
-	@Input() set text(value: string) {
-		this._text = this.sanitizer.bypassSecurityTrustHtml(`<div>${value}</div>`);
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    arrowTop: number;
+    arrowLeft: number;
+    arrowTransform: string;
+    // private rect;
+    private arrowElement;
+    private element;
 
-	@Input() set showArrow(value: boolean) {
-		this._showArrow = value;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    constructor(private cdr: ChangeDetectorRef, private sanitizer: DomSanitizer, private elRef: ElementRef) {
+    }
 
-	@Input() set classes(value: string) {
-		this._classes = value ?? '';
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    _text: SafeHtml;
 
-	_text: SafeHtml;
-	_showArrow = false;
-	_classes: string;
+    @Input() set text(value: string) {
+        this._text = this.sanitizer.bypassSecurityTrustHtml(`<div>${value}</div>`);
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	arrowTop: number;
-	arrowLeft: number;
-	arrowTransform: string;
+    _showArrow = false;
 
-	// private rect;
-	private arrowElement;
-	private element;
+    @Input() set showArrow(value: boolean) {
+        this._showArrow = value;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	constructor(private cdr: ChangeDetectorRef, private sanitizer: DomSanitizer, private elRef: ElementRef) {}
+    _classes: string;
 
-	public setTarget(target: ElementRef) {
-		if (!this._showArrow) {
-			return;
-		}
+    @Input() set classes(value: string) {
+        this._classes = value ?? '';
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-		setTimeout(() => {
-			this.arrowElement = this.elRef.nativeElement.querySelector('.tooltip-arrow');
-			this.element = this.elRef.nativeElement.querySelector('.help-tooltip');
-			const thisPosition = getPosition(this.element);
-			const targetPosition = getPosition(target.nativeElement);
-			const arrowRect = this.arrowElement.getBoundingClientRect();
-			const thisRect = this.element.getBoundingClientRect();
-			const targetRect = target.nativeElement.getBoundingClientRect();
-			this.arrowTop = targetPosition.offsetTop > thisPosition.offsetTop ? thisRect.height : -arrowRect.height;
-			this.arrowTransform = targetPosition.offsetTop < thisPosition.offsetTop ? '' : 'rotate(180deg)';
-			this.arrowLeft = Math.max(
-				0,
-				targetPosition.offsetLeft - thisPosition.offsetLeft + (targetRect.width - arrowRect.width) / 2,
-			);
-			if (!(this.cdr as ViewRef)?.destroyed) {
-				this.cdr.detectChanges();
-			}
-		});
-	}
+    public setTarget(target: ElementRef) {
+        if (!this._showArrow) {
+            return;
+        }
+
+        setTimeout(() => {
+            this.arrowElement = this.elRef.nativeElement.querySelector('.tooltip-arrow');
+            this.element = this.elRef.nativeElement.querySelector('.help-tooltip');
+            const thisPosition = getPosition(this.element);
+            const targetPosition = getPosition(target.nativeElement);
+            const arrowRect = this.arrowElement.getBoundingClientRect();
+            const thisRect = this.element.getBoundingClientRect();
+            const targetRect = target.nativeElement.getBoundingClientRect();
+            this.arrowTop = targetPosition.offsetTop > thisPosition.offsetTop ? thisRect.height : -arrowRect.height;
+            this.arrowTransform = targetPosition.offsetTop < thisPosition.offsetTop ? '' : 'rotate(180deg)';
+            this.arrowLeft = Math.max(
+                0,
+                targetPosition.offsetLeft - thisPosition.offsetLeft + (targetRect.width - arrowRect.width) / 2,
+            );
+            if (!(this.cdr as ViewRef)?.destroyed) {
+                this.cdr.detectChanges();
+            }
+        });
+    }
 }
 
 const getPosition = (el) => {
-	let offsetLeft = 0;
-	let offsetTop = 0;
+    let offsetLeft = 0;
+    let offsetTop = 0;
 
-	while (el) {
-		offsetLeft += el.offsetLeft;
-		offsetTop += el.offsetTop;
-		el = el.offsetParent;
-	}
-	return { offsetTop: offsetTop, offsetLeft: offsetLeft };
+    while (el) {
+        offsetLeft += el.offsetLeft;
+        offsetTop += el.offsetTop;
+        el = el.offsetParent;
+    }
+    return {offsetTop: offsetTop, offsetLeft: offsetLeft};
 };

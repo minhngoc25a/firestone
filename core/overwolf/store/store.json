@@ -1,5 +1,11 @@
 {
   "category_description": "for games",
-  "tags": ["hearthstone", "collection", "manager", "cards", "tracker"],
+  "tags": [
+    "hearthstone",
+    "collection",
+    "manager",
+    "cards",
+    "tracker"
+  ],
   "title": "Firestone"
 }

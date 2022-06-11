@@ -2,45 +2,45 @@
 @import '../global/fonts';
 
 .hotkey {
-	display: flex;
-	align-items: baseline;
-	position: relative;
-	width: auto;
-	height: auto;
-	padding: 5px;
+  display: flex;
+  align-items: baseline;
+  position: relative;
+  width: auto;
+  height: auto;
+  padding: 5px;
 
-	.text {
-		@extend %hotkey-label;
-		margin-right: 5px;
-		color: var(--on-scrollbar-thumb-color);
-		// color: #a89782;
-	}
+  .text {
+    @extend %hotkey-label;
+    margin-right: 5px;
+    color: var(--on-scrollbar-thumb-color);
+    // color: #a89782;
+  }
 
-	.plus {
-		@extend %hotkey;
-		font-weight: 400;
-		margin-left: 6px;
-		margin-right: 6px;
-		font-size: 10px;
-		color: var(--control-button-color);
-	}
+  .plus {
+    @extend %hotkey;
+    font-weight: 400;
+    margin-left: 6px;
+    margin-right: 6px;
+    font-size: 10px;
+    color: var(--control-button-color);
+  }
 
-	.key {
-		@extend %hotkey;
-		font-weight: 400;
-		font-size: 10px;
-		width: 30px;
-		height: 20px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border: 1px solid;
-		color: var(--control-button-color);
-	}
+  .key {
+    @extend %hotkey;
+    font-weight: 400;
+    font-size: 10px;
+    width: 30px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid;
+    color: var(--control-button-color);
+  }
 
-	.no-hotkey {
-		@extend %hotkey;
-		font-weight: 400;
-		font-size: 10px;
-	}
+  .no-hotkey {
+    @extend %hotkey;
+    font-weight: 400;
+    font-size: 10px;
+  }
 }

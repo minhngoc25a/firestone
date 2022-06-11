@@ -1,41 +1,41 @@
 import {
-	AfterContentInit,
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	ElementRef,
-	HostListener,
-	OnDestroy,
-	Renderer2,
-	ViewChild,
-	ViewEncapsulation,
+    AfterContentInit,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    HostListener,
+    OnDestroy,
+    Renderer2,
+    ViewChild,
+    ViewEncapsulation,
 } from '@angular/core';
-import { GameType } from '@firestone-hs/reference-data';
-import { isBattlegroundsScene } from '@services/battlegrounds/bgs-utils';
-import { combineLatest, Observable } from 'rxjs';
-import { CurrentAppType } from '../../models/mainwindow/current-app.type';
-import { DebugService } from '../../services/debug.service';
-import { OverwolfService } from '../../services/overwolf.service';
-import { AppUiStoreFacadeService } from '../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../abstract-subscription.component';
+import {GameType} from '@firestone-hs/reference-data';
+import {isBattlegroundsScene} from '@services/battlegrounds/bgs-utils';
+import {combineLatest, Observable} from 'rxjs';
+import {CurrentAppType} from '../../models/mainwindow/current-app.type';
+import {DebugService} from '../../services/debug.service';
+import {OverwolfService} from '../../services/overwolf.service';
+import {AppUiStoreFacadeService} from '../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../abstract-subscription.component';
 
 @Component({
-	selector: 'full-screen-overlays',
-	styleUrls: [
-		'../../../css/global/components-global.scss',
-		`../../../css/global/cdk-overlay.scss`,
-		`../../../css/themes/collection-theme.scss`,
-		`../../../css/themes/achievements-theme.scss`,
-		`../../../css/themes/battlegrounds-theme.scss`,
-		`../../../css/themes/decktracker-theme.scss`,
-		`../../../css/themes/decktracker-desktop-theme.scss`,
-		`../../../css/themes/replays-theme.scss`,
-		`../../../css/themes/duels-theme.scss`,
-		`../../../css/themes/general-theme.scss`,
-		'../../../css/component/overlays/full-screen-overlays.component.scss',
-	],
-	template: `
+    selector: 'full-screen-overlays',
+    styleUrls: [
+        '../../../css/global/components-global.scss',
+        `../../../css/global/cdk-overlay.scss`,
+        `../../../css/themes/collection-theme.scss`,
+        `../../../css/themes/achievements-theme.scss`,
+        `../../../css/themes/battlegrounds-theme.scss`,
+        `../../../css/themes/decktracker-theme.scss`,
+        `../../../css/themes/decktracker-desktop-theme.scss`,
+        `../../../css/themes/replays-theme.scss`,
+        `../../../css/themes/duels-theme.scss`,
+        `../../../css/themes/general-theme.scss`,
+        '../../../css/component/overlays/full-screen-overlays.component.scss',
+    ],
+    template: `
 		<div
 			id="container"
 			tabindex="0"
@@ -104,103 +104,103 @@ import { AbstractSubscriptionComponent } from '../abstract-subscription.componen
 			<player-bgs-majordomo-widget-wrapper></player-bgs-majordomo-widget-wrapper>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
-	encapsulation: ViewEncapsulation.None, // Needed to the cdk overlay styling to work
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None, // Needed to the cdk overlay styling to work
 })
 export class FullScreenOverlaysComponent
-	extends AbstractSubscriptionComponent
-	implements AfterContentInit, AfterViewInit, OnDestroy {
-	@ViewChild('container', { static: false }) container: ElementRef;
+    extends AbstractSubscriptionComponent
+    implements AfterContentInit, AfterViewInit, OnDestroy {
+    @ViewChild('container', {static: false}) container: ElementRef;
 
-	activeTheme$: Observable<CurrentAppType>;
-	windowId: string;
+    activeTheme$: Observable<CurrentAppType>;
+    windowId: string;
 
-	private gameInfoUpdatedListener: (message: any) => void;
+    private gameInfoUpdatedListener: (message: any) => void;
 
-	constructor(
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-		private readonly ow: OverwolfService,
-		private readonly init_DebugService: DebugService,
-		private readonly renderer: Renderer2,
-		private readonly el: ElementRef,
-	) {
-		super(store, cdr);
-	}
+    constructor(
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+        private readonly ow: OverwolfService,
+        private readonly init_DebugService: DebugService,
+        private readonly renderer: Renderer2,
+        private readonly el: ElementRef,
+    ) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit(): void {
-		this.activeTheme$ = combineLatest(
-			this.store.listenDeckState$((deckState) => deckState.metadata?.gameType),
-			this.store.listen$(([main]) => main.currentScene),
-		).pipe(
-			this.mapData(([[gameType], [currentScene]]) => {
-				switch (gameType) {
-					case GameType.GT_BATTLEGROUNDS:
-					case GameType.GT_BATTLEGROUNDS_AI_VS_AI:
-					case GameType.GT_BATTLEGROUNDS_FRIENDLY:
-						return 'battlegrounds';
-					default:
-						if (isBattlegroundsScene(currentScene)) {
-							return 'battlegrounds';
-						}
-						return 'decktracker';
-				}
-			}),
-		);
+    ngAfterContentInit(): void {
+        this.activeTheme$ = combineLatest(
+            this.store.listenDeckState$((deckState) => deckState.metadata?.gameType),
+            this.store.listen$(([main]) => main.currentScene),
+        ).pipe(
+            this.mapData(([[gameType], [currentScene]]) => {
+                switch (gameType) {
+                    case GameType.GT_BATTLEGROUNDS:
+                    case GameType.GT_BATTLEGROUNDS_AI_VS_AI:
+                    case GameType.GT_BATTLEGROUNDS_FRIENDLY:
+                        return 'battlegrounds';
+                    default:
+                        if (isBattlegroundsScene(currentScene)) {
+                            return 'battlegrounds';
+                        }
+                        return 'decktracker';
+                }
+            }),
+        );
 
-		this.ow.addKeyDownListener(async (info) => {
-			return;
-			console.debug('keydown', info);
-			// F11
-			if (info.key === '122') {
-				await this.ow.bringToFront(this.windowId, true);
-				const element: HTMLElement = this.renderer.selectRootElement('#container', true);
-				const focusable = this.el.nativeElement.querySelectorAll('.root');
-				const element2 = focusable[0];
-				console.debug('element', element, element2, focusable);
-				setTimeout(() => {
-					element.focus();
-					element.click();
-					element2.focus();
-					element2.click();
-					console.debug('set focus', element, document.activeElement);
-				});
-			}
-			setTimeout(() => {
-				console.debug('current focus', document.activeElement);
-			});
-		});
-	}
+        this.ow.addKeyDownListener(async (info) => {
+            return;
+            console.debug('keydown', info);
+            // F11
+            if (info.key === '122') {
+                await this.ow.bringToFront(this.windowId, true);
+                const element: HTMLElement = this.renderer.selectRootElement('#container', true);
+                const focusable = this.el.nativeElement.querySelectorAll('.root');
+                const element2 = focusable[0];
+                console.debug('element', element, element2, focusable);
+                setTimeout(() => {
+                    element.focus();
+                    element.click();
+                    element2.focus();
+                    element2.click();
+                    console.debug('set focus', element, document.activeElement);
+                });
+            }
+            setTimeout(() => {
+                console.debug('current focus', document.activeElement);
+            });
+        });
+    }
 
-	async ngAfterViewInit() {
-		this.windowId = (await this.ow.getCurrentWindow()).id;
-		this.gameInfoUpdatedListener = this.ow.addGameInfoUpdatedListener(async (res: any) => {
-			if (res && res.resolutionChanged) {
-				await this.changeWindowSize();
-			}
-		});
-		await this.changeWindowSize();
-		window.dispatchEvent(new Event('window-resize'));
-	}
+    async ngAfterViewInit() {
+        this.windowId = (await this.ow.getCurrentWindow()).id;
+        this.gameInfoUpdatedListener = this.ow.addGameInfoUpdatedListener(async (res: any) => {
+            if (res && res.resolutionChanged) {
+                await this.changeWindowSize();
+            }
+        });
+        await this.changeWindowSize();
+        window.dispatchEvent(new Event('window-resize'));
+    }
 
-	@HostListener('window:beforeunload')
-	ngOnDestroy(): void {
-		super.ngOnDestroy();
-		this.ow.removeGameInfoUpdatedListener(this.gameInfoUpdatedListener);
-	}
+    @HostListener('window:beforeunload')
+    ngOnDestroy(): void {
+        super.ngOnDestroy();
+        this.ow.removeGameInfoUpdatedListener(this.gameInfoUpdatedListener);
+    }
 
-	// Just make it full screen, always
-	private async changeWindowSize(): Promise<void> {
-		const gameInfo = await this.ow.getRunningGameInfo();
-		if (!gameInfo) {
-			return;
-		}
-		const gameWidth = gameInfo.width;
-		const gameHeight = gameInfo.height;
-		const height = gameHeight;
-		const width = gameWidth;
-		await this.ow.changeWindowSize(this.windowId, width, height);
-		await this.ow.changeWindowPosition(this.windowId, 0, 0);
-		window.dispatchEvent(new Event('window-resize'));
-	}
+    // Just make it full screen, always
+    private async changeWindowSize(): Promise<void> {
+        const gameInfo = await this.ow.getRunningGameInfo();
+        if (!gameInfo) {
+            return;
+        }
+        const gameWidth = gameInfo.width;
+        const gameHeight = gameInfo.height;
+        const height = gameHeight;
+        const width = gameWidth;
+        await this.ow.changeWindowSize(this.windowId, width, height);
+        await this.ow.changeWindowPosition(this.windowId, 0, 0);
+        window.dispatchEvent(new Event('window-resize'));
+    }
 }

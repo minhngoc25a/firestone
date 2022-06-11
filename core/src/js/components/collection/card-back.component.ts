@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, ElementRef, Input } from '@angular/core';
-import { InternalCardBack } from './internal-card-back';
+import {ChangeDetectionStrategy, Component, ElementRef, Input} from '@angular/core';
+import {InternalCardBack} from './internal-card-back';
 
 @Component({
-	selector: 'card-back',
-	styleUrls: [`../../../css/component/collection/card-back.component.scss`],
-	template: `
+    selector: 'card-back',
+    styleUrls: [`../../../css/component/collection/card-back.component.scss`],
+    template: `
 		<div
 			class="card-back"
 			*ngIf="_cardBack"
@@ -26,45 +26,44 @@ import { InternalCardBack } from './internal-card-back';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardBackComponent {
-	// @ViewChild('videoPlayer', { static: false }) set videoPlayer(videoPlayer: ElementRef) {
-	// 	if (videoPlayer) {
-	// 		this.videoPlayerElement = videoPlayer;
-	// 		if (this._cardBack) {
-	// 			this.videoPlayerElement.nativeElement.src = this._cardBack.animatedImage;
-	// 			this.videoPlayerElement.nativeElement.load();
-	// 		}
-	// 	}
-	// }
+    // @ViewChild('videoPlayer', { static: false }) set videoPlayer(videoPlayer: ElementRef) {
+    // 	if (videoPlayer) {
+    // 		this.videoPlayerElement = videoPlayer;
+    // 		if (this._cardBack) {
+    // 			this.videoPlayerElement.nativeElement.src = this._cardBack.animatedImage;
+    // 			this.videoPlayerElement.nativeElement.load();
+    // 		}
+    // 	}
+    // }
 
-	@Input() set cardBack(value: InternalCardBack) {
-		this._cardBack = value;
-		if (this._cardBack && this.videoPlayerElement) {
-			this.videoPlayerElement.nativeElement.src = this._cardBack.animatedImage;
-			this.videoPlayerElement.nativeElement.load();
-		}
-	}
+    @Input() animated: boolean;
+    @Input() alwaysOn: boolean;
+    private videoPlayerElement: ElementRef;
 
-	@Input() animated: boolean;
-	@Input() alwaysOn: boolean;
+    _cardBack: InternalCardBack;
 
-	_cardBack: InternalCardBack;
+    @Input() set cardBack(value: InternalCardBack) {
+        this._cardBack = value;
+        if (this._cardBack && this.videoPlayerElement) {
+            this.videoPlayerElement.nativeElement.src = this._cardBack.animatedImage;
+            this.videoPlayerElement.nativeElement.load();
+        }
+    }
 
-	private videoPlayerElement: ElementRef;
+    play(event: MouseEvent) {
+        if (this.alwaysOn) {
+            return;
+        }
+        this.videoPlayerElement.nativeElement.play();
+    }
 
-	play(event: MouseEvent) {
-		if (this.alwaysOn) {
-			return;
-		}
-		this.videoPlayerElement.nativeElement.play();
-	}
-
-	pause(event: MouseEvent) {
-		if (this.alwaysOn) {
-			return;
-		}
-		this.videoPlayerElement.nativeElement.pause();
-	}
+    pause(event: MouseEvent) {
+        if (this.alwaysOn) {
+            return;
+        }
+        this.videoPlayerElement.nativeElement.pause();
+    }
 }

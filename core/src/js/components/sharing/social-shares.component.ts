@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 
 @Component({
-	selector: 'social-shares',
-	styleUrls: [`../../../css/component/sharing/social-shares.component.scss`],
-	template: `
+    selector: 'social-shares',
+    styleUrls: [`../../../css/component/sharing/social-shares.component.scss`],
+    template: `
 		<div class="social-shares">
 			<clipboard-share-button
 				class="social-share-button"
@@ -25,10 +25,10 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 			></reddit-share-button>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SocialSharesComponent {
-	@Input() onSocialClick: (copyToCliboard: boolean) => Promise<[string, any]>;
-	@Input() page = 'bgs-post-match-stats';
-	@Input() showLabel: boolean;
+    @Input() onSocialClick: (copyToCliboard: boolean) => Promise<[string, any]>;
+    @Input() page = 'bgs-post-match-stats';
+    @Input() showLabel: boolean;
 }

@@ -1,20 +1,20 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { LocalizationFacadeService } from '@services/localization-facade.service';
-import { Observable } from 'rxjs';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
-import { Knob } from '../preference-slider.component';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {LocalizationFacadeService} from '@services/localization-facade.service';
+import {Observable} from 'rxjs';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
+import {Knob} from '../preference-slider.component';
 
 @Component({
-	selector: 'settings-battlegrounds-session',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/global/scrollbar-settings.scss`,
-		`../../../../css/global/forms.scss`,
-		`../../../../css/component/settings/settings-common.component.scss`,
-		`../../../../css/component/settings/battlegrounds/settings-battlegrounds-general.component.scss`,
-	],
-	template: `
+    selector: 'settings-battlegrounds-session',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/global/scrollbar-settings.scss`,
+        `../../../../css/global/forms.scss`,
+        `../../../../css/component/settings/settings-common.component.scss`,
+        `../../../../css/component/settings/battlegrounds/settings-battlegrounds-general.component.scss`,
+    ],
+    template: `
 		<div
 			class="battlegrounds-general"
 			*ngIf="{
@@ -83,47 +83,47 @@ import { Knob } from '../preference-slider.component';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsBattlegroundsSessionComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	showCurrentSessionWidgetBgs$: Observable<boolean>;
-	sessionWidgetShowMatches$: Observable<boolean>;
+    showCurrentSessionWidgetBgs$: Observable<boolean>;
+    sessionWidgetShowMatches$: Observable<boolean>;
 
-	sizeKnobs: readonly Knob[] = [
-		{
-			percentageValue: 0,
-			label: this.i18n.translateString('settings.global.knob-sizes.small'),
-		},
-		{
-			percentageValue: 50,
-			label: this.i18n.translateString('settings.global.knob-sizes.medium'),
-		},
-		{
-			percentageValue: 100,
-			label: this.i18n.translateString('settings.global.knob-sizes.large'),
-		},
-	];
-	opacityKnobs: readonly Knob[] = [
-		{
-			percentageValue: 0,
-			label: this.i18n.translateString('settings.global.knob-opacity.transparent'),
-		},
-		{
-			percentageValue: 100,
-			label: this.i18n.translateString('settings.global.knob-opacity.opaque'),
-		},
-	];
+    sizeKnobs: readonly Knob[] = [
+        {
+            percentageValue: 0,
+            label: this.i18n.translateString('settings.global.knob-sizes.small'),
+        },
+        {
+            percentageValue: 50,
+            label: this.i18n.translateString('settings.global.knob-sizes.medium'),
+        },
+        {
+            percentageValue: 100,
+            label: this.i18n.translateString('settings.global.knob-sizes.large'),
+        },
+    ];
+    opacityKnobs: readonly Knob[] = [
+        {
+            percentageValue: 0,
+            label: this.i18n.translateString('settings.global.knob-opacity.transparent'),
+        },
+        {
+            percentageValue: 100,
+            label: this.i18n.translateString('settings.global.knob-opacity.opaque'),
+        },
+    ];
 
-	constructor(
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-		private readonly i18n: LocalizationFacadeService,
-	) {
-		super(store, cdr);
-	}
+    constructor(
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+        private readonly i18n: LocalizationFacadeService,
+    ) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.showCurrentSessionWidgetBgs$ = this.listenForBasicPref$((prefs) => prefs.showCurrentSessionWidgetBgs);
-		this.sessionWidgetShowMatches$ = this.listenForBasicPref$((prefs) => prefs.sessionWidgetShowMatches);
-	}
+    ngAfterContentInit() {
+        this.showCurrentSessionWidgetBgs$ = this.listenForBasicPref$((prefs) => prefs.showCurrentSessionWidgetBgs);
+        this.sessionWidgetShowMatches$ = this.listenForBasicPref$((prefs) => prefs.sessionWidgetShowMatches);
+    }
 }

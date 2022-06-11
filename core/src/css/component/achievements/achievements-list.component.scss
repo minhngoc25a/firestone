@@ -2,211 +2,212 @@
 @import '../../global/fonts';
 
 .achievements-container {
-	// We want positioning to happen based on the parent, to make the
-	// collapse header transition smoother
-	// position: relative;
-	flex-grow: 1;
-	display: flex;
-	flex-direction: column;
-	width: 100%;
+  // We want positioning to happen based on the parent, to make the
+  // collapse header transition smoother
+  // position: relative;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 
-	achievement-progress-bar {
-		align-self: flex-end;
-		margin-left: auto;
-		position: relative;
-		top: 1px;
-		transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out, max-height 0.4s ease-in-out;
+  achievement-progress-bar {
+    align-self: flex-end;
+    margin-left: auto;
+    position: relative;
+    top: 1px;
+    transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out, max-height 0.4s ease-in-out;
 
-		.achievement-progress-bar {
-			flex-direction: row;
-			align-items: center;
-			justify-content: center;
+    .achievement-progress-bar {
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
 
-			.achieved {
-				margin-bottom: 0;
-				margin-right: 10px;
-			}
-		}
-	}
+      .achieved {
+        margin-bottom: 0;
+        margin-right: 10px;
+      }
+    }
+  }
 
-	.set-title {
-		@extend %achievements-category-title;
-		padding-bottom: 5px;
-		// border-bottom: 1px solid #4B3052;
-	}
+  .set-title {
+    @extend %achievements-category-title;
+    padding-bottom: 5px;
+    // border-bottom: 1px solid #4B3052;
+  }
 
-	.collapse-menu {
-		position: absolute;
-		top: 0px;
-		right: 15px;
-		width: 30px;
-		height: 30px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
+  .collapse-menu {
+    position: absolute;
+    top: 0px;
+    right: 15px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-		i {
-			--icon-color: #cb9fd7;
-			transform: scaleY(-1);
-		}
+    i {
+      --icon-color: #cb9fd7;
+      transform: scaleY(-1);
+    }
 
-		&:hover {
-			background-color: #4b3052;
-		}
-	}
+    &:hover {
+      background-color: #4b3052;
+    }
+  }
 
-	.achievements-list {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		margin-top: 10px;
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		justify-content: flex-start;
-		overflow-x: hidden;
-		overflow-y: auto;
-		-webkit-transition: all 2s;
-		transition: all 2s;
-		flex-grow: 1;
-		min-height: 0;
+  .achievements-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-transition: all 2s;
+    transition: all 2s;
+    flex-grow: 1;
+    min-height: 0;
 
-		li {
-			margin-right: 10px;
-			margin-bottom: 10px;
-		}
-	}
+    li {
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+  }
 
-	.show-filter {
-		@extend %search-active;
-		display: flex;
-		justify-content: flex-start;
-		flex-shrink: 0;
-		align-items: center;
-		margin-right: 15px;
-		// margin-top: 18px;
-		padding-bottom: 15px;
-		border-bottom: 1px solid #4b3052;
-		transition: margin 0.4s ease-in-out;
+  .show-filter {
+    @extend %search-active;
+    display: flex;
+    justify-content: flex-start;
+    flex-shrink: 0;
+    align-items: center;
+    margin-right: 15px;
+    // margin-top: 18px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #4b3052;
+    transition: margin 0.4s ease-in-out;
 
-		ng-select {
-			@extend %search-active;
-			color: #cb9fd7;
-			height: 30px;
-			background: rgba(255, 255, 255, 0.08);
-			margin-right: 15px;
-			width: 215px;
-			transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out, max-height 0.4s ease-in-out;
+    ng-select {
+      @extend %search-active;
+      color: #cb9fd7;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.08);
+      margin-right: 15px;
+      width: 215px;
+      transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out, max-height 0.4s ease-in-out;
 
-			&:focus,
-			&:active {
-				outline: none;
-			}
+      &:focus,
+      &:active {
+        outline: none;
+      }
 
-			& > div {
-				border: 1px solid #7d5a87;
-				outline: none;
+      & > div {
+        border: 1px solid #7d5a87;
+        outline: none;
 
-				div.single > div.toggle:hover {
-					background: transparent;
-				}
-			}
+        div.single > div.toggle:hover {
+          background: transparent;
+        }
+      }
 
-			.placeholder {
-				position: relative;
-				color: #cb9fd7;
-			}
+      .placeholder {
+        position: relative;
+        color: #cb9fd7;
+      }
 
-			.toggle {
-				display: none;
-			}
+      .toggle {
+        display: none;
+      }
 
-			.caret {
-				color: var(--color-1);
-			}
-			.selected-icon {
-				color: var(--color-1);
-				position: relative;
-				left: 8px;
-			}
+      .caret {
+        color: var(--color-1);
+      }
 
-			.open .caret {
-				transform: scale(1, -1);
-			}
+      .selected-icon {
+        color: var(--color-1);
+        position: relative;
+        left: 8px;
+      }
 
-			select-dropdown {
-				& > div {
-					background: $black;
-					border: 1px solid #7d5a87;
-					border-top: none;
-					outline: none;
-				}
+      .open .caret {
+        transform: scale(1, -1);
+      }
 
-				.filter {
-					display: none;
-				}
+      select-dropdown {
+        & > div {
+          background: $black;
+          border: 1px solid #7d5a87;
+          border-top: none;
+          outline: none;
+        }
 
-				& > div .options ul li {
-					color: #cb9fd7;
-					border-bottom: 1px solid #3b1f42;
-					padding: 0;
-					padding-left: 9px;
-					padding-right: 10px;
-					display: flex;
-					justify-content: space-between;
-					align-items: center;
-					height: 30px;
+        .filter {
+          display: none;
+        }
 
-					&.selected {
-						background-color: inherit;
-						color: inherit;
+        & > div .options ul li {
+          color: #cb9fd7;
+          border-bottom: 1px solid #3b1f42;
+          padding: 0;
+          padding-left: 9px;
+          padding-right: 10px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          height: 30px;
 
-						&:hover {
-							color: inherit;
-						}
-					}
+          &.selected {
+            background-color: inherit;
+            color: inherit;
 
-					&.highlighted,
-					&:hover {
-						background-color: #4b3052;
-					}
+            &:hover {
+              color: inherit;
+            }
+          }
 
-					span {
-						max-width: 100%;
-						white-space: nowrap;
-						overflow: hidden;
-						text-overflow: ellipsis;
-					}
-				}
-			}
-		}
-	}
+          &.highlighted,
+          &:hover {
+            background-color: #4b3052;
+          }
 
-	.empty-state {
-		@extend %empty-state;
-		color: #a276af;
-		flex-grow: 1;
-		display: flex;
-		flex-direction: column;
-		justify-items: center;
-		align-items: center;
+          span {
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
+  }
 
-		.state-container {
-			margin: auto;
-			display: flex;
-			flex-direction: column;
-			align-items: center;
+  .empty-state {
+    @extend %empty-state;
+    color: #a276af;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
 
-			i {
-				margin-bottom: 30px;
-				--icon-color: #a276af;
-			}
+    .state-container {
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
 
-			.title {
-				@extend %empty-state-title;
-				color: #cb9fd7;
-				margin-bottom: 15px;
-			}
-		}
-	}
+      i {
+        margin-bottom: 30px;
+        --icon-color: #a276af;
+      }
+
+      .title {
+        @extend %empty-state-title;
+        color: #cb9fd7;
+        margin-bottom: 15px;
+      }
+    }
+  }
 }

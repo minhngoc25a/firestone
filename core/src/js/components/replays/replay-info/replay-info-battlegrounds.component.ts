@@ -1,29 +1,32 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-import { Entity, EntityAsJS, EntityDefinition } from '@firestone-hs/replay-parser';
-import { CardsFacadeService } from '@services/cards-facade.service';
-import { MinionStat } from '../../../models/battlegrounds/post-match/minion-stat';
-import { RunStep } from '../../../models/duels/run-step';
-import { GameStat } from '../../../models/mainwindow/stats/game-stat';
-import { StatGameModeType } from '../../../models/mainwindow/stats/stat-game-mode.type';
-import { getReferenceTribeCardId, getTribeIcon, getTribeName } from '../../../services/battlegrounds/bgs-utils';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
-import { ShowReplayEvent } from '../../../services/mainwindow/store/events/replays/show-replay-event';
-import { TriggerShowMatchStatsEvent } from '../../../services/mainwindow/store/events/replays/trigger-show-match-stats-event';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { capitalizeEachWord } from '../../../services/utils';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
-import { normalizeCardId } from '../../battlegrounds/post-match/card-utils';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
+import {DomSanitizer} from '@angular/platform-browser';
+import {Entity, EntityAsJS, EntityDefinition} from '@firestone-hs/replay-parser';
+import {CardsFacadeService} from '@services/cards-facade.service';
+import {MinionStat} from '../../../models/battlegrounds/post-match/minion-stat';
+import {RunStep} from '../../../models/duels/run-step';
+import {GameStat} from '../../../models/mainwindow/stats/game-stat';
+import {StatGameModeType} from '../../../models/mainwindow/stats/stat-game-mode.type';
+import {getReferenceTribeCardId, getTribeIcon, getTribeName} from '../../../services/battlegrounds/bgs-utils';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
+import {ShowReplayEvent} from '../../../services/mainwindow/store/events/replays/show-replay-event';
+import {
+    TriggerShowMatchStatsEvent
+} from '../../../services/mainwindow/store/events/replays/trigger-show-match-stats-event';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {capitalizeEachWord} from '../../../services/utils';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
+import {normalizeCardId} from '../../battlegrounds/post-match/card-utils';
 
 declare let amplitude;
+
 @Component({
-	selector: 'replay-info-battlegrounds',
-	styleUrls: [
-		`../../../../css/global/menu.scss`,
-		`../../../../css/component/replays/replay-info/replay-info.component.scss`,
-		`../../../../css/component/replays/replay-info/replay-info-battlegrounds.component.scss`,
-	],
-	template: `
+    selector: 'replay-info-battlegrounds',
+    styleUrls: [
+        `../../../../css/global/menu.scss`,
+        `../../../../css/component/replays/replay-info/replay-info.component.scss`,
+        `../../../../css/component/replays/replay-info/replay-info-battlegrounds.component.scss`,
+    ],
+    template: `
 		<div class="replay-info battlegrounds {{ visualResult }}">
 			<div class="result-color-code {{ visualResult }}"></div>
 
@@ -101,160 +104,154 @@ declare let amplitude;
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReplayInfoBattlegroundsComponent extends AbstractSubscriptionComponent {
-	@Input() showStatsLabel = this.i18n.translateString('app.replays.replay-info.show-stats-button');
-	@Input() showReplayLabel = this.i18n.translateString('app.replays.replay-info.watch-replay-button');
+    @Input() showStatsLabel = this.i18n.translateString('app.replays.replay-info.show-stats-button');
+    @Input() showReplayLabel = this.i18n.translateString('app.replays.replay-info.watch-replay-button');
+    finalWarband: KnownBoard;
+    replayInfo: GameStat;
+    visualResult: string;
+    gameMode: StatGameModeType;
+    playerClassImage: string;
+    playerClassTooltip: string;
+    result: string;
+    reviewId: string;
+    hasMatchStats: boolean;
+    deltaMmr: number;
+    availableTribes: readonly InternalTribe[];
+    tribesTooltip: string;
+    private bgsPerfectGame: boolean;
 
-	@Input() set replay(value: GameStat | RunStep) {
-		this.replayInfo = value;
-		this.updateInfo();
-	}
+    constructor(
+        private readonly sanitizer: DomSanitizer,
+        private readonly allCards: CardsFacadeService,
+        private readonly i18n: LocalizationFacadeService,
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+    ) {
+        super(store, cdr);
+    }
 
-	finalWarband: KnownBoard;
+    @Input() set replay(value: GameStat | RunStep) {
+        this.replayInfo = value;
+        this.updateInfo();
+    }
 
-	replayInfo: GameStat;
+    showReplay() {
+        if (this.bgsPerfectGame) {
+            amplitude.getInstance().logEvent('load-bgs-perfect-game');
+        }
+        this.store.send(new ShowReplayEvent(this.reviewId));
+    }
 
-	visualResult: string;
-	gameMode: StatGameModeType;
-	playerClassImage: string;
-	playerClassTooltip: string;
+    showStats() {
+        this.store.send(new TriggerShowMatchStatsEvent(this.reviewId));
+    }
 
-	result: string;
-	reviewId: string;
-	hasMatchStats: boolean;
-	deltaMmr: number;
+    capitalize(input: string): string {
+        return capitalizeEachWord(input);
+    }
 
-	availableTribes: readonly InternalTribe[];
-	tribesTooltip: string;
+    private updateInfo() {
+        if (!this.replayInfo) {
+            return;
+        }
 
-	private bgsPerfectGame: boolean;
+        this.gameMode = this.replayInfo.gameMode;
+        [this.playerClassImage, this.playerClassTooltip] = this.buildPlayerClassImage(this.replayInfo, true);
 
-	constructor(
-		private readonly sanitizer: DomSanitizer,
-		private readonly allCards: CardsFacadeService,
-		private readonly i18n: LocalizationFacadeService,
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-	) {
-		super(store, cdr);
-	}
+        this.result = this.buildMatchResultText(this.replayInfo);
+        this.reviewId = this.replayInfo.reviewId;
 
-	showReplay() {
-		if (this.bgsPerfectGame) {
-			amplitude.getInstance().logEvent('load-bgs-perfect-game');
-		}
-		this.store.send(new ShowReplayEvent(this.reviewId));
-	}
+        const isBg = this.replayInfo.gameMode === 'battlegrounds';
+        this.hasMatchStats = isBg;
+        this.visualResult = isBg
+            ? this.replayInfo.bgsPerfectGame || parseInt(this.replayInfo.additionalResult) <= 4
+                ? 'won'
+                : 'lost'
+            : this.replayInfo.result;
+        const deltaMmr = parseInt(this.replayInfo.newPlayerRank) - parseInt(this.replayInfo.playerRank);
+        // This is most likely a season reset
+        if (deltaMmr < -500) {
+            this.deltaMmr = parseInt(this.replayInfo.newPlayerRank);
+        } else if (!isNaN(deltaMmr)) {
+            this.deltaMmr = deltaMmr;
+        }
+        this.availableTribes = [...(this.replayInfo.bgsAvailableTribes ?? [])]
+            .sort((a, b) => a - b)
+            .map((race) => ({
+                cardId: getReferenceTribeCardId(race),
+                icon: getTribeIcon(race),
+                tooltip: getTribeName(race, this.i18n),
+            }));
+        this.tribesTooltip = this.i18n.translateString('app.replays.replay-info.bgs-available-tribes-tooltip', {
+            value: this.availableTribes.map((tribe) => tribe.tooltip).join(', '),
+        });
+        this.bgsPerfectGame = this.replayInfo.bgsPerfectGame;
+        this.finalWarband = this.buildFinalWarband();
+    }
 
-	showStats() {
-		this.store.send(new TriggerShowMatchStatsEvent(this.reviewId));
-	}
+    private buildPlayerClassImage(info: GameStat, isPlayer: boolean): [string, string] {
+        if (!isPlayer) {
+            return [null, null];
+        } else if (info.playerCardId) {
+            const card = this.allCards.getCard(info.playerCardId);
+            return [`https://static.zerotoheroes.com/hearthstone/cardart/256x/${info.playerCardId}.jpg`, card.name];
+        } else {
+            // Return Bob to not have an empty image
+            return [`https://static.zerotoheroes.com/hearthstone/cardart/256x/TB_BaconShop_HERO_PH.jpg`, null];
+        }
+    }
 
-	capitalize(input: string): string {
-		return capitalizeEachWord(input);
-	}
+    private buildMatchResultText(info: GameStat): string {
+        if (info.additionalResult) {
+            if (info.bgsPerfectGame) {
+                return this.i18n.translateString('app.replays.replay-info.bgs-perfect-game-result');
+            }
+            return this.i18n.translateString(`app.replays.replay-info.bgs-result.${parseInt(info.additionalResult)}`);
+        }
+        return null;
+    }
 
-	private updateInfo() {
-		if (!this.replayInfo) {
-			return;
-		}
+    private buildFinalWarband(): KnownBoard {
+        const postMatch = this.replayInfo.postMatchStats;
+        const bgsBoard = postMatch?.boardHistory[postMatch?.boardHistory.length - 1];
+        if (!bgsBoard) {
+            return null;
+        }
 
-		this.gameMode = this.replayInfo.gameMode;
-		[this.playerClassImage, this.playerClassTooltip] = this.buildPlayerClassImage(this.replayInfo, true);
+        const boardEntities = bgsBoard.board.map((boardEntity) =>
+            boardEntity instanceof Entity || boardEntity.tags instanceof Map
+                ? Entity.create(new Entity(), boardEntity as EntityDefinition)
+                : Entity.fromJS((boardEntity as unknown) as EntityAsJS),
+        ) as readonly Entity[];
+        const normalizedIds = [
+            ...new Set(boardEntities.map((entity) => normalizeCardId(entity.cardID, this.allCards))),
+        ];
+        const minionStats = normalizedIds.map(
+            (cardId) =>
+                ({
+                    cardId: cardId,
+                } as MinionStat),
+        );
 
-		this.result = this.buildMatchResultText(this.replayInfo);
-		this.reviewId = this.replayInfo.reviewId;
-
-		const isBg = this.replayInfo.gameMode === 'battlegrounds';
-		this.hasMatchStats = isBg;
-		this.visualResult = isBg
-			? this.replayInfo.bgsPerfectGame || parseInt(this.replayInfo.additionalResult) <= 4
-				? 'won'
-				: 'lost'
-			: this.replayInfo.result;
-		const deltaMmr = parseInt(this.replayInfo.newPlayerRank) - parseInt(this.replayInfo.playerRank);
-		// This is most likely a season reset
-		if (deltaMmr < -500) {
-			this.deltaMmr = parseInt(this.replayInfo.newPlayerRank);
-		} else if (!isNaN(deltaMmr)) {
-			this.deltaMmr = deltaMmr;
-		}
-		this.availableTribes = [...(this.replayInfo.bgsAvailableTribes ?? [])]
-			.sort((a, b) => a - b)
-			.map((race) => ({
-				cardId: getReferenceTribeCardId(race),
-				icon: getTribeIcon(race),
-				tooltip: getTribeName(race, this.i18n),
-			}));
-		this.tribesTooltip = this.i18n.translateString('app.replays.replay-info.bgs-available-tribes-tooltip', {
-			value: this.availableTribes.map((tribe) => tribe.tooltip).join(', '),
-		});
-		this.bgsPerfectGame = this.replayInfo.bgsPerfectGame;
-		this.finalWarband = this.buildFinalWarband();
-	}
-
-	private buildPlayerClassImage(info: GameStat, isPlayer: boolean): [string, string] {
-		if (!isPlayer) {
-			return [null, null];
-		} else if (info.playerCardId) {
-			const card = this.allCards.getCard(info.playerCardId);
-			return [`https://static.zerotoheroes.com/hearthstone/cardart/256x/${info.playerCardId}.jpg`, card.name];
-		} else {
-			// Return Bob to not have an empty image
-			return [`https://static.zerotoheroes.com/hearthstone/cardart/256x/TB_BaconShop_HERO_PH.jpg`, null];
-		}
-	}
-
-	private buildMatchResultText(info: GameStat): string {
-		if (info.additionalResult) {
-			if (info.bgsPerfectGame) {
-				return this.i18n.translateString('app.replays.replay-info.bgs-perfect-game-result');
-			}
-			return this.i18n.translateString(`app.replays.replay-info.bgs-result.${parseInt(info.additionalResult)}`);
-		}
-		return null;
-	}
-
-	private buildFinalWarband(): KnownBoard {
-		const postMatch = this.replayInfo.postMatchStats;
-		const bgsBoard = postMatch?.boardHistory[postMatch?.boardHistory.length - 1];
-		if (!bgsBoard) {
-			return null;
-		}
-
-		const boardEntities = bgsBoard.board.map((boardEntity) =>
-			boardEntity instanceof Entity || boardEntity.tags instanceof Map
-				? Entity.create(new Entity(), boardEntity as EntityDefinition)
-				: Entity.fromJS((boardEntity as unknown) as EntityAsJS),
-		) as readonly Entity[];
-		const normalizedIds = [
-			...new Set(boardEntities.map((entity) => normalizeCardId(entity.cardID, this.allCards))),
-		];
-		const minionStats = normalizedIds.map(
-			(cardId) =>
-				({
-					cardId: cardId,
-				} as MinionStat),
-		);
-
-		return {
-			entities: boardEntities,
-			minionStats: minionStats,
-		} as KnownBoard;
-	}
+        return {
+            entities: boardEntities,
+            minionStats: minionStats,
+        } as KnownBoard;
+    }
 }
 
 interface InternalTribe {
-	cardId: string;
-	icon: string;
-	tooltip: string;
+    cardId: string;
+    icon: string;
+    tooltip: string;
 }
 
 interface KnownBoard {
-	readonly entities: readonly Entity[];
-	// readonly title: string;
-	readonly minionStats: readonly MinionStat[];
-	// readonly date: string;
+    readonly entities: readonly Entity[];
+    // readonly title: string;
+    readonly minionStats: readonly MinionStat[];
+    // readonly date: string;
 }

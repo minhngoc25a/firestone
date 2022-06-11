@@ -1,17 +1,17 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { CardIds } from '@firestone-hs/reference-data';
-import { StatName } from '@firestone-hs/user-bgs-post-match-stats';
-import { BgsFaceOffWithSimulation } from '../../../models/battlegrounds/bgs-face-off-with-simulation';
-import { BgsPostMatchStatsPanel } from '../../../models/battlegrounds/post-match/bgs-post-match-stats-panel';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {CardIds} from '@firestone-hs/reference-data';
+import {StatName} from '@firestone-hs/user-bgs-post-match-stats';
+import {BgsFaceOffWithSimulation} from '../../../models/battlegrounds/bgs-face-off-with-simulation';
+import {BgsPostMatchStatsPanel} from '../../../models/battlegrounds/post-match/bgs-post-match-stats-panel';
 
 @Component({
-	selector: 'bgs-post-match-stats-recap',
-	styleUrls: [
-		`../../../../css/global/reset-styles.scss`,
-		`../../../../css/component/battlegrounds/post-match/bgs-post-match-stats-recap.component.scss`,
-		`../../../../css/global/scrollbar.scss`,
-	],
-	template: `
+    selector: 'bgs-post-match-stats-recap',
+    styleUrls: [
+        `../../../../css/global/reset-styles.scss`,
+        `../../../../css/component/battlegrounds/post-match/bgs-post-match-stats-recap.component.scss`,
+        `../../../../css/global/scrollbar.scss`,
+    ],
+    template: `
 		<div class="stats-recap" scrollable>
 			<div class="entry face-offs" *ngIf="wins || losses || ties">
 				<div class="cell">
@@ -137,138 +137,140 @@ import { BgsPostMatchStatsPanel } from '../../../models/battlegrounds/post-match
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsPostMatchStatsRecapComponent {
-	wins: number;
-	losses: number;
-	ties: number;
+    wins: number;
+    losses: number;
+    ties: number;
 
-	totalMinionsDamageDealt: number;
-	totalMinionsDamageTaken: number;
-	totalHeroDamageDealt = 0;
-	maxSingleTurnHeroDamageDealt = 0;
-	winStreak: number;
-	triples: number;
-	maxBoardStats: number;
-	coinsWasted: number;
-	rerolls: number;
-	freezes: number;
-	heroPowers: number;
-	minionsBought: number;
-	minionsSold: number;
-	minionsKilled: number;
-	heroesKilled: number;
-	percentageOfBattlesGoingFirst: number;
-	luckFactor: number;
+    totalMinionsDamageDealt: number;
+    totalMinionsDamageTaken: number;
+    totalHeroDamageDealt = 0;
+    maxSingleTurnHeroDamageDealt = 0;
+    winStreak: number;
+    triples: number;
+    maxBoardStats: number;
+    coinsWasted: number;
+    rerolls: number;
+    freezes: number;
+    heroPowers: number;
+    minionsBought: number;
+    minionsSold: number;
+    minionsKilled: number;
+    heroesKilled: number;
+    percentageOfBattlesGoingFirst: number;
+    luckFactor: number;
 
-	private _stats: BgsPostMatchStatsPanel;
-	private _reviewId: string;
-	private _faceOffs: readonly BgsFaceOffWithSimulation[];
+    private _stats: BgsPostMatchStatsPanel;
 
-	@Input() set stats(value: BgsPostMatchStatsPanel) {
-		if (value === this._stats) {
-			return;
-		}
-		this._stats = value;
-		this.updateStats();
-	}
+    @Input() set stats(value: BgsPostMatchStatsPanel) {
+        if (value === this._stats) {
+            return;
+        }
+        this._stats = value;
+        this.updateStats();
+    }
 
-	@Input() set reviewId(value: string) {
-		this._reviewId = value;
-		this.updateStats();
-	}
+    private _reviewId: string;
 
-	@Input() set faceOffs(value: readonly BgsFaceOffWithSimulation[]) {
-		this._faceOffs = value;
-		this.updateStats();
-	}
+    @Input() set reviewId(value: string) {
+        this._reviewId = value;
+        this.updateStats();
+    }
 
-	isNewRecord(statName: StatName): boolean {
-		const isNewRecord =
-			this?._stats?.newBestUserStats &&
-			this?._reviewId &&
-			this?._stats?.newBestUserStats.find((stat) => stat.statName === statName) != null &&
-			this?._stats?.newBestUserStats.find((stat) => stat.statName === statName).reviewId === this._reviewId;
+    private _faceOffs: readonly BgsFaceOffWithSimulation[];
 
-		return isNewRecord;
-	}
+    @Input() set faceOffs(value: readonly BgsFaceOffWithSimulation[]) {
+        this._faceOffs = value;
+        this.updateStats();
+    }
 
-	// When adding stats here, also add them to the api-compute-bgs-single-run-stats lambda
-	private updateStats() {
-		if (!this._stats?.player || !this._stats?.stats) {
-			this.reset();
-			return;
-		}
-		this.wins = this._faceOffs?.filter((faceOff) => faceOff.result === 'won')?.length || 0;
-		this.losses = this._faceOffs?.filter((faceOff) => faceOff.result === 'lost')?.length || 0;
-		this.ties = this._faceOffs?.filter((faceOff) => faceOff.result === 'tied')?.length || 0;
+    isNewRecord(statName: StatName): boolean {
+        const isNewRecord =
+            this?._stats?.newBestUserStats &&
+            this?._reviewId &&
+            this?._stats?.newBestUserStats.find((stat) => stat.statName === statName) != null &&
+            this?._stats?.newBestUserStats.find((stat) => stat.statName === statName).reviewId === this._reviewId;
 
-		this.winStreak = this._stats.player.highestWinStreak;
-		this.totalMinionsDamageDealt = Object.keys(this._stats.stats.totalMinionsDamageDealt)
-			.filter((cardId) => cardId !== this._stats.player.cardId)
-			.map((cardId) => this._stats.stats.totalMinionsDamageDealt[cardId])
-			.reduce((a, b) => a + b, 0);
-		this.totalMinionsDamageTaken = Object.keys(this._stats.stats.totalMinionsDamageTaken)
-			.filter((cardId) => cardId !== this._stats.player.cardId)
-			.map((cardId) => this._stats.stats.totalMinionsDamageTaken[cardId])
-			.reduce((a, b) => a + b, 0);
-		if (this._stats.stats.damageToEnemyHeroOverTurn) {
-			const damageDealtToHero = this._stats.stats.damageToEnemyHeroOverTurn
-				.filter((info) => info.value.enemyHeroCardId !== CardIds.KelthuzadBattlegrounds)
-				.map((info) => (info.value.value != null ? info.value.value : ((info.value as any) as number))); // For backward compatibilitymap(info => info.value);
-			this.maxSingleTurnHeroDamageDealt = Math.max(...damageDealtToHero, this.maxSingleTurnHeroDamageDealt);
-			this.totalHeroDamageDealt = damageDealtToHero.reduce((a, b) => a + b, 0);
-		}
-		this.triples = this._stats.stats.tripleTimings?.length;
-		// console.error('should reactivated coins wasted');
-		this.coinsWasted = this._stats.stats.coinsWastedOverTurn.map((value) => value.value).reduce((a, b) => a + b, 0);
-		this.freezes = this._stats.stats.freezesOverTurn.map((value) => value.value).reduce((a, b) => a + b, 0);
-		this.minionsBought = this._stats.stats.minionsBoughtOverTurn
-			.map((value) => value.value)
-			.reduce((a, b) => a + b, 0);
-		this.minionsSold = this._stats.stats.minionsSoldOverTurn.map((value) => value.value).reduce((a, b) => a + b, 0);
-		this.heroPowers = this._stats.stats.mainPlayerHeroPowersOverTurn
-			.map((value) => value.value)
-			.reduce((a, b) => a + b, 0);
-		this.maxBoardStats = Math.max(0, Math.max(...this._stats.stats.totalStatsOverTurn.map((stat) => stat.value)));
-		// Hack for Toki, to avoid counting the hero power as a refresh (even though it technically
-		// is a refresh)
-		const rerolls = this._stats.stats.rerollsOverTurn.map((value) => value.value).reduce((a, b) => a + b, 0);
-		this.rerolls =
-			this._stats.player.cardId === CardIds.InfiniteTokiBattlegrounds ? rerolls - this.heroPowers : rerolls;
-		this.minionsKilled = this._stats.stats.totalEnemyMinionsKilled;
-		this.heroesKilled = this._stats.stats.totalEnemyHeroesKilled;
-		const battlesGoingFirst = this._stats.stats.wentFirstInBattleOverTurn.filter((value) => value.value === true)
-			.length;
-		const battlesGoingSecond = this._stats.stats.wentFirstInBattleOverTurn.filter((value) => value.value === false)
-			.length;
-		this.percentageOfBattlesGoingFirst =
-			this._stats.stats.wentFirstInBattleOverTurn.length === 0
-				? 0
-				: (100 * battlesGoingFirst) / (battlesGoingFirst + battlesGoingSecond);
-		this.luckFactor = 100 * this._stats.stats.luckFactor;
-	}
+        return isNewRecord;
+    }
 
-	private reset() {
-		this.wins = undefined;
-		this.losses = undefined;
-		this.ties = undefined;
-		this.totalMinionsDamageDealt = undefined;
-		this.totalMinionsDamageTaken = undefined;
-		this.totalHeroDamageDealt = undefined;
-		this.winStreak = undefined;
-		this.triples = undefined;
-		this.maxBoardStats = undefined;
-		this.coinsWasted = undefined;
-		this.rerolls = undefined;
-		this.freezes = undefined;
-		this.heroPowers = undefined;
-		this.minionsBought = undefined;
-		this.minionsSold = undefined;
-		this.minionsKilled = undefined;
-		this.heroesKilled = undefined;
-		this.percentageOfBattlesGoingFirst = undefined;
-		this.luckFactor = undefined;
-	}
+    // When adding stats here, also add them to the api-compute-bgs-single-run-stats lambda
+    private updateStats() {
+        if (!this._stats?.player || !this._stats?.stats) {
+            this.reset();
+            return;
+        }
+        this.wins = this._faceOffs?.filter((faceOff) => faceOff.result === 'won')?.length || 0;
+        this.losses = this._faceOffs?.filter((faceOff) => faceOff.result === 'lost')?.length || 0;
+        this.ties = this._faceOffs?.filter((faceOff) => faceOff.result === 'tied')?.length || 0;
+
+        this.winStreak = this._stats.player.highestWinStreak;
+        this.totalMinionsDamageDealt = Object.keys(this._stats.stats.totalMinionsDamageDealt)
+            .filter((cardId) => cardId !== this._stats.player.cardId)
+            .map((cardId) => this._stats.stats.totalMinionsDamageDealt[cardId])
+            .reduce((a, b) => a + b, 0);
+        this.totalMinionsDamageTaken = Object.keys(this._stats.stats.totalMinionsDamageTaken)
+            .filter((cardId) => cardId !== this._stats.player.cardId)
+            .map((cardId) => this._stats.stats.totalMinionsDamageTaken[cardId])
+            .reduce((a, b) => a + b, 0);
+        if (this._stats.stats.damageToEnemyHeroOverTurn) {
+            const damageDealtToHero = this._stats.stats.damageToEnemyHeroOverTurn
+                .filter((info) => info.value.enemyHeroCardId !== CardIds.KelthuzadBattlegrounds)
+                .map((info) => (info.value.value != null ? info.value.value : ((info.value as any) as number))); // For backward compatibilitymap(info => info.value);
+            this.maxSingleTurnHeroDamageDealt = Math.max(...damageDealtToHero, this.maxSingleTurnHeroDamageDealt);
+            this.totalHeroDamageDealt = damageDealtToHero.reduce((a, b) => a + b, 0);
+        }
+        this.triples = this._stats.stats.tripleTimings?.length;
+        // console.error('should reactivated coins wasted');
+        this.coinsWasted = this._stats.stats.coinsWastedOverTurn.map((value) => value.value).reduce((a, b) => a + b, 0);
+        this.freezes = this._stats.stats.freezesOverTurn.map((value) => value.value).reduce((a, b) => a + b, 0);
+        this.minionsBought = this._stats.stats.minionsBoughtOverTurn
+            .map((value) => value.value)
+            .reduce((a, b) => a + b, 0);
+        this.minionsSold = this._stats.stats.minionsSoldOverTurn.map((value) => value.value).reduce((a, b) => a + b, 0);
+        this.heroPowers = this._stats.stats.mainPlayerHeroPowersOverTurn
+            .map((value) => value.value)
+            .reduce((a, b) => a + b, 0);
+        this.maxBoardStats = Math.max(0, Math.max(...this._stats.stats.totalStatsOverTurn.map((stat) => stat.value)));
+        // Hack for Toki, to avoid counting the hero power as a refresh (even though it technically
+        // is a refresh)
+        const rerolls = this._stats.stats.rerollsOverTurn.map((value) => value.value).reduce((a, b) => a + b, 0);
+        this.rerolls =
+            this._stats.player.cardId === CardIds.InfiniteTokiBattlegrounds ? rerolls - this.heroPowers : rerolls;
+        this.minionsKilled = this._stats.stats.totalEnemyMinionsKilled;
+        this.heroesKilled = this._stats.stats.totalEnemyHeroesKilled;
+        const battlesGoingFirst = this._stats.stats.wentFirstInBattleOverTurn.filter((value) => value.value === true)
+            .length;
+        const battlesGoingSecond = this._stats.stats.wentFirstInBattleOverTurn.filter((value) => value.value === false)
+            .length;
+        this.percentageOfBattlesGoingFirst =
+            this._stats.stats.wentFirstInBattleOverTurn.length === 0
+                ? 0
+                : (100 * battlesGoingFirst) / (battlesGoingFirst + battlesGoingSecond);
+        this.luckFactor = 100 * this._stats.stats.luckFactor;
+    }
+
+    private reset() {
+        this.wins = undefined;
+        this.losses = undefined;
+        this.ties = undefined;
+        this.totalMinionsDamageDealt = undefined;
+        this.totalMinionsDamageTaken = undefined;
+        this.totalHeroDamageDealt = undefined;
+        this.winStreak = undefined;
+        this.triples = undefined;
+        this.maxBoardStats = undefined;
+        this.coinsWasted = undefined;
+        this.rerolls = undefined;
+        this.freezes = undefined;
+        this.heroPowers = undefined;
+        this.minionsBought = undefined;
+        this.minionsSold = undefined;
+        this.minionsKilled = undefined;
+        this.heroesKilled = undefined;
+        this.percentageOfBattlesGoingFirst = undefined;
+        this.luckFactor = undefined;
+    }
 }

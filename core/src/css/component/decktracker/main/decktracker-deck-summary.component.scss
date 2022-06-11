@@ -1,123 +1,125 @@
 :host() {
-	position: relative;
+  position: relative;
 }
 
 .decktracker-deck-summary {
-	display: flex;
-	align-items: center;
-	flex-direction: column;
-	height: 100%;
-	background: rgba(255, 255, 255, 0.08);
-	position: relative;
-	padding: 10px;
-	padding-bottom: 12px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  position: relative;
+  padding: 10px;
+  padding-bottom: 12px;
 
-	.deck-name {
-		width: 100%;
-		font-family: Open Sans;
-		font-style: normal;
-		font-weight: normal;
-		color: var(--default-title-color);
-		font-size: 16px;
-		line-height: 22px;
-		text-align: center;
-		position: relative;
-		margin: auto;
-		flex-grow: 0;
-		flex-shrink: 0;
-		margin-bottom: 10px;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
+  .deck-name {
+    width: 100%;
+    font-family: Open Sans;
+    font-style: normal;
+    font-weight: normal;
+    color: var(--default-title-color);
+    font-size: 16px;
+    line-height: 22px;
+    text-align: center;
+    position: relative;
+    margin: auto;
+    flex-grow: 0;
+    flex-shrink: 0;
+    margin-bottom: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-	.deck-image {
-		width: 60%;
-		position: relative;
-		flex-grow: 1;
-		margin-bottom: 10px;
-		flex-shrink: 0;
+  .deck-image {
+    width: 60%;
+    position: relative;
+    flex-grow: 1;
+    margin-bottom: 10px;
+    flex-shrink: 0;
 
-		.skin {
-			width: 100%;
-			clip-path: polygon(0% 100%, 0% 56%, 15% 20%, 50% 5%, 80% 20%, 90% 56%, 90% 100%);
-		}
-		.frame {
-			position: absolute;
-			top: -8%;
-			left: -16%;
-			width: 120%;
-		}
-		.decoration {
-			position: absolute;
-			top: -8%;
-			left: 0%;
-			width: 100%;
+    .skin {
+      width: 100%;
+      clip-path: polygon(0% 100%, 0% 56%, 15% 20%, 50% 5%, 80% 20%, 90% 56%, 90% 100%);
+    }
 
-			&.wild {
-				left: -15%;
-			}
-		}
-	}
+    .frame {
+      position: absolute;
+      top: -8%;
+      left: -16%;
+      width: 120%;
+    }
 
-	.stats {
-		font-family: Open Sans;
-		font-style: normal;
-		font-weight: normal;
-		font-size: 12px;
-		line-height: 16px;
-		color: var(--default-title-color);
-		display: flex;
-		flex-direction: column;
-		align-items: center;
+    .decoration {
+      position: absolute;
+      top: -8%;
+      left: 0%;
+      width: 100%;
 
-		.last-used {
-			color: var(--default-text-color);
-		}
+      &.wild {
+        left: -15%;
+      }
+    }
+  }
 
-		& > div {
-			margin-bottom: 2px;
-		}
-	}
+  .stats {
+    font-family: Open Sans;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--default-title-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-	button {
-		position: absolute;
-		top: 0;
-		right: 0;
-		background: transparent;
-		display: none;
-	}
+    .last-used {
+      color: var(--default-text-color);
+    }
 
-	.close-button {
-		&:hover {
-			background: var(--on-close-button-background-color); // #2F0D0D;
-			color: var(--on-close-button-color); //#CCA2B3;
-			--icon-color: var(--on-close-button-color); //#CCA2B3;
-		}
-	}
+    & > div {
+      margin-bottom: 2px;
+    }
+  }
 
-	.restore-button {
-		width: 30px;
-		height: 30px;
+  button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: transparent;
+    display: none;
+  }
 
-		&:hover {
-			background: var(--on-close-button-background-color); // #2F0D0D;
-			color: var(--on-close-button-color); //#CCA2B3;
-			--icon-color: var(--on-close-button-color); //#CCA2B3;
-		}
-	}
+  .close-button {
+    &:hover {
+      background: var(--on-close-button-background-color); // #2F0D0D;
+      color: var(--on-close-button-color); //#CCA2B3;
+      --icon-color: var(--on-close-button-color); //#CCA2B3;
+    }
+  }
 
-	&.hidden {
-		opacity: 0.7;
-	}
+  .restore-button {
+    width: 30px;
+    height: 30px;
 
-	&:not(.no-click):hover {
-		background: rgba(255, 255, 255, 0.12);
-	}
+    &:hover {
+      background: var(--on-close-button-background-color); // #2F0D0D;
+      color: var(--on-close-button-color); //#CCA2B3;
+      --icon-color: var(--on-close-button-color); //#CCA2B3;
+    }
+  }
 
-	&:hover {
-		button {
-			display: block;
-		}
-	}
+  &.hidden {
+    opacity: 0.7;
+  }
+
+  &:not(.no-click):hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  &:hover {
+    button {
+      display: block;
+    }
+  }
 }

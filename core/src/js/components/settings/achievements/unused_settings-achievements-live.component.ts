@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 @Component({
-	selector: 'settings-achievements-live',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/global/scrollbar-settings.scss`,
-		`../../../../css/global/forms.scss`,
-		`../../../../css/component/settings/settings-common.component.scss`,
-		`../../../../css/component/settings/achievements/settings-achievements-live.component.scss`,
-	],
-	template: `
+    selector: 'settings-achievements-live',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/global/scrollbar-settings.scss`,
+        `../../../../css/global/forms.scss`,
+        `../../../../css/component/settings/settings-common.component.scss`,
+        `../../../../css/component/settings/achievements/settings-achievements-live.component.scss`,
+    ],
+    template: `
 		<div class="settings-group achievements-live">
 			<h2 class="title">Live achievements tracking</h2>
 			<section class="toggle-label">
@@ -21,6 +21,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 			</section>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SettingsAchievementsLiveComponent {}
+export class SettingsAchievementsLiveComponent {
+}

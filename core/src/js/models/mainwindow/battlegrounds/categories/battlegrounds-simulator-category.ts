@@ -1,13 +1,13 @@
-import { BattlegroundsCategory } from '../battlegrounds-category';
+import {BattlegroundsCategory} from '../battlegrounds-category';
 
 export class BattlegroundsSimulatorCategory extends BattlegroundsCategory {
-	constructor() {
-		super();
-		// @ts-ignore
-		this.id = 'bgs-category-simulator';
-	}
+    constructor() {
+        super();
+        // @ts-ignore
+        this.id = 'bgs-category-simulator';
+    }
 
-	public static create(base: BattlegroundsSimulatorCategory): BattlegroundsSimulatorCategory {
-		return Object.assign(new BattlegroundsSimulatorCategory(), base);
-	}
+    public static create(base: BattlegroundsSimulatorCategory): BattlegroundsSimulatorCategory {
+        return Object.assign(new BattlegroundsSimulatorCategory(), base);
+    }
 }

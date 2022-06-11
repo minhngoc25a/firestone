@@ -1,21 +1,21 @@
 import {
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	ElementRef,
-	EventEmitter,
-	Input,
-	ViewRef,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    ViewRef,
 } from '@angular/core';
-import { IOption } from 'ng-select';
-import { MainWindowStoreEvent } from '../services/mainwindow/store/events/main-window-store-event';
-import { OverwolfService } from '../services/overwolf.service';
+import {IOption} from 'ng-select';
+import {MainWindowStoreEvent} from '../services/mainwindow/store/events/main-window-store-event';
+import {OverwolfService} from '../services/overwolf.service';
 
 @Component({
-	selector: 'filter',
-	styleUrls: [`../../css/component/filter.component.scss`],
-	template: `
+    selector: 'filter',
+    styleUrls: [`../../css/component/filter.component.scss`],
+    template: `
 		<div class="filter">
 			<ng-select
 				class="filter"
@@ -38,48 +38,49 @@ import { OverwolfService } from '../services/overwolf.service';
 			</ng-select>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterComponent implements AfterViewInit {
-	@Input() filterOptions: readonly IOption[];
-	@Input() activeFilter: string;
-	@Input() placeholder: string;
-	@Input() delegateFullControl: boolean;
-	@Input() filterChangeFunction: (option: IOption) => MainWindowStoreEvent;
+    @Input() filterOptions: readonly IOption[];
+    @Input() activeFilter: string;
+    @Input() placeholder: string;
+    @Input() delegateFullControl: boolean;
+    @Input() filterChangeFunction: (option: IOption) => MainWindowStoreEvent;
 
-	private stateUpdater: EventEmitter<MainWindowStoreEvent>;
+    private stateUpdater: EventEmitter<MainWindowStoreEvent>;
 
-	constructor(private ow: OverwolfService, private el: ElementRef, private cdr: ChangeDetectorRef) {}
+    constructor(private ow: OverwolfService, private el: ElementRef, private cdr: ChangeDetectorRef) {
+    }
 
-	ngAfterViewInit() {
-		this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
-		const singleEls: HTMLElement[] = this.el.nativeElement.querySelectorAll('.single');
-		singleEls.forEach((singleEl) => {
-			const caretEl = singleEl.appendChild(document.createElement('i'));
-			caretEl.innerHTML = `<svg class="svg-icon-fill">
+    ngAfterViewInit() {
+        this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
+        const singleEls: HTMLElement[] = this.el.nativeElement.querySelectorAll('.single');
+        singleEls.forEach((singleEl) => {
+            const caretEl = singleEl.appendChild(document.createElement('i'));
+            caretEl.innerHTML = `<svg class="svg-icon-fill">
 					<use xlink:href="assets/svg/sprite.svg#arrow"/>
 				</svg>`;
-			caretEl.classList.add('i-30');
-			caretEl.classList.add('caret');
-		});
-		setTimeout(() => {
-			if (!(this.cdr as ViewRef)?.destroyed) {
-				this.cdr.detectChanges();
-			}
-		});
-	}
+            caretEl.classList.add('i-30');
+            caretEl.classList.add('caret');
+        });
+        setTimeout(() => {
+            if (!(this.cdr as ViewRef)?.destroyed) {
+                this.cdr.detectChanges();
+            }
+        });
+    }
 
-	selectFilter(option: IOption) {
-		if (this.delegateFullControl) {
-			this.filterChangeFunction(option);
-		} else {
-			this.stateUpdater.next(this.filterChangeFunction(option));
-		}
-	}
+    selectFilter(option: IOption) {
+        if (this.delegateFullControl) {
+            this.filterChangeFunction(option);
+        } else {
+            this.stateUpdater.next(this.filterChangeFunction(option));
+        }
+    }
 
-	refresh() {
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    refresh() {
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 }

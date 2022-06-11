@@ -1,17 +1,17 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
-import { Observable } from 'rxjs';
-import { DecktrackerViewType } from '../../models/mainwindow/decktracker/decktracker-view.type';
-import { AppUiStoreFacadeService } from '../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../abstract-subscription.component';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
+import {Observable} from 'rxjs';
+import {DecktrackerViewType} from '../../models/mainwindow/decktracker/decktracker-view.type';
+import {AppUiStoreFacadeService} from '../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../abstract-subscription.component';
 
 @Component({
-	selector: 'decktracker',
-	styleUrls: [
-		`../../../css/global/components-global.scss`,
-		`../../../css/component/app-section.component.scss`,
-		`../../../css/component/decktracker/decktracker.component.scss`,
-	],
-	template: `
+    selector: 'decktracker',
+    styleUrls: [
+        `../../../css/global/components-global.scss`,
+        `../../../css/component/app-section.component.scss`,
+        `../../../css/component/decktracker/decktracker.component.scss`,
+    ],
+    template: `
 		<div
 			class="app-section decktracker"
 			*ngIf="{ currentView: currentView$ | async, menuDisplayType: menuDisplayType$ | async } as value"
@@ -48,36 +48,36 @@ import { AbstractSubscriptionComponent } from '../abstract-subscription.componen
 			</section>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DecktrackerComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	currentView$: Observable<DecktrackerViewType>;
-	menuDisplayType$: Observable<string>;
-	loading$: Observable<boolean>;
+    currentView$: Observable<DecktrackerViewType>;
+    menuDisplayType$: Observable<string>;
+    loading$: Observable<boolean>;
 
-	@Input() showAds: boolean;
+    @Input() showAds: boolean;
 
-	constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
-		super(store, cdr);
-	}
+    constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.currentView$ = this.store
-			.listen$(([main, nav, prefs]) => nav.navigationDecktracker.currentView)
-			.pipe(this.mapData(([currentView]) => currentView));
-		this.menuDisplayType$ = this.store
-			.listen$(([main, nav, prefs]) => nav.navigationDecktracker.menuDisplayType)
-			.pipe(this.mapData(([menuDisplayType]) => menuDisplayType));
-		this.loading$ = this.store
-			.listen$(([main, nav, prefs]) => main.decktracker.isLoading)
-			.pipe(this.mapData(([isLoading]) => isLoading));
-	}
+    ngAfterContentInit() {
+        this.currentView$ = this.store
+            .listen$(([main, nav, prefs]) => nav.navigationDecktracker.currentView)
+            .pipe(this.mapData(([currentView]) => currentView));
+        this.menuDisplayType$ = this.store
+            .listen$(([main, nav, prefs]) => nav.navigationDecktracker.menuDisplayType)
+            .pipe(this.mapData(([menuDisplayType]) => menuDisplayType));
+        this.loading$ = this.store
+            .listen$(([main, nav, prefs]) => main.decktracker.isLoading)
+            .pipe(this.mapData(([isLoading]) => isLoading));
+    }
 
-	showReplaysRecap(currentView: DecktrackerViewType): boolean {
-		return (
-			currentView === 'decks' ||
-			currentView === 'ladder-stats' ||
-			(currentView === 'deck-details' && !this.showAds)
-		);
-	}
+    showReplaysRecap(currentView: DecktrackerViewType): boolean {
+        return (
+            currentView === 'decks' ||
+            currentView === 'ladder-stats' ||
+            (currentView === 'deck-details' && !this.showAds)
+        );
+    }
 }

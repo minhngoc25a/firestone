@@ -1,24 +1,25 @@
-import { MainWindowStoreEvent } from '../main-window-store-event';
+import {MainWindowStoreEvent} from '../main-window-store-event';
 
 export class SelectCollectionSetEvent implements MainWindowStoreEvent {
-	constructor(setId: string) {
-		this.setId = setId;
-	}
-	readonly setId: string;
+    readonly setId: string;
 
-	public static eventName(): string {
-		return 'SelectCollectionSetEvent';
-	}
+    constructor(setId: string) {
+        this.setId = setId;
+    }
 
-	public eventName(): string {
-		return 'SelectCollectionSetEvent';
-	}
+    public static eventName(): string {
+        return 'SelectCollectionSetEvent';
+    }
 
-	public isNavigationEvent(): boolean {
-		return true;
-	}
+    public eventName(): string {
+        return 'SelectCollectionSetEvent';
+    }
 
-	public isResetHistoryEvent(): boolean {
-		return false;
-	}
+    public isNavigationEvent(): boolean {
+        return true;
+    }
+
+    public isResetHistoryEvent(): boolean {
+        return false;
+    }
 }

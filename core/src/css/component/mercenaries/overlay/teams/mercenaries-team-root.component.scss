@@ -1,287 +1,290 @@
 :host {
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .root {
-	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	// height: 100%;
-	filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.75));
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // height: 100%;
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.75));
 
-	.scalable {
-		transform: scale(1);
-		top: 30px;
-		position: relative;
-		opacity: 1;
-		transition-property: transform, opacity;
-		transition-duration: 0.3s;
-		transition-timing-function: cubic-bezier(0, 0.26, 0.305, 1.65);
-	}
+  .scalable {
+    transform: scale(1);
+    top: 30px;
+    position: relative;
+    opacity: 1;
+    transition-property: transform, opacity;
+    transition-duration: 0.3s;
+    transition-timing-function: cubic-bezier(0, 0.26, 0.305, 1.65);
+  }
 
-	&.player,
-	&.out-of-combat-player {
-		.scalable {
-			transform-origin: right top;
-		}
-	}
+  &.player,
+  &.out-of-combat-player {
+    .scalable {
+      transform-origin: right top;
+    }
+  }
 
-	&.opponent {
-		.scalable {
-			transform-origin: left top;
-		}
-		.icon {
-			right: auto;
-			left: 260px;
-		}
-	}
+  &.opponent {
+    .scalable {
+      transform-origin: left top;
+    }
 
-	.container {
-		position: relative;
-		width: 100%;
-		max-width: 100%;
-		display: flex;
-		flex-direction: column;
-	}
+    .icon {
+      right: auto;
+      left: 260px;
+    }
+  }
 
-	.team {
-		position: relative;
-		width: 100%;
-		display: flex;
-		flex-direction: column;
+  .container {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
 
-		// This is needed to keep a padding at the bottom of the deck-list (to prevent the scrollbar from
-		// appearing on mouse over) while not showing a background
-		.background {
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 28px;
-			background: #07081f;
-		}
+  .team {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
 
-		mercenaries-team-control-bar {
-			flex-grow: 0;
-			flex-shrink: 0;
-			z-index: 1;
-		}
+    // This is needed to keep a padding at the bottom of the deck-list (to prevent the scrollbar from
+    // appearing on mouse over) while not showing a background
+    .background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 28px;
+      background: #07081f;
+    }
 
-		mercenaries-team-title-bar {
-			flex-grow: 0;
-			flex-shrink: 0;
-			z-index: 1;
-		}
+    mercenaries-team-control-bar {
+      flex-grow: 0;
+      flex-shrink: 0;
+      z-index: 1;
+    }
 
-		mercenaries-team-list {
-			flex-grow: 1;
-			flex-shrink: 1;
-			display: flex;
-			position: relative;
-			height: 100%;
-			min-height: 0;
-		}
-	}
+    mercenaries-team-title-bar {
+      flex-grow: 0;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+
+    mercenaries-team-list {
+      flex-grow: 1;
+      flex-shrink: 1;
+      display: flex;
+      position: relative;
+      height: 100%;
+      min-height: 0;
+    }
+  }
 }
 
 .footer {
-	display: flex;
+  display: flex;
 }
 
 .mouseover-button {
-	color: var(--color-2);
-	font-family: Open Sans;
-	font-size: 13px;
-	width: 120px;
-	height: 26px;
-	margin-left: auto;
-	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: flex-end;
+  color: var(--color-2);
+  font-family: Open Sans;
+  font-size: 13px;
+  width: 120px;
+  height: 26px;
+  margin-left: auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 
-	.background-main-part,
-	.background-second-part {
-		height: 100%;
-		background: var(--color-7);
-		overflow: hidden;
-	}
+  .background-main-part,
+  .background-second-part {
+    height: 100%;
+    background: var(--color-7);
+    overflow: hidden;
+  }
 
-	&:after {
-		content: '';
-		background: var(--color-1);
-		display: block;
-		position: absolute;
-		padding-top: 300%;
-		padding-left: 350%;
-		margin-left: -20px !important;
-		margin-top: -120%;
-		opacity: 0;
-		transition: all 0.8s;
-		right: 0;
-		pointer-events: none;
-	}
+  &:after {
+    content: '';
+    background: var(--color-1);
+    display: block;
+    position: absolute;
+    padding-top: 300%;
+    padding-left: 350%;
+    margin-left: -20px !important;
+    margin-top: -120%;
+    opacity: 0;
+    transition: all 0.8s;
+    right: 0;
+    pointer-events: none;
+  }
 
-	// Click effect
-	&:active:after {
-		padding: 0;
-		margin: 0;
-		opacity: 1;
-		transition: 0s;
-	}
+  // Click effect
+  &:active:after {
+    padding: 0;
+    margin: 0;
+    opacity: 1;
+    transition: 0s;
+  }
 
-	.background-main-part {
-		width: 80px;
-	}
-	.background-second-part {
-		width: 40px;
-		border-bottom-left-radius: 33px 33px;
-		z-index: -1;
-	}
+  .background-main-part {
+    width: 80px;
+  }
 
-	.content {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: flex-end;
-		padding-right: 10px;
-	}
+  .background-second-part {
+    width: 40px;
+    border-bottom-left-radius: 33px 33px;
+    z-index: -1;
+  }
 
-	.icon {
-		width: 16px;
-		height: 16px;
-		--icon-color: var(--color-2);
-		--icon-secondary-color: var(--color-7);
-		margin-right: 5px;
-	}
+  .content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+  }
 
-	&:hover {
-		.content {
-			color: var(--color-1);
-			--icon-color: var(--color-1);
-		}
-	}
+  .icon {
+    width: 16px;
+    height: 16px;
+    --icon-color: var(--color-2);
+    --icon-secondary-color: var(--color-7);
+    margin-right: 5px;
+  }
+
+  &:hover {
+    .content {
+      color: var(--color-1);
+      --icon-color: var(--color-1);
+    }
+  }
 }
 
 .show-roles-matchup-button {
 }
 
 .show-tasks {
-	width: 85px;
-	margin-left: 0;
-	margin-right: auto;
+  width: 85px;
+  margin-left: 0;
+  margin-right: auto;
 
-	.content {
-		justify-content: flex-start;
-		padding-left: 10px;
-		padding-right: 0;
-	}
-	.background-second-part {
-		transform: scale(-1, 1);
-	}
+  .content {
+    justify-content: flex-start;
+    padding-left: 10px;
+    padding-right: 0;
+  }
+
+  .background-second-part {
+    transform: scale(-1, 1);
+  }
 }
 
 .task-list {
-	position: absolute;
-	right: 90px;
-	bottom: 0;
-	width: 320px;
-	background: var(--color-7);
-	display: flex;
-	flex-direction: column;
-	padding: 20px;
-	// Because the hero portraits do this already
-	padding-left: 0;
-	z-index: 1;
-	// Because we need the size to compute where to position it
-	// If we display: none, the size isn't available until it becomes visible
-	opacity: 0;
-	pointer-events: none;
+  position: absolute;
+  right: 90px;
+  bottom: 0;
+  width: 320px;
+  background: var(--color-7);
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  // Because the hero portraits do this already
+  padding-left: 0;
+  z-index: 1;
+  // Because we need the size to compute where to position it
+  // If we display: none, the size isn't available until it becomes visible
+  opacity: 0;
+  pointer-events: none;
 
-	&.right {
-		right: auto;
-		left: 230px;
-	}
+  &.right {
+    right: auto;
+    left: 230px;
+  }
 
-	&.visible {
-		opacity: 1;
-		pointer-events: all;
-	}
+  &.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
 
-	.task {
-		display: flex;
-		position: relative;
+  .task {
+    display: flex;
+    position: relative;
 
-		&:not(:last-child) {
-			margin-bottom: 30px;
-		}
+    &:not(:last-child) {
+      margin-bottom: 30px;
+    }
 
-		.portrait {
-			flex-grow: 0;
-			flex-shrink: 0;
-			display: flex;
-			flex-direction: column;
-			width: 90px;
-			position: relative;
-			top: 0;
-			left: 0;
-			z-index: 9;
-			margin-top: 0;
-			margin-bottom: 0;
+    .portrait {
+      flex-grow: 0;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      width: 90px;
+      position: relative;
+      top: 0;
+      left: 0;
+      z-index: 9;
+      margin-top: 0;
+      margin-bottom: 0;
 
-			.art {
-				position: absolute;
-				top: 11%;
-				left: 13%;
-				width: 76%;
-				clip-path: ellipse(40% 44% at 50% 50%);
-			}
+      .art {
+        position: absolute;
+        top: 11%;
+        left: 13%;
+        width: 76%;
+        clip-path: ellipse(40% 44% at 50% 50%);
+      }
 
-			.frame {
-				width: 100%;
-				z-index: 1;
-			}
-		}
+      .frame {
+        width: 100%;
+        z-index: 1;
+      }
+    }
 
-		.task-content {
-			display: flex;
-			flex-direction: column;
+    .task-content {
+      display: flex;
+      flex-direction: column;
 
-			.header {
-				color: var(--default-title-color);
-				margin-bottom: 5px;
-			}
+      .header {
+        color: var(--default-title-color);
+        margin-bottom: 5px;
+      }
 
-			.description {
-				margin-bottom: 5px;
-			}
+      .description {
+        margin-bottom: 5px;
+      }
 
-			.progress {
-				display: flex;
+      .progress {
+        display: flex;
 
-				.label {
-					margin-right: 10px;
-				}
+        .label {
+          margin-right: 10px;
+        }
 
-				.value {
-					color: var(--color-1);
-				}
-			}
-		}
-	}
+        .value {
+          color: var(--color-1);
+        }
+      }
+    }
+  }
 }
 
 ::ng-deep .cdk-overlay-container {
-	.card-tooltip.mercenaries-weakness-triangle.mercenaries-weakness-triangle.mercenaries-weakness-triangle {
-		width: 500px;
+  .card-tooltip.mercenaries-weakness-triangle.mercenaries-weakness-triangle.mercenaries-weakness-triangle {
+    width: 500px;
 
-		img {
-			width: 100%;
-			filter: none;
-		}
-	}
+    img {
+      width: 100%;
+      filter: none;
+    }
+  }
 }

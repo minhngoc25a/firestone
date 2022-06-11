@@ -1,32 +1,36 @@
 import {
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
-	Input,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
 } from '@angular/core';
-import { BattleResultHistory } from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
-import { BgsBattleSimulationUpdateEvent } from '@services/battlegrounds/store/events/bgs-battle-simulation-update-event';
-import { BgsSelectBattleEvent } from '@services/battlegrounds/store/events/bgs-select-battle-event';
-import { BattlegroundsStoreEvent } from '@services/battlegrounds/store/events/_battlegrounds-store-event';
-import { OverwolfService } from '@services/overwolf.service';
-import { BgsFaceOffWithSimulation } from '../../../models/battlegrounds/bgs-face-off-with-simulation';
-import { BgsBattleSimulationResetEvent } from '../../../services/battlegrounds/store/events/bgs-battle-simulation-reset-event';
-import { BattlegroundsMainWindowSelectBattleEvent } from '../../../services/mainwindow/store/events/battlegrounds/battlegrounds-main-window-select-battle-event';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
+import {BattleResultHistory} from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
+import {BgsBattleSimulationUpdateEvent} from '@services/battlegrounds/store/events/bgs-battle-simulation-update-event';
+import {BgsSelectBattleEvent} from '@services/battlegrounds/store/events/bgs-select-battle-event';
+import {BattlegroundsStoreEvent} from '@services/battlegrounds/store/events/_battlegrounds-store-event';
+import {OverwolfService} from '@services/overwolf.service';
+import {BgsFaceOffWithSimulation} from '../../../models/battlegrounds/bgs-face-off-with-simulation';
+import {
+    BgsBattleSimulationResetEvent
+} from '../../../services/battlegrounds/store/events/bgs-battle-simulation-reset-event';
+import {
+    BattlegroundsMainWindowSelectBattleEvent
+} from '../../../services/mainwindow/store/events/battlegrounds/battlegrounds-main-window-select-battle-event';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
 
 @Component({
-	selector: 'bgs-battles-view',
-	styleUrls: [
-		`../../../../css/global/reset-styles.scss`,
-		`../../../../css/global/scrollbar.scss`,
-		`../../../../css/component/controls/controls.scss`,
-		`../../../../css/component/controls/control-close.component.scss`,
-		`../../../../css/component/battlegrounds/battles/bgs-battles-view.component.scss`,
-	],
-	template: `
+    selector: 'bgs-battles-view',
+    styleUrls: [
+        `../../../../css/global/reset-styles.scss`,
+        `../../../../css/global/scrollbar.scss`,
+        `../../../../css/component/controls/controls.scss`,
+        `../../../../css/component/controls/control-close.component.scss`,
+        `../../../../css/component/battlegrounds/battles/bgs-battles-view.component.scss`,
+    ],
+    template: `
 		<div class="container">
 			<div class="content empty-state" *ngIf="!faceOffs?.length">
 				<i>
@@ -85,56 +89,56 @@ import { AbstractSubscriptionComponent } from '../../abstract-subscription.compo
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsBattlesViewComponent extends AbstractSubscriptionComponent implements AfterViewInit {
-	simulationUpdater: (currentFaceOff: BgsFaceOffWithSimulation, partialUpdate: BgsFaceOffWithSimulation) => void;
-	simulationReset: (faceOffId: string) => void;
+    simulationUpdater: (currentFaceOff: BgsFaceOffWithSimulation, partialUpdate: BgsFaceOffWithSimulation) => void;
+    simulationReset: (faceOffId: string) => void;
 
-	@Input() faceOffs: readonly BgsFaceOffWithSimulation[];
-	@Input() selectedFaceOff: BgsFaceOffWithSimulation;
-	@Input() actualBattle: BgsFaceOffWithSimulation;
-	@Input() battleResultHistory: readonly BattleResultHistory[];
+    @Input() faceOffs: readonly BgsFaceOffWithSimulation[];
+    @Input() selectedFaceOff: BgsFaceOffWithSimulation;
+    @Input() actualBattle: BgsFaceOffWithSimulation;
+    @Input() battleResultHistory: readonly BattleResultHistory[];
+    private battlegroundsUpdater: EventEmitter<BattlegroundsStoreEvent>;
 
-	@Input() set isMainWindow(value: boolean) {
-		this._isMainWindow = value;
-		this.ngAfterViewInit();
-	}
+    constructor(
+        private readonly ow: OverwolfService,
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+    ) {
+        super(store, cdr);
+    }
 
-	private _isMainWindow: boolean;
-	private battlegroundsUpdater: EventEmitter<BattlegroundsStoreEvent>;
+    private _isMainWindow: boolean;
 
-	constructor(
-		private readonly ow: OverwolfService,
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-	) {
-		super(store, cdr);
-	}
+    @Input() set isMainWindow(value: boolean) {
+        this._isMainWindow = value;
+        this.ngAfterViewInit();
+    }
 
-	async ngAfterViewInit() {
-		this.battlegroundsUpdater = (await this.ow.getMainWindow()).battlegroundsUpdater;
-		this.simulationUpdater = (currentFaceOff, partialUpdate) => {
-			this.battlegroundsUpdater.next(new BgsBattleSimulationUpdateEvent(currentFaceOff, partialUpdate));
-		};
-		this.simulationReset = (faceOffId: string) => {
-			this.battlegroundsUpdater.next(new BgsBattleSimulationResetEvent(faceOffId));
-		};
-	}
+    async ngAfterViewInit() {
+        this.battlegroundsUpdater = (await this.ow.getMainWindow()).battlegroundsUpdater;
+        this.simulationUpdater = (currentFaceOff, partialUpdate) => {
+            this.battlegroundsUpdater.next(new BgsBattleSimulationUpdateEvent(currentFaceOff, partialUpdate));
+        };
+        this.simulationReset = (faceOffId: string) => {
+            this.battlegroundsUpdater.next(new BgsBattleSimulationResetEvent(faceOffId));
+        };
+    }
 
-	selectBattle(faceOff: BgsFaceOffWithSimulation) {
-		if (this._isMainWindow) {
-			this.store.send(new BattlegroundsMainWindowSelectBattleEvent(faceOff));
-		} else {
-			this.battlegroundsUpdater.next(new BgsSelectBattleEvent(faceOff?.id));
-		}
-	}
+    selectBattle(faceOff: BgsFaceOffWithSimulation) {
+        if (this._isMainWindow) {
+            this.store.send(new BattlegroundsMainWindowSelectBattleEvent(faceOff));
+        } else {
+            this.battlegroundsUpdater.next(new BgsSelectBattleEvent(faceOff?.id));
+        }
+    }
 
-	closeBattle(faceOff: BgsFaceOffWithSimulation) {
-		this.battlegroundsUpdater.next(new BgsSelectBattleEvent(null));
-	}
+    closeBattle(faceOff: BgsFaceOffWithSimulation) {
+        this.battlegroundsUpdater.next(new BgsSelectBattleEvent(null));
+    }
 
-	trackByFn(index: number, item: BgsFaceOffWithSimulation) {
-		return item.id;
-	}
+    trackByFn(index: number, item: BgsFaceOffWithSimulation) {
+        return item.id;
+    }
 }

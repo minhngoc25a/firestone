@@ -1,29 +1,29 @@
 import {
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
-	Input,
-	Optional,
-	Output,
-	ViewRef,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    Optional,
+    Output,
+    ViewRef,
 } from '@angular/core';
-import { CardTooltipPositionType } from '../../../directives/card-tooltip-position.type';
-import { DeckZone, DeckZoneSection } from '../../../models/decktracker/view/deck-zone';
-import { VisualDeckCard } from '../../../models/decktracker/visual-deck-card';
-import { SetCard } from '../../../models/set';
-import { PreferencesService } from '../../../services/preferences.service';
-import { groupByFunction } from '../../../services/utils';
+import {CardTooltipPositionType} from '../../../directives/card-tooltip-position.type';
+import {DeckZone, DeckZoneSection} from '../../../models/decktracker/view/deck-zone';
+import {VisualDeckCard} from '../../../models/decktracker/visual-deck-card';
+import {SetCard} from '../../../models/set';
+import {PreferencesService} from '../../../services/preferences.service';
+import {groupByFunction} from '../../../services/utils';
 
 @Component({
-	selector: 'deck-zone',
-	styleUrls: [
-		'../../../../css/global/components-global.scss',
-		'../../../../css/component/decktracker/overlay/deck-zone.component.scss',
-		'../../../../css/component/decktracker/overlay/dim-overlay.scss',
-	],
-	template: `
+    selector: 'deck-zone',
+    styleUrls: [
+        '../../../../css/global/components-global.scss',
+        '../../../../css/component/decktracker/overlay/deck-zone.component.scss',
+        '../../../../css/component/decktracker/overlay/dim-overlay.scss',
+    ],
+    template: `
 		<div class="deck-zone {{ className }}" [ngClass]="{ 'darken-used-cards': _darkenUsedCards }">
 			<div class="zone-name-container" *ngIf="zoneName" (mousedown)="toggleZone()">
 				<div class="zone-name">
@@ -64,247 +64,254 @@ import { groupByFunction } from '../../../services/utils';
 			</ul>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeckZoneComponent implements AfterViewInit {
-	@Output() cardClicked: EventEmitter<VisualDeckCard> = new EventEmitter<VisualDeckCard>();
+    @Output() cardClicked: EventEmitter<VisualDeckCard> = new EventEmitter<VisualDeckCard>();
 
-	@Input() colorManaCost: boolean;
-	@Input() showRelatedCards: boolean;
-	@Input() showUnknownCards: boolean;
+    @Input() colorManaCost: boolean;
+    @Input() showRelatedCards: boolean;
+    @Input() showUnknownCards: boolean;
+    @Input() side: 'player' | 'opponent';
+    className: string;
+    zoneName: string;
+    showWarning: boolean;
+    cardsInZone = 0;
+    cardSections: readonly DeckZoneSection[] = [];
+    // cards: readonly VisualDeckCard[];
+    open = true;
 
-	@Input() set tooltipPosition(value: CardTooltipPositionType) {
-		this._tooltipPosition = value;
-	}
+    constructor(private readonly cdr: ChangeDetectorRef, @Optional() private readonly prefs: PreferencesService) {
+    }
 
-	@Input() set showUpdatedCost(value: boolean) {
-		this._showUpdatedCost = value;
-		this.refreshZone();
-	}
+    _tooltipPosition: CardTooltipPositionType;
 
-	@Input() set showGiftsSeparately(value: boolean) {
-		this._showGiftsSeparately = value;
-		this.refreshZone();
-	}
+    @Input() set tooltipPosition(value: CardTooltipPositionType) {
+        this._tooltipPosition = value;
+    }
 
-	@Input() set showStatsChange(value: boolean) {
-		this._showStatsChange = value;
-		this.refreshZone();
-	}
+    _collection: readonly SetCard[];
 
-	@Input() set showBottomCardsSeparately(value: boolean) {
-		this._showBottomCardsSeparately = value;
-		this.refreshZone();
-	}
+    @Input() set collection(value: readonly SetCard[]) {
+        this._collection = value;
+        this.refreshZone();
+    }
 
-	@Input() set showTopCardsSeparately(value: boolean) {
-		this._showTopCardsSeparately = value;
-		this.refreshZone();
-	}
+    _showUpdatedCost = true;
 
-	@Input() set zone(zone: DeckZone) {
-		this._zone = zone;
-		this.refreshZone();
-	}
+    @Input() set showUpdatedCost(value: boolean) {
+        this._showUpdatedCost = value;
+        this.refreshZone();
+    }
 
-	@Input() set collection(value: readonly SetCard[]) {
-		this._collection = value;
-		this.refreshZone();
-	}
+    _darkenUsedCards = true;
 
-	@Input() set darkenUsedCards(value: boolean) {
-		this._darkenUsedCards = value;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    @Input() set darkenUsedCards(value: boolean) {
+        this._darkenUsedCards = value;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	@Input() side: 'player' | 'opponent';
+    private _showGiftsSeparately = true;
 
-	_tooltipPosition: CardTooltipPositionType;
-	_collection: readonly SetCard[];
-	_showUpdatedCost = true;
-	_darkenUsedCards = true;
-	className: string;
-	zoneName: string;
-	showWarning: boolean;
-	cardsInZone = 0;
-	cardSections: readonly DeckZoneSection[] = [];
-	// cards: readonly VisualDeckCard[];
-	open = true;
+    @Input() set showGiftsSeparately(value: boolean) {
+        this._showGiftsSeparately = value;
+        this.refreshZone();
+    }
 
-	private _showGiftsSeparately = true;
-	private _showStatsChange = true;
-	private _showBottomCardsSeparately = true;
-	private _showTopCardsSeparately = true;
-	private _zone: DeckZone;
+    private _showStatsChange = true;
 
-	constructor(private readonly cdr: ChangeDetectorRef, @Optional() private readonly prefs: PreferencesService) {}
+    @Input() set showStatsChange(value: boolean) {
+        this._showStatsChange = value;
+        this.refreshZone();
+    }
 
-	async ngAfterViewInit() {
-		if (this.prefs) {
-			this.open = !(await this.prefs.getZoneToggleDefaultClose(this._zone.name, this.side));
-		}
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    private _showBottomCardsSeparately = true;
 
-	toggleZone() {
-		this.open = !this.open;
-		if (this.prefs) {
-			this.prefs.setZoneToggleDefaultClose(this._zone.name, this.side, !this.open);
-		}
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    @Input() set showBottomCardsSeparately(value: boolean) {
+        this._showBottomCardsSeparately = value;
+        this.refreshZone();
+    }
 
-	onCardClicked(card: VisualDeckCard) {
-		this.cardClicked.next(card);
-	}
+    private _showTopCardsSeparately = true;
 
-	trackCard(index, card: VisualDeckCard) {
-		return card.cardId;
-	}
+    @Input() set showTopCardsSeparately(value: boolean) {
+        this._showTopCardsSeparately = value;
+        this.refreshZone();
+    }
 
-	trackBySection(index: number, item: DeckZoneSection) {
-		return item.header;
-	}
+    private _zone: DeckZone;
 
-	private refreshZone() {
-		if (!this._zone) {
-			return;
-		}
-		this.className = this._zone.id;
-		this.zoneName = this._zone.name;
-		this.showWarning = this._zone.showWarning;
-		this.cardsInZone = this._zone.numberOfCards;
+    @Input() set zone(zone: DeckZone) {
+        this._zone = zone;
+        this.refreshZone();
+    }
 
-		this.cardSections = this._zone.sections.map((section) => {
-			const quantitiesLeftForCard = this.buildQuantitiesLeftForCard(section.cards);
-			const grouped: { [cardId: string]: readonly VisualDeckCard[] } = groupByFunction((card: VisualDeckCard) =>
-				this.buildGroupingKey(card, quantitiesLeftForCard),
-			)(section.cards);
-			let cards = Object.keys(grouped)
-				.map((groupingKey) => {
-					const cards = grouped[groupingKey];
-					const creatorCardIds: readonly string[] = [
-						...new Set(
-							cards
-								.map((card) => card.creatorCardIds)
-								.reduce((a, b) => a.concat(b), [])
-								.filter((creator) => creator),
-						),
-					];
+    async ngAfterViewInit() {
+        if (this.prefs) {
+            this.open = !(await this.prefs.getZoneToggleDefaultClose(this._zone.name, this.side));
+        }
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-					return Object.assign(new VisualDeckCard(), cards[0], {
-						totalQuantity: cards.length,
-						creatorCardIds: creatorCardIds,
-						isMissing: groupingKey.includes('missing'),
-					} as VisualDeckCard);
-				})
-				.sort((a, b) => this.compare(a, b))
-				.sort((a, b) => this.sortByIcon(a, b));
-			if (section.sortingFunction) {
-				cards = [...cards].sort(section.sortingFunction);
-			}
-			return {
-				header: section.header,
-				cards: cards,
-				sortingFunction: section.sortingFunction,
-			} as DeckZoneSection;
-		});
-		// console.debug('final sections', this.cardSections);
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    toggleZone() {
+        this.open = !this.open;
+        if (this.prefs) {
+            this.prefs.setZoneToggleDefaultClose(this._zone.name, this.side, !this.open);
+        }
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	private buildQuantitiesLeftForCard(cards: readonly VisualDeckCard[]) {
-		if (!this._collection?.length) {
-			return {};
-		}
+    onCardClicked(card: VisualDeckCard) {
+        this.cardClicked.next(card);
+    }
 
-		const result = {};
-		for (const card of cards) {
-			const cardInCollection = this._collection.find((c) => c.id === card.cardId);
-			result[card.cardId] = cardInCollection?.getTotalOwned() ?? 0;
-		}
-		return result;
-	}
+    trackCard(index, card: VisualDeckCard) {
+        return card.cardId;
+    }
 
-	private buildGroupingKey(card: VisualDeckCard, quantitiesLeftForCard: { [cardId: string]: number }): string {
-		const keyWithBonus = this._showStatsChange ? card.cardId + '_' + (card.mainAttributeChange || 0) : card.cardId;
-		const keyWithGift = this._showGiftsSeparately
-			? keyWithBonus + 'creators-' + (card.creatorCardIds || []).reduce((a, b) => a + b, '')
-			: keyWithBonus;
-		const keyWithBottom = this._showBottomCardsSeparately
-			? keyWithGift + 'bottom-' + (card.positionFromBottom ?? '')
-			: keyWithGift;
-		const keyWithTop = this._showTopCardsSeparately
-			? keyWithBottom + 'top-' + (card.positionFromTop ?? '')
-			: keyWithBottom;
-		const keyWithGraveyard = card.zone === 'GRAVEYARD' ? keyWithTop + '-graveyard' : keyWithTop;
-		const keyWithCost = keyWithGraveyard + '-' + card.getEffectiveManaCost();
-		if (!this._collection?.length) {
-			return keyWithCost;
-		}
+    trackBySection(index: number, item: DeckZoneSection) {
+        return item.header;
+    }
 
-		const quantityToAllocate = quantitiesLeftForCard[card.cardId];
-		quantitiesLeftForCard[card.cardId] = quantityToAllocate - 1;
-		if (quantityToAllocate > 0) {
-			return keyWithCost;
-		}
+    private refreshZone() {
+        if (!this._zone) {
+            return;
+        }
+        this.className = this._zone.id;
+        this.zoneName = this._zone.name;
+        this.showWarning = this._zone.showWarning;
+        this.cardsInZone = this._zone.numberOfCards;
 
-		return keyWithCost + '-missing';
-	}
+        this.cardSections = this._zone.sections.map((section) => {
+            const quantitiesLeftForCard = this.buildQuantitiesLeftForCard(section.cards);
+            const grouped: { [cardId: string]: readonly VisualDeckCard[] } = groupByFunction((card: VisualDeckCard) =>
+                this.buildGroupingKey(card, quantitiesLeftForCard),
+            )(section.cards);
+            let cards = Object.keys(grouped)
+                .map((groupingKey) => {
+                    const cards = grouped[groupingKey];
+                    const creatorCardIds: readonly string[] = [
+                        ...new Set(
+                            cards
+                                .map((card) => card.creatorCardIds)
+                                .reduce((a, b) => a.concat(b), [])
+                                .filter((creator) => creator),
+                        ),
+                    ];
 
-	private compare(a: VisualDeckCard, b: VisualDeckCard): number {
-		if (this.getCost(a) < this.getCost(b)) {
-			return -1;
-		}
-		if (this.getCost(a) > this.getCost(b)) {
-			return 1;
-		}
-		if (a.cardName?.toLowerCase() < b.cardName?.toLowerCase()) {
-			return -1;
-		}
-		if (a.cardName?.toLowerCase() > b.cardName?.toLowerCase()) {
-			return 1;
-		}
-		if (a.creatorCardIds.length === 0) {
-			return -1;
-		}
-		if (b.creatorCardIds.length === 0) {
-			return 1;
-		}
-		return 0;
-	}
+                    return Object.assign(new VisualDeckCard(), cards[0], {
+                        totalQuantity: cards.length,
+                        creatorCardIds: creatorCardIds,
+                        isMissing: groupingKey.includes('missing'),
+                    } as VisualDeckCard);
+                })
+                .sort((a, b) => this.compare(a, b))
+                .sort((a, b) => this.sortByIcon(a, b));
+            if (section.sortingFunction) {
+                cards = [...cards].sort(section.sortingFunction);
+            }
+            return {
+                header: section.header,
+                cards: cards,
+                sortingFunction: section.sortingFunction,
+            } as DeckZoneSection;
+        });
+        // console.debug('final sections', this.cardSections);
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	private getCost(card: VisualDeckCard): number {
-		return this._showUpdatedCost ? card.getEffectiveManaCost() : card.manaCost;
-	}
+    private buildQuantitiesLeftForCard(cards: readonly VisualDeckCard[]) {
+        if (!this._collection?.length) {
+            return {};
+        }
 
-	private sortByIcon(a: VisualDeckCard, b: VisualDeckCard): number {
-		if (a.zone === 'PLAY' && b.zone !== 'PLAY') {
-			return -1;
-		}
-		if (a.zone !== 'PLAY' && b.zone === 'PLAY') {
-			return 1;
-		}
-		if (a.zone === 'GRAVEYARD' && b.zone !== 'GRAVEYARD') {
-			return -1;
-		}
-		if (a.zone !== 'GRAVEYARD' && b.zone === 'GRAVEYARD') {
-			return 1;
-		}
-		if (a.zone === 'DISCARD' && b.zone !== 'DISCARD') {
-			return -1;
-		}
-		if (a.zone !== 'DISCARD' && b.zone === 'DISCARD') {
-			return 1;
-		}
-		return 0;
-	}
+        const result = {};
+        for (const card of cards) {
+            const cardInCollection = this._collection.find((c) => c.id === card.cardId);
+            result[card.cardId] = cardInCollection?.getTotalOwned() ?? 0;
+        }
+        return result;
+    }
+
+    private buildGroupingKey(card: VisualDeckCard, quantitiesLeftForCard: { [cardId: string]: number }): string {
+        const keyWithBonus = this._showStatsChange ? card.cardId + '_' + (card.mainAttributeChange || 0) : card.cardId;
+        const keyWithGift = this._showGiftsSeparately
+            ? keyWithBonus + 'creators-' + (card.creatorCardIds || []).reduce((a, b) => a + b, '')
+            : keyWithBonus;
+        const keyWithBottom = this._showBottomCardsSeparately
+            ? keyWithGift + 'bottom-' + (card.positionFromBottom ?? '')
+            : keyWithGift;
+        const keyWithTop = this._showTopCardsSeparately
+            ? keyWithBottom + 'top-' + (card.positionFromTop ?? '')
+            : keyWithBottom;
+        const keyWithGraveyard = card.zone === 'GRAVEYARD' ? keyWithTop + '-graveyard' : keyWithTop;
+        const keyWithCost = keyWithGraveyard + '-' + card.getEffectiveManaCost();
+        if (!this._collection?.length) {
+            return keyWithCost;
+        }
+
+        const quantityToAllocate = quantitiesLeftForCard[card.cardId];
+        quantitiesLeftForCard[card.cardId] = quantityToAllocate - 1;
+        if (quantityToAllocate > 0) {
+            return keyWithCost;
+        }
+
+        return keyWithCost + '-missing';
+    }
+
+    private compare(a: VisualDeckCard, b: VisualDeckCard): number {
+        if (this.getCost(a) < this.getCost(b)) {
+            return -1;
+        }
+        if (this.getCost(a) > this.getCost(b)) {
+            return 1;
+        }
+        if (a.cardName?.toLowerCase() < b.cardName?.toLowerCase()) {
+            return -1;
+        }
+        if (a.cardName?.toLowerCase() > b.cardName?.toLowerCase()) {
+            return 1;
+        }
+        if (a.creatorCardIds.length === 0) {
+            return -1;
+        }
+        if (b.creatorCardIds.length === 0) {
+            return 1;
+        }
+        return 0;
+    }
+
+    private getCost(card: VisualDeckCard): number {
+        return this._showUpdatedCost ? card.getEffectiveManaCost() : card.manaCost;
+    }
+
+    private sortByIcon(a: VisualDeckCard, b: VisualDeckCard): number {
+        if (a.zone === 'PLAY' && b.zone !== 'PLAY') {
+            return -1;
+        }
+        if (a.zone !== 'PLAY' && b.zone === 'PLAY') {
+            return 1;
+        }
+        if (a.zone === 'GRAVEYARD' && b.zone !== 'GRAVEYARD') {
+            return -1;
+        }
+        if (a.zone !== 'GRAVEYARD' && b.zone === 'GRAVEYARD') {
+            return 1;
+        }
+        if (a.zone === 'DISCARD' && b.zone !== 'DISCARD') {
+            return -1;
+        }
+        if (a.zone !== 'DISCARD' && b.zone === 'DISCARD') {
+            return 1;
+        }
+        return 0;
+    }
 }

@@ -1,24 +1,26 @@
 import {
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
-	Input,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
 } from '@angular/core';
-import { CurrentView } from '../../models/mainwindow/collection/current-view.type';
-import { CollectionSelectCurrentTabEvent } from '../../services/mainwindow/store/events/collection/collection-select-current-tab-event';
-import { MainWindowStoreEvent } from '../../services/mainwindow/store/events/main-window-store-event';
-import { OverwolfService } from '../../services/overwolf.service';
+import {CurrentView} from '../../models/mainwindow/collection/current-view.type';
+import {
+    CollectionSelectCurrentTabEvent
+} from '../../services/mainwindow/store/events/collection/collection-select-current-tab-event';
+import {MainWindowStoreEvent} from '../../services/mainwindow/store/events/main-window-store-event';
+import {OverwolfService} from '../../services/overwolf.service';
 
 @Component({
-	selector: 'collection-menu-selection',
-	styleUrls: [
-		`../../../css/global/menu.scss`,
-		`../../../css/component/menu-selection.component.scss`,
-		`../../../css/component/collection/collection-menu-selection.component.scss`,
-	],
-	template: `
+    selector: 'collection-menu-selection',
+    styleUrls: [
+        `../../../css/global/menu.scss`,
+        `../../../css/component/menu-selection.component.scss`,
+        `../../../css/component/collection/collection-menu-selection.component.scss`,
+    ],
+    template: `
 		<ul class="menu-selection">
 			<li [ngClass]="{ 'selected': selectedTab === 'sets' }" (mousedown)="selectTab('sets')">
 				<span [owTranslate]="'app.collection.menu.sets'"></span>
@@ -37,20 +39,21 @@ import { OverwolfService } from '../../services/overwolf.service';
 			</li>
 		</ul>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionMenuSelectionComponent implements AfterViewInit {
-	@Input() selectedTab: CurrentView;
+    @Input() selectedTab: CurrentView;
 
-	private stateUpdater: EventEmitter<MainWindowStoreEvent>;
+    private stateUpdater: EventEmitter<MainWindowStoreEvent>;
 
-	constructor(private ow: OverwolfService, private cdr: ChangeDetectorRef) {}
+    constructor(private ow: OverwolfService, private cdr: ChangeDetectorRef) {
+    }
 
-	ngAfterViewInit() {
-		this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
-	}
+    ngAfterViewInit() {
+        this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
+    }
 
-	selectTab(stage: CurrentView) {
-		this.stateUpdater.next(new CollectionSelectCurrentTabEvent(stage));
-	}
+    selectTab(stage: CurrentView) {
+        this.stateUpdater.next(new CollectionSelectCurrentTabEvent(stage));
+    }
 }

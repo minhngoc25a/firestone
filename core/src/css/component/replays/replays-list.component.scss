@@ -2,147 +2,148 @@
 @import '../../global/fonts';
 
 :host {
-	height: 100%;
-	display: flex;
-	padding-top: 10px;
+  height: 100%;
+  display: flex;
+  padding-top: 10px;
 }
 
 .replays-container {
-	flex-grow: 1;
-	display: flex;
-	flex-direction: column;
-	width: 100%;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .replays-list {
-	list-style: none;
-	padding: 0;
-	margin: 0;
-	margin-top: 10px;
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-start;
-	overflow-x: hidden;
-	overflow-y: auto;
-	-webkit-transition: all 2s;
-	transition: all 2s;
-	flex-grow: 1;
-	padding-right: 10px;
-	min-height: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-transition: all 2s;
+  transition: all 2s;
+  flex-grow: 1;
+  padding-right: 10px;
+  min-height: 0;
 
-	.header {
-		font-family: Open Sans;
-		font-style: normal;
-		font-weight: normal;
-		font-size: 14px;
-		line-height: 19px;
-		color: var(--default-title-color);
-		margin-bottom: 5px;
+  .header {
+    font-family: Open Sans;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 19px;
+    color: var(--default-title-color);
+    margin-bottom: 5px;
 
-		&:not(:first-child) {
-			margin-top: 15px;
-		}
-	}
+    &:not(:first-child) {
+      margin-top: 15px;
+    }
+  }
 
-	.replay {
-		display: block;
-		margin-bottom: 5px;
-	}
+  .replay {
+    display: block;
+    margin-bottom: 5px;
+  }
 
-	::ng-deep replay-info {
-		.replay-info {
-			&.battlegrounds {
-				.tribes {
-					display: none;
-				}
-			}
-		}
-	}
+  ::ng-deep replay-info {
+    .replay-info {
+      &.battlegrounds {
+        .tribes {
+          display: none;
+        }
+      }
+    }
+  }
 }
 
 .filters {
-	@extend %search-active;
-	display: flex;
-	justify-content: flex-start;
-	flex-shrink: 0;
-	align-items: center;
-	padding-bottom: 15px;
-	transition: margin 0.4s ease-in-out;
-	position: relative;
-	z-index: 10;
+  @extend %search-active;
+  display: flex;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  align-items: center;
+  padding-bottom: 15px;
+  transition: margin 0.4s ease-in-out;
+  position: relative;
+  z-index: 10;
 
-	.filter {
-		margin-right: 8px;
-		::ng-deep .filter {
-			width: 163px;
-		}
-	}
+  .filter {
+    margin-right: 8px;
 
-	.icon-toggle {
-		margin-left: auto;
-		margin-right: 25px;
+    ::ng-deep .filter {
+      width: 163px;
+    }
+  }
 
-		&.absolute {
-			position: absolute;
-			right: 0;
-			bottom: -20px;
-		}
-	}
+  .icon-toggle {
+    margin-left: auto;
+    margin-right: 25px;
 
-	// .icon-toggle {
-	// 	position: absolute;
-	// 	bottom: -15px;
-	// 	right: 25px;
-	// }
+    &.absolute {
+      position: absolute;
+      right: 0;
+      bottom: -20px;
+    }
+  }
+
+  // .icon-toggle {
+  // 	position: absolute;
+  // 	bottom: -15px;
+  // 	right: 25px;
+  // }
 }
 
 .loading {
-	@extend %search-active;
-	height: 25px;
-	flex-grow: 0;
-	flex-shrink: 0;
-	display: flex;
-	justify-items: center;
-	align-items: center;
-	color: var(--color-1);
+  @extend %search-active;
+  height: 25px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  color: var(--color-1);
 }
 
 .empty-state {
-	@extend %empty-state;
-	flex-grow: 1;
-	display: flex;
-	flex-direction: column;
-	justify-items: center;
-	align-items: center;
-	color: var(--color-1);
+  @extend %empty-state;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  align-items: center;
+  color: var(--color-1);
 
-	.state-container {
-		margin: auto;
-		margin-bottom: 25vh;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		color: var(--color-1);
+  .state-container {
+    margin: auto;
+    margin-bottom: 25vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--color-1);
 
-		i {
-			margin-bottom: 30px;
-			--icon-color: var(--color-1);
-			--icon-secondary-color: var(--color-3);
-		}
+    i {
+      margin-bottom: 30px;
+      --icon-color: var(--color-1);
+      --icon-secondary-color: var(--color-3);
+    }
 
-		.title {
-			@extend %empty-state-title;
-			margin-bottom: 15px;
-			color: var(--color-1);
-		}
+    .title {
+      @extend %empty-state-title;
+      margin-bottom: 15px;
+      color: var(--color-1);
+    }
 
-		.subtitle {
-			color: var(--color-1);
-		}
+    .subtitle {
+      color: var(--color-1);
+    }
 
-		svg {
-			fill: transparent;
-		}
-	}
+    svg {
+      fill: transparent;
+    }
+  }
 }

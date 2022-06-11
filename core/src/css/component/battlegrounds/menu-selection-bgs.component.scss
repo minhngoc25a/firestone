@@ -1,19 +1,19 @@
 .menu-selection {
-	color: var(--menu-selection-color);
+  color: var(--menu-selection-color);
 
-	li,
-	button.menu-item {
-		margin-right: 25px;
-		padding-bottom: 14px;
+  li,
+  button.menu-item {
+    margin-right: 25px;
+    padding-bottom: 14px;
 
-		&:hover {
-			&:not(.disabled) {
-				color: var(--on-menu-selection-color);
-			}
-		}
+    &:hover {
+      &:not(.disabled) {
+        color: var(--on-menu-selection-color);
+      }
+    }
 
-		span {
-			display: flex;
-		}
-	}
+    span {
+      display: flex;
+    }
+  }
 }

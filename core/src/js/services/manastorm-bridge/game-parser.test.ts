@@ -1,20 +1,20 @@
-import { parseHsReplayString } from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
-import { buildTestCardsService } from '../test-utils';
-import { GameForUpload } from './game-for-upload';
-import { GameParserService } from './game-parser.service';
+import {parseHsReplayString} from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
+import {buildTestCardsService} from '../test-utils';
+import {GameForUpload} from './game-for-upload';
+import {GameParserService} from './game-parser.service';
 
 describe('Test correct result is computed', () => {
-	const cards = buildTestCardsService();
+    const cards = buildTestCardsService();
 
-	test('Basic test', async () => {
-		const service = new GameParserService(cards);
-		const game = new GameForUpload();
-		game.uncompressedXmlReplay = replayXml;
-		const replay = parseHsReplayString(game.uncompressedXmlReplay);
-		service.extractMatchup(replay, game);
+    test('Basic test', async () => {
+        const service = new GameParserService(cards);
+        const game = new GameForUpload();
+        game.uncompressedXmlReplay = replayXml;
+        const replay = parseHsReplayString(game.uncompressedXmlReplay);
+        service.extractMatchup(replay, game);
 
-		expect(game.result).toBe('won');
-	});
+        expect(game.result).toBe('won');
+    });
 });
 
 const replayXml = `

@@ -1,16 +1,16 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { SocialUserInfo } from '../../models/mainwindow/social-user-info';
-import { capitalizeEachWord } from '../../services/utils';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {SocialUserInfo} from '../../models/mainwindow/social-user-info';
+import {capitalizeEachWord} from '../../services/utils';
 
 @Component({
-	selector: 'social-share-modal',
-	styleUrls: [
-		`../../../css/global/scrollbar.scss`,
-		`../../../css/component/controls/controls.scss`,
-		`../../../css/component/controls/control-close.component.scss`,
-		`../../../css/component/sharing/social-share-modal.component.scss`,
-	],
-	template: `
+    selector: 'social-share-modal',
+    styleUrls: [
+        `../../../css/global/scrollbar.scss`,
+        `../../../css/component/controls/controls.scss`,
+        `../../../css/component/controls/control-close.component.scss`,
+        `../../../css/component/sharing/social-share-modal.component.scss`,
+    ],
+    template: `
 		<div class="social-share-modal">
 			<button class="i-30 close-button" (mousedown)="closeModal()">
 				<svg class="svg-icon-fill">
@@ -44,48 +44,48 @@ import { capitalizeEachWord } from '../../services/utils';
 			</button>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SocialShareModalComponent {
-	@Output() onShare: EventEmitter<string> = new EventEmitter<string>();
-	@Output() onLoginRequest: EventEmitter<boolean> = new EventEmitter<boolean>();
-	@Output() onLogoutRequest: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() onShare: EventEmitter<string> = new EventEmitter<string>();
+    @Output() onLoginRequest: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() onLogoutRequest: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-	@Input() closeHandler: () => void;
-	@Input() buttonEnabled: boolean;
-	@Input() dataValid: boolean;
+    @Input() closeHandler: () => void;
+    @Input() buttonEnabled: boolean;
+    @Input() dataValid: boolean;
+    networkTitle: string;
+    networkSvg: string;
+    loggedIn: boolean;
 
-	@Input() set socialUserInfo(value: SocialUserInfo) {
-		this._socialUserInfo = value;
-		if (this._socialUserInfo) {
-			this.networkSvg = `assets/svg/social/${this._socialUserInfo.network}.svg`;
-			this.networkTitle = capitalizeEachWord(this._socialUserInfo.network);
-			this.loggedIn = this._socialUserInfo.id != null;
-		}
-		console.log('setting socialUserInfo in modal', value);
-	}
+    _socialUserInfo: SocialUserInfo;
 
-	_socialUserInfo: SocialUserInfo;
-	networkTitle: string;
-	networkSvg: string;
-	loggedIn: boolean;
+    @Input() set socialUserInfo(value: SocialUserInfo) {
+        this._socialUserInfo = value;
+        if (this._socialUserInfo) {
+            this.networkSvg = `assets/svg/social/${this._socialUserInfo.network}.svg`;
+            this.networkTitle = capitalizeEachWord(this._socialUserInfo.network);
+            this.loggedIn = this._socialUserInfo.id != null;
+        }
+        console.log('setting socialUserInfo in modal', value);
+    }
 
-	share(text: string) {
-		if (this.dataValid && this.loggedIn) {
-			console.log('handling share', text);
-			this.onShare.next(text);
-		}
-	}
+    share(text: string) {
+        if (this.dataValid && this.loggedIn) {
+            console.log('handling share', text);
+            this.onShare.next(text);
+        }
+    }
 
-	handleLoginRequest() {
-		this.onLoginRequest.next(true);
-	}
+    handleLoginRequest() {
+        this.onLoginRequest.next(true);
+    }
 
-	handleLogoutRequest() {
-		this.onLogoutRequest.next(true);
-	}
+    handleLogoutRequest() {
+        this.onLogoutRequest.next(true);
+    }
 
-	closeModal() {
-		this.closeHandler && this.closeHandler();
-	}
+    closeModal() {
+        this.closeHandler && this.closeHandler();
+    }
 }

@@ -1,10 +1,10 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewRef } from '@angular/core';
-import { OverwolfService } from '../services/overwolf.service';
+import {AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewRef} from '@angular/core';
+import {OverwolfService} from '../services/overwolf.service';
 
 @Component({
-	selector: 'version',
-	styleUrls: [`../../css/component/version.component.scss`],
-	template: `
+    selector: 'version',
+    styleUrls: [`../../css/component/version.component.scss`],
+    template: `
 		<div class="version-info">v.{{ version }}</div>
 		<!-- <div
 			class="update check"
@@ -40,41 +40,42 @@ import { OverwolfService } from '../services/overwolf.service';
 			(click)="restartApp()"
 		></div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VersionComponent implements AfterViewInit {
-	version: string;
-	updateStatus: null | 'update-available' | 'restart-needed' | 'update-error' = null;
+    version: string;
+    updateStatus: null | 'update-available' | 'restart-needed' | 'update-error' = null;
 
-	constructor(private cdr: ChangeDetectorRef, private ow: OverwolfService) {}
+    constructor(private cdr: ChangeDetectorRef, private ow: OverwolfService) {
+    }
 
-	async ngAfterViewInit() {
-		// this.cdr.detach();
-		this.version = await this.ow.getAppVersion('lnknbakkpommmjjdnelmfbjjdbocfpnpbkijjnob');
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-		setInterval(() => this.checkForUpdates(), 5 * 60 * 1000);
-		this.checkForUpdates();
-	}
+    async ngAfterViewInit() {
+        // this.cdr.detach();
+        this.version = await this.ow.getAppVersion('lnknbakkpommmjjdnelmfbjjdbocfpnpbkijjnob');
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+        setInterval(() => this.checkForUpdates(), 5 * 60 * 1000);
+        this.checkForUpdates();
+    }
 
-	async checkForUpdates() {
-		const isUpdate = await this.ow.checkForExtensionUpdate();
-		this.updateStatus = isUpdate ? 'update-available' : null;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    async checkForUpdates() {
+        const isUpdate = await this.ow.checkForExtensionUpdate();
+        this.updateStatus = isUpdate ? 'update-available' : null;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	async updateApp() {
-		const updateDone = await this.ow.updateExtension();
-		this.updateStatus = updateDone ? 'restart-needed' : 'update-error';
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    async updateApp() {
+        const updateDone = await this.ow.updateExtension();
+        this.updateStatus = updateDone ? 'restart-needed' : 'update-error';
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	async restartApp() {
-		this.ow.relaunchApp();
-	}
+    async restartApp() {
+        this.ow.relaunchApp();
+    }
 }

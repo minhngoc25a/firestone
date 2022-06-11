@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 
 @Component({
-	selector: 'bgs-hero-short-recap',
-	styleUrls: [
-		'../../../../css/global/components-global.scss',
-		'../../../../css/component/battlegrounds/overlay/bgs-hero-short-recap.component.scss',
-	],
-	template: `
+    selector: 'bgs-hero-short-recap',
+    styleUrls: [
+        '../../../../css/global/components-global.scss',
+        '../../../../css/component/battlegrounds/overlay/bgs-hero-short-recap.component.scss',
+    ],
+    template: `
 		<div class="short-recap">
 			<tavern-level-icon [level]="tavernTier" class="element tavern" *ngIf="tavernTier"></tavern-level-icon>
 			<div class="element triples">
@@ -27,17 +27,17 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsHeroShortRecapComponent {
-	@Input() tavernTier: number;
-	@Input() triples: number;
-	@Input() winStreak: number;
-	@Input() tribeImage: string;
-	@Input() tribeCount: number;
-	@Input() damage: number;
+    @Input() tavernTier: number;
+    @Input() triples: number;
+    @Input() winStreak: number;
+    @Input() tribeImage: string;
+    @Input() tribeCount: number;
+    @Input() damage: number;
 
-	triplesImage = 'https://static.zerotoheroes.com/hearthstone/asset/firestone/images/bgs_leaderboard_triple.png';
-	winStreakImage = 'https://static.zerotoheroes.com/hearthstone/asset/firestone/images/bgs_leaderboard_winstreak.png';
-	damageImage = 'https://static.zerotoheroes.com/hearthstone/asset/firestone/images/bgs_leaderboard_damage.png';
+    triplesImage = 'https://static.zerotoheroes.com/hearthstone/asset/firestone/images/bgs_leaderboard_triple.png';
+    winStreakImage = 'https://static.zerotoheroes.com/hearthstone/asset/firestone/images/bgs_leaderboard_winstreak.png';
+    damageImage = 'https://static.zerotoheroes.com/hearthstone/asset/firestone/images/bgs_leaderboard_damage.png';
 }

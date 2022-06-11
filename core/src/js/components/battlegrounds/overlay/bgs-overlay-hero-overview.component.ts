@@ -1,27 +1,27 @@
 import {
-	AfterContentInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	ElementRef,
-	HostBinding,
-	Input,
-	Renderer2,
-	ViewRef,
+    AfterContentInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    HostBinding,
+    Input,
+    Renderer2,
+    ViewRef,
 } from '@angular/core';
-import { BgsPlayer } from '../../../models/battlegrounds/bgs-player';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
+import {BgsPlayer} from '../../../models/battlegrounds/bgs-player';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
 
 @Component({
-	selector: 'bgs-overlay-hero-overview',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/global/reset-styles.scss`,
-		'../../../../css/themes/battlegrounds-theme.scss',
-		'../../../../css/component/battlegrounds/overlay/bgs-overlay-hero-overview.component.scss',
-	],
-	template: `
+    selector: 'bgs-overlay-hero-overview',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/global/reset-styles.scss`,
+        '../../../../css/themes/battlegrounds-theme.scss',
+        '../../../../css/component/battlegrounds/overlay/bgs-overlay-hero-overview.component.scss',
+    ],
+    template: `
 		<div class="battlegrounds-theme bgs-hero-overview-tooltip scalable">
 			<bgs-opponent-overview-big
 				[opponent]="_opponent"
@@ -34,58 +34,58 @@ import { AbstractSubscriptionComponent } from '../../abstract-subscription.compo
 			></bgs-opponent-overview-big>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsOverlayHeroOverviewComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	@Input() set config(value: {
-		player: BgsPlayer;
-		currentTurn: number;
-		isLastOpponent: boolean;
-		additionalClasses: string;
-	}) {
-		this._opponent = value.player;
-		this.currentTurn = value.currentTurn;
-		this.isLastOpponent = value.isLastOpponent;
-		this.componentClass = value.additionalClasses;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    componentClass: string;
+    _opponent: BgsPlayer;
+    currentTurn: number;
+    isLastOpponent: boolean;
 
-	@HostBinding('class') get hostClasses() {
-		return `${this.componentClass}`;
-	}
+    constructor(
+        private readonly el: ElementRef,
+        private readonly renderer: Renderer2,
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+    ) {
+        super(store, cdr);
+        this.store
+            .listenPrefs$((prefs) => prefs.bgsOpponentBoardScale)
+            .pipe(this.mapData(([pref]) => pref))
+            .subscribe((scale) => {
+                try {
+                    // this.el.nativeElement.style.setProperty('--bgs-opponent-board-scale', scale / 100);
+                    const newScale = scale / 100;
+                    const element = this.el.nativeElement.querySelector('.scalable');
+                    this.renderer.setStyle(element, 'transform', `scale(${newScale})`);
+                } catch (e) {
+                    // Do nothing
+                    console.debug('error', e);
+                }
+            });
+    }
 
-	componentClass: string;
-	_opponent: BgsPlayer;
-	currentTurn: number;
-	isLastOpponent: boolean;
+    @Input() set config(value: {
+        player: BgsPlayer;
+        currentTurn: number;
+        isLastOpponent: boolean;
+        additionalClasses: string;
+    }) {
+        this._opponent = value.player;
+        this.currentTurn = value.currentTurn;
+        this.isLastOpponent = value.isLastOpponent;
+        this.componentClass = value.additionalClasses;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	constructor(
-		private readonly el: ElementRef,
-		private readonly renderer: Renderer2,
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-	) {
-		super(store, cdr);
-		this.store
-			.listenPrefs$((prefs) => prefs.bgsOpponentBoardScale)
-			.pipe(this.mapData(([pref]) => pref))
-			.subscribe((scale) => {
-				try {
-					// this.el.nativeElement.style.setProperty('--bgs-opponent-board-scale', scale / 100);
-					const newScale = scale / 100;
-					const element = this.el.nativeElement.querySelector('.scalable');
-					this.renderer.setStyle(element, 'transform', `scale(${newScale})`);
-				} catch (e) {
-					// Do nothing
-					console.debug('error', e);
-				}
-			});
-	}
+    @HostBinding('class') get hostClasses() {
+        return `${this.componentClass}`;
+    }
 
-	async ngAfterContentInit() {
-		// This method is not called, because we create teh component manually
-		console.debug('after content init');
-	}
+    async ngAfterContentInit() {
+        // This method is not called, because we create teh component manually
+        console.debug('after content init');
+    }
 }

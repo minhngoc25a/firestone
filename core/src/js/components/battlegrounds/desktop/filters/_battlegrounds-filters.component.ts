@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 @Component({
-	selector: 'battlegrounds-filters',
-	styleUrls: [
-		`../../../../../css/component/app-section.component.scss`,
-		`../../../../../css/component/battlegrounds/desktop/filters/_battlegrounds-filters.component.scss`,
-	],
-	template: `
+    selector: 'battlegrounds-filters',
+    styleUrls: [
+        `../../../../../css/component/app-section.component.scss`,
+        `../../../../../css/component/battlegrounds/desktop/filters/_battlegrounds-filters.component.scss`,
+    ],
+    template: `
 		<div class="battlegrounds-filters" [attr.aria-label]="'Battlegrounds filters'" role="list">
 			<battlegrounds-hero-sort-dropdown class="hero-sort"></battlegrounds-hero-sort-dropdown>
 			<battlegrounds-hero-filter-dropdown class="hero-filter"></battlegrounds-hero-filter-dropdown>
@@ -16,6 +16,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 			<battlegrounds-time-filter-dropdown class="time-filter"></battlegrounds-time-filter-dropdown>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BattlegroundsFiltersComponent {}
+export class BattlegroundsFiltersComponent {
+}

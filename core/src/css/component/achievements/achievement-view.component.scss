@@ -2,129 +2,133 @@
 @import '../../global/fonts';
 
 .achievement-container {
-	position: relative;
-	width: 100%;
-	background: rgba(255, 255, 255, 0.08);
-	display: flex;
-	flex-direction: column;
+  position: relative;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
 
-	.stripe {
-		width: 100%;
-		height: 125px;
-		display: flex;
-		padding: 15px;
-	}
+  .stripe {
+    width: 100%;
+    height: 125px;
+    display: flex;
+    padding: 15px;
+  }
 
-	.achievement-body {
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		flex-grow: 1;
-		justify-content: space-between;
-	}
+  .achievement-body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+  }
 
-	.achievement-name {
-		@extend %achievement-name;
-	}
+  .achievement-name {
+    @extend %achievement-name;
+  }
 
-	.achievement-text {
-		@extend %achievement-text;
-		margin-top: 7px;
-	}
+  .achievement-text {
+    @extend %achievement-text;
+    margin-top: 7px;
+  }
 
-	.completion-date {
-		position: absolute;
-		bottom: -2px;
-		right: 0;
-		color: #7d5a87;
-		font-family: Open Sans;
-		font-style: normal;
-		font-weight: normal;
-		line-height: normal;
-		font-size: 12px;
-	}
+  .completion-date {
+    position: absolute;
+    bottom: -2px;
+    right: 0;
+    color: #7d5a87;
+    font-family: Open Sans;
+    font-style: normal;
+    font-weight: normal;
+    line-height: normal;
+    font-size: 12px;
+  }
 
-	.collapse {
-		position: absolute;
-		top: 0px;
-		right: 0px;
-		width: 30px;
-		height: 30px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
+  .collapse {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-		i {
-			--icon-color: #cb9fd7;
+    i {
+      --icon-color: #cb9fd7;
 
-			&.open {
-				transform: scaleY(-1);
-			}
-		}
+      &.open {
+        transform: scaleY(-1);
+      }
+    }
 
-		&:hover {
-			background-color: #4b3052;
-		}
-	}
+    &:hover {
+      background-color: #4b3052;
+    }
+  }
 
-	.completion-progress {
-		display: flex;
-		margin-top: 10px;
-	}
+  .completion-progress {
+    display: flex;
+    margin-top: 10px;
+  }
 
-	.recordings {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: #d9c3ab;
-		padding-right: 15px;
-		border-right: 1px solid;
-		margin-right: 15px;
+  .recordings {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #d9c3ab;
+    padding-right: 15px;
+    border-right: 1px solid;
+    margin-right: 15px;
 
-		.number {
-			margin-right: 10px;
-			font-family: Open Sans;
-			font-style: normal;
-			font-weight: normal;
-			line-height: normal;
-			font-size: 12px;
-			text-align: center;
-		}
+    .number {
+      margin-right: 10px;
+      font-family: Open Sans;
+      font-style: normal;
+      font-weight: normal;
+      line-height: normal;
+      font-size: 12px;
+      text-align: center;
+    }
 
-		i {
-			--icon-color: #d9c3ab;
-		}
+    i {
+      --icon-color: #d9c3ab;
+    }
 
-		&.empty {
-			opacity: 0.4;
-			// color: #7d5a87;
-			// i {
-			// 	--icon-color: #7d5a87;
-			// }
-		}
-	}
+    &.empty {
+      opacity: 0.4;
+      // color: #7d5a87;
+      // i {
+      // 	--icon-color: #7d5a87;
+      // }
+    }
+  }
 
-	achievement-completion-step {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
+  achievement-completion-step {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-	&.missing {
-		.achievement-name {
-			color: #cb9fd7;
-		}
-		.achievement-text {
-			color: #7d5a87;
-		}
-		::ng-deep .completion-progress .completion-step i {
-			--icon-color: #7d5a87;
-		}
-		.recordings {
-			color: #7d5a87;
-			i {
-				--icon-color: #7d5a87;
-			}
-		}
-	}
+  &.missing {
+    .achievement-name {
+      color: #cb9fd7;
+    }
+
+    .achievement-text {
+      color: #7d5a87;
+    }
+
+    ::ng-deep .completion-progress .completion-step i {
+      --icon-color: #7d5a87;
+    }
+
+    .recordings {
+      color: #7d5a87;
+
+      i {
+        --icon-color: #7d5a87;
+      }
+    }
+  }
 }

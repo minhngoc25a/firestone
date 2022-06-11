@@ -1,18 +1,18 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef } from '@angular/core';
-import { Entity } from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
-import { BgsFaceOffWithSimulation } from '../../../models/battlegrounds/bgs-face-off-with-simulation';
-import { BgsPlayer } from '../../../models/battlegrounds/bgs-player';
-import { BgsTavernUpgrade } from '../../../models/battlegrounds/in-game/bgs-tavern-upgrade';
-import { BgsTriple } from '../../../models/battlegrounds/in-game/bgs-triple';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef} from '@angular/core';
+import {Entity} from '@firestone-hs/hs-replay-xml-parser/dist/public-api';
+import {BgsFaceOffWithSimulation} from '../../../models/battlegrounds/bgs-face-off-with-simulation';
+import {BgsPlayer} from '../../../models/battlegrounds/bgs-player';
+import {BgsTavernUpgrade} from '../../../models/battlegrounds/in-game/bgs-tavern-upgrade';
+import {BgsTriple} from '../../../models/battlegrounds/in-game/bgs-triple';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
 
 @Component({
-	selector: 'bgs-opponent-overview-big',
-	styleUrls: [
-		`../../../../css/global/reset-styles.scss`,
-		`../../../../css/component/battlegrounds/in-game/bgs-opponent-overview-big.component.scss`,
-	],
-	template: `
+    selector: 'bgs-opponent-overview-big',
+    styleUrls: [
+        `../../../../css/global/reset-styles.scss`,
+        `../../../../css/component/battlegrounds/in-game/bgs-opponent-overview-big.component.scss`,
+    ],
+    template: `
 		<bgs-player-capsule
 			[player]="_opponent"
 			[displayTavernTier]="true"
@@ -50,52 +50,53 @@ import { LocalizationFacadeService } from '../../../services/localization-facade
 			</div>
 		</bgs-player-capsule>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsOpponentOverviewBigComponent {
-	_opponent: BgsPlayer;
-	boardMinions: readonly Entity[];
-	boardTurn: number;
-	tavernUpgrades: readonly BgsTavernUpgrade[];
-	triples: readonly BgsTriple[];
-	// buddies: readonly number[];
+    boardMinions: readonly Entity[];
+    boardTurn: number;
+    tavernUpgrades: readonly BgsTavernUpgrade[];
+    triples: readonly BgsTriple[];
+    @Input() rating: number;
+    // buddies: readonly number[];
+    @Input() debug: boolean;
+    @Input() enableSimulation: boolean;
+    @Input() currentTurn: number;
+    @Input() nextBattle: BgsFaceOffWithSimulation;
+    @Input() maxBoardHeight = 1;
+    @Input() tavernTitle = this.i18n.translateString('battlegrounds.in-game.opponents.tavern-upgrade-title');
+    // @Input() buddiesTitle: string;
+    @Input() showTavernsIfEmpty = true;
+    // @Input() showBuddiesIfEmpty = true;
+    @Input() showLastOpponentIcon: boolean;
 
-	@Input() rating: number;
-	@Input() debug: boolean;
-	@Input() enableSimulation: boolean;
-	@Input() currentTurn: number;
-	@Input() nextBattle: BgsFaceOffWithSimulation;
-	@Input() maxBoardHeight = 1;
-	@Input() tavernTitle = this.i18n.translateString('battlegrounds.in-game.opponents.tavern-upgrade-title');
-	// @Input() buddiesTitle: string;
-	@Input() showTavernsIfEmpty = true;
-	// @Input() showBuddiesIfEmpty = true;
-	@Input() showLastOpponentIcon: boolean;
+    constructor(private readonly cdr: ChangeDetectorRef, private readonly i18n: LocalizationFacadeService) {
+    }
 
-	@Input() set opponent(value: BgsPlayer) {
-		if (value === this._opponent) {
-			return;
-		}
+    _opponent: BgsPlayer;
 
-		this._opponent = value;
-		if (!value) {
-			console.warn('[opponent-big] setting empty value');
-			return;
-		}
+    @Input() set opponent(value: BgsPlayer) {
+        if (value === this._opponent) {
+            return;
+        }
 
-		this.boardMinions = value.getLastKnownBoardState();
-		this.boardTurn = value.getLastBoardStateTurn();
-		this.triples = value.tripleHistory;
-		// this.buddies = value.buddyTurns;
-		this.tavernUpgrades = value.tavernUpgradeHistory;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+        this._opponent = value;
+        if (!value) {
+            console.warn('[opponent-big] setting empty value');
+            return;
+        }
 
-	constructor(private readonly cdr: ChangeDetectorRef, private readonly i18n: LocalizationFacadeService) {}
+        this.boardMinions = value.getLastKnownBoardState();
+        this.boardTurn = value.getLastBoardStateTurn();
+        this.triples = value.tripleHistory;
+        // this.buddies = value.buddyTurns;
+        this.tavernUpgrades = value.tavernUpgradeHistory;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	trackByUpgradeFn(index, item: BgsTavernUpgrade) {
-		return item.tavernTier;
-	}
+    trackByUpgradeFn(index, item: BgsTavernUpgrade) {
+        return item.tavernTier;
+    }
 }

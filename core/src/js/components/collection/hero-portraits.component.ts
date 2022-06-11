@@ -1,37 +1,37 @@
 import {
-	AfterContentInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	OnDestroy,
-	ViewRef,
+    AfterContentInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    ViewRef,
 } from '@angular/core';
-import { ReferenceCard } from '@firestone-hs/reference-data';
-import { CardsFacadeService } from '@services/cards-facade.service';
-import { sortBy } from 'lodash';
-import { combineLatest, Observable } from 'rxjs';
-import { Card } from '../../models/card';
-import { CardBack } from '../../models/card-back';
-import { CollectionPortraitCategoryFilter, CollectionPortraitOwnedFilter } from '../../models/collection/filter-types';
-import { MemoryMercenary } from '../../models/memory/memory-mercenaries-info';
-import { normalizeHeroCardId } from '../../services/battlegrounds/bgs-utils';
-import { formatClass } from '../../services/hs-utils';
-import { LocalizationFacadeService } from '../../services/localization-facade.service';
-import { ShowCardDetailsEvent } from '../../services/mainwindow/store/events/collection/show-card-details-event';
-import { MercenariesReferenceData } from '../../services/mercenaries/mercenaries-state-builder.service';
-import { normalizeMercenariesCardId } from '../../services/mercenaries/mercenaries-utils';
-import { AppUiStoreFacadeService } from '../../services/ui-store/app-ui-store-facade.service';
-import { groupByFunction } from '../../services/utils';
-import { AbstractSubscriptionComponent } from '../abstract-subscription.component';
-import { CollectionReferenceCard } from './collection-reference-card';
+import {ReferenceCard} from '@firestone-hs/reference-data';
+import {CardsFacadeService} from '@services/cards-facade.service';
+import {sortBy} from 'lodash';
+import {combineLatest, Observable} from 'rxjs';
+import {Card} from '../../models/card';
+import {CardBack} from '../../models/card-back';
+import {CollectionPortraitCategoryFilter, CollectionPortraitOwnedFilter} from '../../models/collection/filter-types';
+import {MemoryMercenary} from '../../models/memory/memory-mercenaries-info';
+import {normalizeHeroCardId} from '../../services/battlegrounds/bgs-utils';
+import {formatClass} from '../../services/hs-utils';
+import {LocalizationFacadeService} from '../../services/localization-facade.service';
+import {ShowCardDetailsEvent} from '../../services/mainwindow/store/events/collection/show-card-details-event';
+import {MercenariesReferenceData} from '../../services/mercenaries/mercenaries-state-builder.service';
+import {normalizeMercenariesCardId} from '../../services/mercenaries/mercenaries-utils';
+import {AppUiStoreFacadeService} from '../../services/ui-store/app-ui-store-facade.service';
+import {groupByFunction} from '../../services/utils';
+import {AbstractSubscriptionComponent} from '../abstract-subscription.component';
+import {CollectionReferenceCard} from './collection-reference-card';
 
 @Component({
-	selector: 'hero-portraits',
-	styleUrls: [
-		`../../../css/global/scrollbar.scss`,
-		`../../../css/component/collection/hero-portraits.component.scss`,
-	],
-	template: `
+    selector: 'hero-portraits',
+    styleUrls: [
+        `../../../css/global/scrollbar.scss`,
+        `../../../css/component/collection/hero-portraits.component.scss`,
+    ],
+    template: `
 		<div class="hero-portraits">
 			<div class="show-filter">
 				<collection-hero-portrait-owned-filter
@@ -74,297 +74,297 @@ import { CollectionReferenceCard } from './collection-reference-card';
 			</ng-container>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeroPortraitsComponent extends AbstractSubscriptionComponent implements AfterContentInit, OnDestroy {
-	readonly DEFAULT_CARD_WIDTH = 206;
+    readonly DEFAULT_CARD_WIDTH = 206;
 
-	total$: Observable<number>;
-	unlocked$: Observable<number>;
-	shownHeroPortraits$: Observable<readonly PortraitGroup[]>;
+    total$: Observable<number>;
+    unlocked$: Observable<number>;
+    shownHeroPortraits$: Observable<readonly PortraitGroup[]>;
 
-	cardWidth = this.DEFAULT_CARD_WIDTH;
+    cardWidth = this.DEFAULT_CARD_WIDTH;
 
-	constructor(
-		private readonly i18n: LocalizationFacadeService,
-		private readonly allCards: CardsFacadeService,
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-	) {
-		super(store, cdr);
-	}
+    constructor(
+        private readonly i18n: LocalizationFacadeService,
+        private readonly allCards: CardsFacadeService,
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+    ) {
+        super(store, cdr);
+    }
 
-	async ngAfterContentInit() {
-		const mercenariesReferenceData$ = this.store
-			.listen$(([main, nav, prefs]) => main.mercenaries.referenceData?.mercenaries)
-			.pipe(this.mapData(([mercs]) => mercs));
-		const relevantHeroes$ = combineLatest(
-			this.store.listen$(
-				([main, nav, prefs]) => main.binder.collection,
-				([main, nav, prefs]) => main.binder.ownedBgsHeroSkins,
-				([main, nav, prefs]) => main.mercenaries.collectionInfo?.Mercenaries,
-			),
-			mercenariesReferenceData$,
-			this.listenForBasicPref$((prefs) => prefs.collectionActivePortraitCategoryFilter),
-		).pipe(
-			this.mapData(
-				([[collection, ownedBgsHeroSkins, mercenariesCollection], mercenariesReferenceData, category]) => {
-					console.debug('collection', collection);
-					switch (category) {
-						case 'collectible':
-							return this.buildCollectibleHeroPortraits(collection, this.allCards.getCards());
-						case 'battlegrounds':
-							return this.buildBattlegroundsHeroPortraits(ownedBgsHeroSkins, this.allCards.getCards());
-						case 'mercenaries':
-							return this.buildMercenariesHeroPortraits(
-								mercenariesCollection,
-								mercenariesReferenceData,
-								this.allCards.getCards(),
-							);
-						case 'book-of-mercs':
-							return this.buildBookOfMercenariesHeroPortraits(this.allCards.getCards());
-					}
-				},
-			),
-		);
-		this.total$ = relevantHeroes$.pipe(this.mapData((heroes) => heroes.length));
-		this.unlocked$ = relevantHeroes$.pipe(
-			this.mapData((heroes) => heroes.filter((item) => item.numberOwned > 0).length),
-		);
+    async ngAfterContentInit() {
+        const mercenariesReferenceData$ = this.store
+            .listen$(([main, nav, prefs]) => main.mercenaries.referenceData?.mercenaries)
+            .pipe(this.mapData(([mercs]) => mercs));
+        const relevantHeroes$ = combineLatest(
+            this.store.listen$(
+                ([main, nav, prefs]) => main.binder.collection,
+                ([main, nav, prefs]) => main.binder.ownedBgsHeroSkins,
+                ([main, nav, prefs]) => main.mercenaries.collectionInfo?.Mercenaries,
+            ),
+            mercenariesReferenceData$,
+            this.listenForBasicPref$((prefs) => prefs.collectionActivePortraitCategoryFilter),
+        ).pipe(
+            this.mapData(
+                ([[collection, ownedBgsHeroSkins, mercenariesCollection], mercenariesReferenceData, category]) => {
+                    console.debug('collection', collection);
+                    switch (category) {
+                        case 'collectible':
+                            return this.buildCollectibleHeroPortraits(collection, this.allCards.getCards());
+                        case 'battlegrounds':
+                            return this.buildBattlegroundsHeroPortraits(ownedBgsHeroSkins, this.allCards.getCards());
+                        case 'mercenaries':
+                            return this.buildMercenariesHeroPortraits(
+                                mercenariesCollection,
+                                mercenariesReferenceData,
+                                this.allCards.getCards(),
+                            );
+                        case 'book-of-mercs':
+                            return this.buildBookOfMercenariesHeroPortraits(this.allCards.getCards());
+                    }
+                },
+            ),
+        );
+        this.total$ = relevantHeroes$.pipe(this.mapData((heroes) => heroes.length));
+        this.unlocked$ = relevantHeroes$.pipe(
+            this.mapData((heroes) => heroes.filter((item) => item.numberOwned > 0).length),
+        );
 
-		const filteredHeroPortraits$ = combineLatest(
-			relevantHeroes$,
-			this.listenForBasicPref$((prefs) => prefs.collectionActivePortraitCategoryFilter),
-			this.listenForBasicPref$((prefs) => prefs.collectionActivePortraitOwnedFilter),
-		).pipe(this.mapData(([heroes, category, owned]) => heroes.filter(this.filterCardsOwned(owned))));
-		this.shownHeroPortraits$ = combineLatest(
-			filteredHeroPortraits$,
-			this.listenForBasicPref$((prefs) => prefs.collectionActivePortraitCategoryFilter),
-			this.listenForBasicPref$((prefs) => prefs.collectionActivePortraitOwnedFilter),
-		).pipe(
-			this.mapData(([portraitCards, category, cardsOwnedActiveFilter]) =>
-				this.groupPortraits(portraitCards, category),
-			),
-		);
+        const filteredHeroPortraits$ = combineLatest(
+            relevantHeroes$,
+            this.listenForBasicPref$((prefs) => prefs.collectionActivePortraitCategoryFilter),
+            this.listenForBasicPref$((prefs) => prefs.collectionActivePortraitOwnedFilter),
+        ).pipe(this.mapData(([heroes, category, owned]) => heroes.filter(this.filterCardsOwned(owned))));
+        this.shownHeroPortraits$ = combineLatest(
+            filteredHeroPortraits$,
+            this.listenForBasicPref$((prefs) => prefs.collectionActivePortraitCategoryFilter),
+            this.listenForBasicPref$((prefs) => prefs.collectionActivePortraitOwnedFilter),
+        ).pipe(
+            this.mapData(([portraitCards, category, cardsOwnedActiveFilter]) =>
+                this.groupPortraits(portraitCards, category),
+            ),
+        );
 
-		this.store
-			.listenPrefs$((prefs) => prefs.collectionCardScale)
-			.pipe(this.mapData(([pref]) => pref))
-			.subscribe((value) => {
-				const cardScale = value / 100;
-				this.cardWidth = cardScale * this.DEFAULT_CARD_WIDTH;
-				if (!(this.cdr as ViewRef)?.destroyed) {
-					this.cdr.detectChanges();
-				}
-			});
-	}
+        this.store
+            .listenPrefs$((prefs) => prefs.collectionCardScale)
+            .pipe(this.mapData(([pref]) => pref))
+            .subscribe((value) => {
+                const cardScale = value / 100;
+                this.cardWidth = cardScale * this.DEFAULT_CARD_WIDTH;
+                if (!(this.cdr as ViewRef)?.destroyed) {
+                    this.cdr.detectChanges();
+                }
+            });
+    }
 
-	showFullHeroPortrait(heroPortrait: CollectionReferenceCard) {
-		this.store.send(new ShowCardDetailsEvent(heroPortrait.id));
-	}
+    showFullHeroPortrait(heroPortrait: CollectionReferenceCard) {
+        this.store.send(new ShowCardDetailsEvent(heroPortrait.id));
+    }
 
-	trackByCardId(index: number, card: CardBack) {
-		return card.id;
-	}
+    trackByCardId(index: number, card: CardBack) {
+        return card.id;
+    }
 
-	private groupPortraits(
-		portraitCards: CollectionReferenceCard[],
-		category: CollectionPortraitCategoryFilter,
-	): readonly PortraitGroup[] {
-		const groupingFunction = this.buildGroupingFunction(category);
-		const sortingFunction = this.buildSortingFunction(category);
-		const groupedByClass = groupByFunction(groupingFunction)(portraitCards);
-		return Object.keys(groupedByClass)
-			.map((groupingKey) => ({
-				title: this.buildGroupTitle(category, groupedByClass[groupingKey][0]),
-				portraits: groupedByClass[groupingKey],
-			}))
-			.sort(sortingFunction);
-	}
+    private groupPortraits(
+        portraitCards: CollectionReferenceCard[],
+        category: CollectionPortraitCategoryFilter,
+    ): readonly PortraitGroup[] {
+        const groupingFunction = this.buildGroupingFunction(category);
+        const sortingFunction = this.buildSortingFunction(category);
+        const groupedByClass = groupByFunction(groupingFunction)(portraitCards);
+        return Object.keys(groupedByClass)
+            .map((groupingKey) => ({
+                title: this.buildGroupTitle(category, groupedByClass[groupingKey][0]),
+                portraits: groupedByClass[groupingKey],
+            }))
+            .sort(sortingFunction);
+    }
 
-	private buildGroupingFunction(category: CollectionPortraitCategoryFilter): (portrait: ReferenceCard) => string {
-		switch (category) {
-			case 'collectible':
-				return (portrait: ReferenceCard) => portrait.playerClass?.toLowerCase();
-			case 'battlegrounds':
-				return (portrait: ReferenceCard) => normalizeHeroCardId(portrait.id, this.allCards);
-			case 'mercenaries':
-				return (portrait: ReferenceCard) => normalizeMercenariesCardId(portrait.id);
-			case 'book-of-mercs':
-				return (portrait: ReferenceCard) => {
-					const match = /BOM_(\d+)_.*/g.exec(portrait.id);
-					return match ? match[1] : '';
-				};
-		}
-	}
+    private buildGroupingFunction(category: CollectionPortraitCategoryFilter): (portrait: ReferenceCard) => string {
+        switch (category) {
+            case 'collectible':
+                return (portrait: ReferenceCard) => portrait.playerClass?.toLowerCase();
+            case 'battlegrounds':
+                return (portrait: ReferenceCard) => normalizeHeroCardId(portrait.id, this.allCards);
+            case 'mercenaries':
+                return (portrait: ReferenceCard) => normalizeMercenariesCardId(portrait.id);
+            case 'book-of-mercs':
+                return (portrait: ReferenceCard) => {
+                    const match = /BOM_(\d+)_.*/g.exec(portrait.id);
+                    return match ? match[1] : '';
+                };
+        }
+    }
 
-	private buildSortingFunction(
-		category: CollectionPortraitCategoryFilter,
-	): (a: PortraitGroup, b: PortraitGroup) => number {
-		switch (category) {
-			default:
-				return (a, b) => (a.title < b.title ? -1 : 1);
-		}
-	}
+    private buildSortingFunction(
+        category: CollectionPortraitCategoryFilter,
+    ): (a: PortraitGroup, b: PortraitGroup) => number {
+        switch (category) {
+            default:
+                return (a, b) => (a.title < b.title ? -1 : 1);
+        }
+    }
 
-	private buildGroupTitle(category: CollectionPortraitCategoryFilter, refPortrait: ReferenceCard): string {
-		switch (category) {
-			case 'collectible':
-				return formatClass(refPortrait.playerClass, this.i18n);
-			case 'battlegrounds':
-			case 'mercenaries':
-				return refPortrait.name;
-			case 'book-of-mercs':
-				const match = /BOM_(\d+)_.*/g.exec(refPortrait.id);
-				const storyIndex = match ? match[1] : '';
-				switch (+storyIndex) {
-					case 1:
-						return `${storyIndex.padStart(2, '0')} - Rokara's story`;
-					case 2:
-						return `${storyIndex.padStart(2, '0')} - Xyrella's story`;
-					case 3:
-						return `${storyIndex.padStart(2, '0')} - Guff's story`;
-					case 4:
-						return `${storyIndex.padStart(2, '0')} - Kurtrus' story`;
-					case 5:
-						return `${storyIndex.padStart(2, '0')} - Tamsin's story`;
-					case 6:
-						return `${storyIndex.padStart(2, '0')} - Cariel's story`;
-					case 7:
-						return `${storyIndex.padStart(2, '0')} - Scabbs' story`;
-					case 8:
-						return `${storyIndex.padStart(2, '0')} - Tavish's story`;
-					case 9:
-						return `${storyIndex.padStart(2, '0')} - Bru'kan's story`;
-					case 10:
-						return `${storyIndex.padStart(2, '0')} - Dawngrasp's story`;
-					default:
-						return `${storyIndex.padStart(2, '0')} - Other stories`;
-				}
-		}
-	}
+    private buildGroupTitle(category: CollectionPortraitCategoryFilter, refPortrait: ReferenceCard): string {
+        switch (category) {
+            case 'collectible':
+                return formatClass(refPortrait.playerClass, this.i18n);
+            case 'battlegrounds':
+            case 'mercenaries':
+                return refPortrait.name;
+            case 'book-of-mercs':
+                const match = /BOM_(\d+)_.*/g.exec(refPortrait.id);
+                const storyIndex = match ? match[1] : '';
+                switch (+storyIndex) {
+                    case 1:
+                        return `${storyIndex.padStart(2, '0')} - Rokara's story`;
+                    case 2:
+                        return `${storyIndex.padStart(2, '0')} - Xyrella's story`;
+                    case 3:
+                        return `${storyIndex.padStart(2, '0')} - Guff's story`;
+                    case 4:
+                        return `${storyIndex.padStart(2, '0')} - Kurtrus' story`;
+                    case 5:
+                        return `${storyIndex.padStart(2, '0')} - Tamsin's story`;
+                    case 6:
+                        return `${storyIndex.padStart(2, '0')} - Cariel's story`;
+                    case 7:
+                        return `${storyIndex.padStart(2, '0')} - Scabbs' story`;
+                    case 8:
+                        return `${storyIndex.padStart(2, '0')} - Tavish's story`;
+                    case 9:
+                        return `${storyIndex.padStart(2, '0')} - Bru'kan's story`;
+                    case 10:
+                        return `${storyIndex.padStart(2, '0')} - Dawngrasp's story`;
+                    default:
+                        return `${storyIndex.padStart(2, '0')} - Other stories`;
+                }
+        }
+    }
 
-	private buildBattlegroundsHeroPortraits(
-		ownedBgsHeroSkins: readonly number[],
-		cards: readonly ReferenceCard[],
-	): readonly CollectionReferenceCard[] {
-		const relevantPortraits: readonly ReferenceCard[] = cards
-			.filter((card) => card.set === 'Battlegrounds')
-			.filter((card) => card.battlegroundsHero || card.battlegroundsHeroSkin);
-		const heroPortraits = relevantPortraits.map((card) =>
-			(ownedBgsHeroSkins ?? []).includes(card.dbfId) || !card.battlegroundsHeroSkin
-				? ({
-						...card,
-						numberOwned: 1,
-				  } as CollectionReferenceCard)
-				: ({
-						...card,
-						numberOwned: 0,
-				  } as CollectionReferenceCard),
-		) as CollectionReferenceCard[];
-		const sortedHeroes = sortBy(heroPortraits, 'id');
-		return sortedHeroes;
-	}
+    private buildBattlegroundsHeroPortraits(
+        ownedBgsHeroSkins: readonly number[],
+        cards: readonly ReferenceCard[],
+    ): readonly CollectionReferenceCard[] {
+        const relevantPortraits: readonly ReferenceCard[] = cards
+            .filter((card) => card.set === 'Battlegrounds')
+            .filter((card) => card.battlegroundsHero || card.battlegroundsHeroSkin);
+        const heroPortraits = relevantPortraits.map((card) =>
+            (ownedBgsHeroSkins ?? []).includes(card.dbfId) || !card.battlegroundsHeroSkin
+                ? ({
+                    ...card,
+                    numberOwned: 1,
+                } as CollectionReferenceCard)
+                : ({
+                    ...card,
+                    numberOwned: 0,
+                } as CollectionReferenceCard),
+        ) as CollectionReferenceCard[];
+        const sortedHeroes = sortBy(heroPortraits, 'id');
+        return sortedHeroes;
+    }
 
-	private buildMercenariesHeroPortraits(
-		mercenariesCollection: readonly MemoryMercenary[],
-		mercenariesReferenceData: readonly MercenariesReferenceData['mercenaries'][0][],
-		cards: readonly ReferenceCard[],
-	): readonly CollectionReferenceCard[] {
-		if (!mercenariesCollection || !mercenariesReferenceData?.length) {
-			return [];
-		}
-		const allArtVariations =
-			mercenariesReferenceData
-				// Get rid of the enemies
-				?.filter((data) => data.skins?.length > 1)
-				.map((data) => data.skins)
-				.reduce((a, b) => a.concat(b), [])
-				.map((skin) => skin.cardId) ?? [];
-		const allMercenariesPortraits: readonly ReferenceCard[] = cards
-			.filter((card) => card.set === 'Lettuce')
-			.filter((card) => card.mercenary)
-			.filter((card) => allArtVariations.includes(card.dbfId));
-		const ownedMercenariesSkins =
-			mercenariesCollection
-				?.map((merc) => merc.Skins)
-				.reduce((a, b) => a.concat(b), [])
-				.map((skin) => skin.CardDbfId) ?? [];
-		const heroPortraits = allMercenariesPortraits
-			.filter((card) => allArtVariations.includes(card.dbfId))
-			.map((card) =>
-				ownedMercenariesSkins.includes(card.dbfId)
-					? ({
-							...card,
-							numberOwned: 1,
-					  } as CollectionReferenceCard)
-					: ({
-							...card,
-							numberOwned: 0,
-					  } as CollectionReferenceCard),
-			) as CollectionReferenceCard[];
-		const sortedHeroes = sortBy(heroPortraits, 'id');
-		return sortedHeroes;
-	}
+    private buildMercenariesHeroPortraits(
+        mercenariesCollection: readonly MemoryMercenary[],
+        mercenariesReferenceData: readonly MercenariesReferenceData['mercenaries'][0][],
+        cards: readonly ReferenceCard[],
+    ): readonly CollectionReferenceCard[] {
+        if (!mercenariesCollection || !mercenariesReferenceData?.length) {
+            return [];
+        }
+        const allArtVariations =
+            mercenariesReferenceData
+                // Get rid of the enemies
+                ?.filter((data) => data.skins?.length > 1)
+                .map((data) => data.skins)
+                .reduce((a, b) => a.concat(b), [])
+                .map((skin) => skin.cardId) ?? [];
+        const allMercenariesPortraits: readonly ReferenceCard[] = cards
+            .filter((card) => card.set === 'Lettuce')
+            .filter((card) => card.mercenary)
+            .filter((card) => allArtVariations.includes(card.dbfId));
+        const ownedMercenariesSkins =
+            mercenariesCollection
+                ?.map((merc) => merc.Skins)
+                .reduce((a, b) => a.concat(b), [])
+                .map((skin) => skin.CardDbfId) ?? [];
+        const heroPortraits = allMercenariesPortraits
+            .filter((card) => allArtVariations.includes(card.dbfId))
+            .map((card) =>
+                ownedMercenariesSkins.includes(card.dbfId)
+                    ? ({
+                        ...card,
+                        numberOwned: 1,
+                    } as CollectionReferenceCard)
+                    : ({
+                        ...card,
+                        numberOwned: 0,
+                    } as CollectionReferenceCard),
+            ) as CollectionReferenceCard[];
+        const sortedHeroes = sortBy(heroPortraits, 'id');
+        return sortedHeroes;
+    }
 
-	private buildCollectibleHeroPortraits(
-		collection: readonly Card[],
-		cards: readonly ReferenceCard[],
-	): readonly CollectionReferenceCard[] {
-		const relevantPortraits: readonly ReferenceCard[] = cards
-			.filter((card) => card.set === 'Hero_skins')
-			.filter((card) => card.collectible);
-		const portraitCardIds = relevantPortraits.map((card) => card.id);
-		const ownedPortraits = collection
-			.filter((card) => (card.count ?? 0) + (card.premiumCount ?? 0) > 0)
-			.map((card) => card.id)
-			.filter((cardId) => portraitCardIds.includes(cardId));
-		const heroPortraits = relevantPortraits.map((card) =>
-			ownedPortraits.includes(card.id)
-				? ({
-						...card,
-						numberOwned: 1,
-				  } as CollectionReferenceCard)
-				: ({
-						...card,
-						numberOwned: 0,
-				  } as CollectionReferenceCard),
-		) as CollectionReferenceCard[];
-		const sortedHeroes = sortBy(heroPortraits, 'id', 'playerClass');
-		return sortedHeroes;
-	}
+    private buildCollectibleHeroPortraits(
+        collection: readonly Card[],
+        cards: readonly ReferenceCard[],
+    ): readonly CollectionReferenceCard[] {
+        const relevantPortraits: readonly ReferenceCard[] = cards
+            .filter((card) => card.set === 'Hero_skins')
+            .filter((card) => card.collectible);
+        const portraitCardIds = relevantPortraits.map((card) => card.id);
+        const ownedPortraits = collection
+            .filter((card) => (card.count ?? 0) + (card.premiumCount ?? 0) > 0)
+            .map((card) => card.id)
+            .filter((cardId) => portraitCardIds.includes(cardId));
+        const heroPortraits = relevantPortraits.map((card) =>
+            ownedPortraits.includes(card.id)
+                ? ({
+                    ...card,
+                    numberOwned: 1,
+                } as CollectionReferenceCard)
+                : ({
+                    ...card,
+                    numberOwned: 0,
+                } as CollectionReferenceCard),
+        ) as CollectionReferenceCard[];
+        const sortedHeroes = sortBy(heroPortraits, 'id', 'playerClass');
+        return sortedHeroes;
+    }
 
-	private buildBookOfMercenariesHeroPortraits(cards: readonly ReferenceCard[]): readonly CollectionReferenceCard[] {
-		const relevantPortraits: readonly ReferenceCard[] = cards
-			.filter((card) => card.id.startsWith('BOM_'))
-			.filter((card) => card.type === 'Hero');
-		const heroPortraits = relevantPortraits.map(
-			(card) =>
-				({
-					...card,
-					numberOwned: 1,
-				} as CollectionReferenceCard),
-		) as CollectionReferenceCard[];
-		const sortedHeroes = sortBy(heroPortraits, 'id');
-		return sortedHeroes;
-	}
+    private buildBookOfMercenariesHeroPortraits(cards: readonly ReferenceCard[]): readonly CollectionReferenceCard[] {
+        const relevantPortraits: readonly ReferenceCard[] = cards
+            .filter((card) => card.id.startsWith('BOM_'))
+            .filter((card) => card.type === 'Hero');
+        const heroPortraits = relevantPortraits.map(
+            (card) =>
+                ({
+                    ...card,
+                    numberOwned: 1,
+                } as CollectionReferenceCard),
+        ) as CollectionReferenceCard[];
+        const sortedHeroes = sortBy(heroPortraits, 'id');
+        return sortedHeroes;
+    }
 
-	private filterCardsOwned(cardsOwnedActiveFilter: CollectionPortraitOwnedFilter) {
-		switch (cardsOwnedActiveFilter) {
-			case 'own':
-				return (card: CollectionReferenceCard) => card.numberOwned > 0;
-			case 'dontown':
-				return (card: CollectionReferenceCard) => !card.numberOwned;
-			case 'all':
-				return (card: CollectionReferenceCard) => true;
-			default:
-				console.warn('unknown filter', cardsOwnedActiveFilter);
-				return (card: CollectionReferenceCard) => true;
-		}
-	}
+    private filterCardsOwned(cardsOwnedActiveFilter: CollectionPortraitOwnedFilter) {
+        switch (cardsOwnedActiveFilter) {
+            case 'own':
+                return (card: CollectionReferenceCard) => card.numberOwned > 0;
+            case 'dontown':
+                return (card: CollectionReferenceCard) => !card.numberOwned;
+            case 'all':
+                return (card: CollectionReferenceCard) => true;
+            default:
+                console.warn('unknown filter', cardsOwnedActiveFilter);
+                return (card: CollectionReferenceCard) => true;
+        }
+    }
 }
 
 interface PortraitGroup {
-	readonly title: string;
-	readonly portraits: readonly (ReferenceCard | CollectionReferenceCard)[];
+    readonly title: string;
+    readonly portraits: readonly (ReferenceCard | CollectionReferenceCard)[];
 }

@@ -1,34 +1,36 @@
 import {
-	AfterContentInit,
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
-	Input,
-	ViewRef,
+    AfterContentInit,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    ViewRef,
 } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { filter, map, takeUntil, tap } from 'rxjs/operators';
-import { BgsFaceOffWithSimulation } from '../../../models/battlegrounds/bgs-face-off-with-simulation';
-import { BgsPostMatchStatsPanel } from '../../../models/battlegrounds/post-match/bgs-post-match-stats-panel';
-import { BgsStatsFilterId } from '../../../models/battlegrounds/post-match/bgs-stats-filter-id.type';
-import { BgsHeroStat } from '../../../models/battlegrounds/stats/bgs-hero-stat';
-import { BgsPostMatchStatsFilterChangeEvent } from '../../../services/battlegrounds/store/events/bgs-post-match-stats-filter-change-event';
-import { BattlegroundsStoreEvent } from '../../../services/battlegrounds/store/events/_battlegrounds-store-event';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
-import { OverwolfService } from '../../../services/overwolf.service';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { cdLog } from '../../../services/ui-store/app-ui-store.service';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
+import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
+import {filter, map, takeUntil, tap} from 'rxjs/operators';
+import {BgsFaceOffWithSimulation} from '../../../models/battlegrounds/bgs-face-off-with-simulation';
+import {BgsPostMatchStatsPanel} from '../../../models/battlegrounds/post-match/bgs-post-match-stats-panel';
+import {BgsStatsFilterId} from '../../../models/battlegrounds/post-match/bgs-stats-filter-id.type';
+import {BgsHeroStat} from '../../../models/battlegrounds/stats/bgs-hero-stat';
+import {
+    BgsPostMatchStatsFilterChangeEvent
+} from '../../../services/battlegrounds/store/events/bgs-post-match-stats-filter-change-event';
+import {BattlegroundsStoreEvent} from '../../../services/battlegrounds/store/events/_battlegrounds-store-event';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
+import {OverwolfService} from '../../../services/overwolf.service';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {cdLog} from '../../../services/ui-store/app-ui-store.service';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
 
 @Component({
-	selector: 'bgs-post-match-stats-tabs',
-	styleUrls: [
-		`../../../../css/global/reset-styles.scss`,
-		`../../../../css/component/battlegrounds/post-match/bgs-post-match-stats-tabs.component.scss`,
-	],
-	template: `
+    selector: 'bgs-post-match-stats-tabs',
+    styleUrls: [
+        `../../../../css/global/reset-styles.scss`,
+        `../../../../css/component/battlegrounds/post-match/bgs-post-match-stats-tabs.component.scss`,
+    ],
+    template: `
 		<div class="stats">
 			<ul class="tabs">
 				<li
@@ -82,82 +84,79 @@ import { AbstractSubscriptionComponent } from '../../abstract-subscription.compo
 			</ng-container>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsPostMatchStatsTabsComponent
-	extends AbstractSubscriptionComponent
-	implements AfterContentInit, AfterViewInit {
-	_panel: BgsPostMatchStatsPanel;
-	tabs: readonly BgsStatsFilterId[];
-	faceOffs: readonly BgsFaceOffWithSimulation[];
+    extends AbstractSubscriptionComponent
+    implements AfterContentInit, AfterViewInit {
+    tabs: readonly BgsStatsFilterId[];
+    faceOffs: readonly BgsFaceOffWithSimulation[];
+    heroStat$: Observable<BgsHeroStat>;
+    @Input() selectedTab: BgsStatsFilterId;
+    @Input() selectTabHandler: (tab: BgsStatsFilterId, tabIndex: number) => void;
+    @Input() mainPlayerCardId: string;
+    @Input() tabIndex = 0;
+    private currentHeroId$$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
+    private battlegroundsUpdater: EventEmitter<BattlegroundsStoreEvent>;
 
-	heroStat$: Observable<BgsHeroStat>;
+    constructor(
+        private readonly ow: OverwolfService,
+        private readonly i18n: LocalizationFacadeService,
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+    ) {
+        super(store, cdr);
+    }
 
-	private currentHeroId$$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
+    _panel: BgsPostMatchStatsPanel;
 
-	@Input() selectedTab: BgsStatsFilterId;
-	@Input() selectTabHandler: (tab: BgsStatsFilterId, tabIndex: number) => void;
-	@Input() mainPlayerCardId: string;
-	@Input() tabIndex = 0;
+    @Input() set panel(value: BgsPostMatchStatsPanel) {
+        if (!value?.player || value === this._panel) {
+            return;
+        }
+        this._panel = value;
+        this.currentHeroId$$.next(value.player.cardId);
+        this.tabs = value.tabs;
+        this.faceOffs = (value.stats?.faceOffs ?? [])
+            .map((faceOff) => {
+                const battle = value.stats?.battleResultHistory?.find(
+                    (battleResult) => battleResult.turn === faceOff.turn,
+                );
+                return {
+                    ...faceOff,
+                    battleInfo: (battle as any)?.battleInfo,
+                    battleResult: battle?.simulationResult,
+                } as BgsFaceOffWithSimulation;
+            })
+            .reverse();
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	@Input() set panel(value: BgsPostMatchStatsPanel) {
-		if (!value?.player || value === this._panel) {
-			return;
-		}
-		this._panel = value;
-		this.currentHeroId$$.next(value.player.cardId);
-		this.tabs = value.tabs;
-		this.faceOffs = (value.stats?.faceOffs ?? [])
-			.map((faceOff) => {
-				const battle = value.stats?.battleResultHistory?.find(
-					(battleResult) => battleResult.turn === faceOff.turn,
-				);
-				return {
-					...faceOff,
-					battleInfo: (battle as any)?.battleInfo,
-					battleResult: battle?.simulationResult,
-				} as BgsFaceOffWithSimulation;
-			})
-			.reverse();
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    ngAfterContentInit() {
+        this.heroStat$ = combineLatest(this.store.bgHeroStats$(), this.currentHeroId$$.asObservable()).pipe(
+            filter(([heroStats, heroId]) => !!heroStats?.length && !!heroId),
+            map(([heroStats, heroId]) => heroStats.find((stat) => stat.id === heroId)),
+            tap((filter) => cdLog('emitting heroStat in ', this.constructor.name, filter)),
+            takeUntil(this.destroyed$),
+        );
+    }
 
-	private battlegroundsUpdater: EventEmitter<BattlegroundsStoreEvent>;
+    async ngAfterViewInit() {
+        this.battlegroundsUpdater = (await this.ow.getMainWindow()).battlegroundsUpdater;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	constructor(
-		private readonly ow: OverwolfService,
-		private readonly i18n: LocalizationFacadeService,
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-	) {
-		super(store, cdr);
-	}
+    selectTab(tab: BgsStatsFilterId) {
+        this.selectTabHandler
+            ? this.selectTabHandler(tab, this.tabIndex)
+            : this.battlegroundsUpdater.next(new BgsPostMatchStatsFilterChangeEvent(tab, this.tabIndex));
+    }
 
-	ngAfterContentInit() {
-		this.heroStat$ = combineLatest(this.store.bgHeroStats$(), this.currentHeroId$$.asObservable()).pipe(
-			filter(([heroStats, heroId]) => !!heroStats?.length && !!heroId),
-			map(([heroStats, heroId]) => heroStats.find((stat) => stat.id === heroId)),
-			tap((filter) => cdLog('emitting heroStat in ', this.constructor.name, filter)),
-			takeUntil(this.destroyed$),
-		);
-	}
-
-	async ngAfterViewInit() {
-		this.battlegroundsUpdater = (await this.ow.getMainWindow()).battlegroundsUpdater;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
-
-	selectTab(tab: BgsStatsFilterId) {
-		this.selectTabHandler
-			? this.selectTabHandler(tab, this.tabIndex)
-			: this.battlegroundsUpdater.next(new BgsPostMatchStatsFilterChangeEvent(tab, this.tabIndex));
-	}
-
-	getLabel(tab: BgsStatsFilterId): string {
-		return this.i18n.translateString(`battlegrounds.post-match-stats.tabs.${tab}`);
-	}
+    getLabel(tab: BgsStatsFilterId): string {
+        return this.i18n.translateString(`battlegrounds.post-match-stats.tabs.${tab}`);
+    }
 }

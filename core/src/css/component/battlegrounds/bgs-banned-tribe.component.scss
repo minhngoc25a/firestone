@@ -1,58 +1,58 @@
 .bgs-banned-tribe {
-	position: relative;
+  position: relative;
 }
 
 .background {
-	position: relative;
-	width: 75px;
-	height: 85px;
-	background: #dfb3d3;
-	clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  position: relative;
+  width: 75px;
+  height: 85px;
+  background: #dfb3d3;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
 }
 
 .icon {
-	position: absolute;
-	top: 3px;
-	left: -8px;
-	width: 91px;
-	height: 78px;
-	clip-path: polygon(50% 4%, 85% 25%, 85% 75%, 50% 98%, 15% 75%, 15% 25%);
+  position: absolute;
+  top: 3px;
+  left: -8px;
+  width: 91px;
+  height: 78px;
+  clip-path: polygon(50% 4%, 85% 25%, 85% 75%, 50% 98%, 15% 75%, 15% 25%);
 }
 
 .center-wrapper {
-	position: absolute;
-	top: -5px;
-	width: 100%;
-	height: 26px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+  position: absolute;
+  top: -5px;
+  width: 100%;
+  height: 26px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .cross-container-outer {
-	position: relative;
-	width: 26px;
-	height: 26px;
-	clip-path: ellipse(50% 50% at 50% 50%);
-	background: #dfb3d3;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  position: relative;
+  width: 26px;
+  height: 26px;
+  clip-path: ellipse(50% 50% at 50% 50%);
+  background: #dfb3d3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-	.cross-container-inner {
-		background: var(--color-5);
-		clip-path: ellipse(50% 50% at 50% 50%);
-		width: 20px;
-		height: 20px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+  .cross-container-inner {
+    background: var(--color-5);
+    clip-path: ellipse(50% 50% at 50% 50%);
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-		.crossed {
-			width: 17px;
-			height: 17px;
-			position: relative;
-			top: -1px;
-		}
-	}
+    .crossed {
+      width: 17px;
+      height: 17px;
+      position: relative;
+      top: -1px;
+    }
+  }
 }

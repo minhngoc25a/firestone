@@ -1,18 +1,18 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewRef } from '@angular/core';
-import { DuelsLeaderboardEntry } from '@firestone-hs/duels-leaderboard';
-import { BnetRegion } from '@firestone-hs/reference-data';
-import { LocalizationFacadeService } from '@services/localization-facade.service';
-import { Observable } from 'rxjs';
-import { distinctUntilChanged, filter, map, takeUntil, tap } from 'rxjs/operators';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { cdLog } from '../../../services/ui-store/app-ui-store.service';
-import { arraysEqual } from '../../../services/utils';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewRef} from '@angular/core';
+import {DuelsLeaderboardEntry} from '@firestone-hs/duels-leaderboard';
+import {BnetRegion} from '@firestone-hs/reference-data';
+import {LocalizationFacadeService} from '@services/localization-facade.service';
+import {Observable} from 'rxjs';
+import {distinctUntilChanged, filter, map, takeUntil, tap} from 'rxjs/operators';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {cdLog} from '../../../services/ui-store/app-ui-store.service';
+import {arraysEqual} from '../../../services/utils';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
 
 @Component({
-	selector: 'duels-leaderboard',
-	styleUrls: [`../../../../css/component/duels/desktop/duels-leaderboard.component.scss`],
-	template: `
+    selector: 'duels-leaderboard',
+    styleUrls: [`../../../../css/component/duels/desktop/duels-leaderboard.component.scss`],
+    template: `
 		<div class="duels-leaderboard">
 			<div class="duels-leaderboard-entry-container">
 				<li class="duels-leaderboard-entry header">
@@ -36,47 +36,47 @@ import { AbstractSubscriptionComponent } from '../../abstract-subscription.compo
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DuelsLeaderboardComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	values$: Observable<readonly DuelsLeaderboardEntry[]>;
+    values$: Observable<readonly DuelsLeaderboardEntry[]>;
 
-	constructor(
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-		private readonly i18n: LocalizationFacadeService,
-	) {
-		super(store, cdr);
-	}
+    constructor(
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+        private readonly i18n: LocalizationFacadeService,
+    ) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.values$ = this.store
-			.listen$(
-				([main, nav]) => main.duels.leaderboard,
-				([main, nav, prefs]) => prefs.duelsActiveLeaderboardModeFilter,
-			)
-			.pipe(
-				filter(([stats, filter]) => !!stats && !!filter),
-				map(([stats, filter]) => (filter === 'paid-duels' ? stats.heroic : stats.casual)),
-				distinctUntilChanged((a, b) => arraysEqual(a, b)),
-				// FIXME
-				tap((filter) =>
-					setTimeout(() => {
-						if (!(this.cdr as ViewRef)?.destroyed) {
-							this.cdr.detectChanges();
-						}
-					}, 0),
-				),
-				tap((stat) => cdLog('emitting leaderboard in ', this.constructor.name, stat)),
-				takeUntil(this.destroyed$),
-			);
-	}
+    ngAfterContentInit() {
+        this.values$ = this.store
+            .listen$(
+                ([main, nav]) => main.duels.leaderboard,
+                ([main, nav, prefs]) => prefs.duelsActiveLeaderboardModeFilter,
+            )
+            .pipe(
+                filter(([stats, filter]) => !!stats && !!filter),
+                map(([stats, filter]) => (filter === 'paid-duels' ? stats.heroic : stats.casual)),
+                distinctUntilChanged((a, b) => arraysEqual(a, b)),
+                // FIXME
+                tap((filter) =>
+                    setTimeout(() => {
+                        if (!(this.cdr as ViewRef)?.destroyed) {
+                            this.cdr.detectChanges();
+                        }
+                    }, 0),
+                ),
+                tap((stat) => cdLog('emitting leaderboard in ', this.constructor.name, stat)),
+                takeUntil(this.destroyed$),
+            );
+    }
 
-	getRegion(region: BnetRegion): string {
-		return region ? this.i18n.translateString(`global.region.${BnetRegion[region]?.toLowerCase()}`) : '-';
-	}
+    getRegion(region: BnetRegion): string {
+        return region ? this.i18n.translateString(`global.region.${BnetRegion[region]?.toLowerCase()}`) : '-';
+    }
 
-	trackValue(index: number, entry: DuelsLeaderboardEntry) {
-		return entry.playerName;
-	}
+    trackValue(index: number, entry: DuelsLeaderboardEntry) {
+        return entry.playerName;
+    }
 }

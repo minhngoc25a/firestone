@@ -1,24 +1,24 @@
 .card-back {
-	backface-visibility: hidden;
-	transform-style: preserve-3d;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
 
-	.perspective-wrapper {
-		backface-visibility: hidden;
-		transform-style: preserve-3d;
-		width: 100%;
-	}
+  .perspective-wrapper {
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    width: 100%;
+  }
 
-	img,
-	video {
-		width: 100%;
-		backface-visibility: hidden;
-	}
+  img,
+  video {
+    width: 100%;
+    backface-visibility: hidden;
+  }
 
-	&.missing {
-		opacity: 0.4;
-	}
+  &.missing {
+    opacity: 0.4;
+  }
 
-	&:hover {
-		opacity: 1;
-	}
+  &:hover {
+    opacity: 1;
+  }
 }

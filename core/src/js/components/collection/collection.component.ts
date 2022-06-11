@@ -1,20 +1,20 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { ReferenceCard } from '@firestone-hs/reference-data';
-import { CardsFacadeService } from '@services/cards-facade.service';
-import { Observable } from 'rxjs';
-import { CardBack } from '../../models/card-back';
-import { CurrentView } from '../../models/mainwindow/collection/current-view.type';
-import { Set, SetCard } from '../../models/set';
-import { AppUiStoreFacadeService } from '../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../abstract-subscription.component';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {ReferenceCard} from '@firestone-hs/reference-data';
+import {CardsFacadeService} from '@services/cards-facade.service';
+import {Observable} from 'rxjs';
+import {CardBack} from '../../models/card-back';
+import {CurrentView} from '../../models/mainwindow/collection/current-view.type';
+import {Set, SetCard} from '../../models/set';
+import {AppUiStoreFacadeService} from '../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../abstract-subscription.component';
 
 @Component({
-	selector: 'collection',
-	styleUrls: [
-		`../../../css/component/app-section.component.scss`,
-		`../../../css/component/collection/collection.component.scss`,
-	],
-	template: `
+    selector: 'collection',
+    styleUrls: [
+        `../../../css/component/app-section.component.scss`,
+        `../../../css/component/collection/collection.component.scss`,
+    ],
+    template: `
 		<div
 			class="app-section collection"
 			*ngIf="{
@@ -85,74 +85,74 @@ import { AbstractSubscriptionComponent } from '../abstract-subscription.componen
 			</section>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CollectionComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	loading$: Observable<boolean>;
-	currentView$: Observable<CurrentView>;
-	menuDisplayType$: Observable<string>;
-	searchString$: Observable<string>;
-	selectedSet$: Observable<Set>;
-	selectedCard$: Observable<SetCard | ReferenceCard>;
-	selectedCardBack$: Observable<CardBack>;
+    loading$: Observable<boolean>;
+    currentView$: Observable<CurrentView>;
+    menuDisplayType$: Observable<string>;
+    searchString$: Observable<string>;
+    selectedSet$: Observable<Set>;
+    selectedCard$: Observable<SetCard | ReferenceCard>;
+    selectedCardBack$: Observable<CardBack>;
 
-	isSetDetails(currentView: CurrentView, selectedSet: Set, searchString: string): boolean {
-		return currentView === 'cards' && !!selectedSet && !searchString;
-	}
+    constructor(
+        private readonly allCards: CardsFacadeService,
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+    ) {
+        super(store, cdr);
+    }
 
-	constructor(
-		private readonly allCards: CardsFacadeService,
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-	) {
-		super(store, cdr);
-	}
+    isSetDetails(currentView: CurrentView, selectedSet: Set, searchString: string): boolean {
+        return currentView === 'cards' && !!selectedSet && !searchString;
+    }
 
-	ngAfterContentInit() {
-		this.loading$ = this.store
-			.listen$(([main, nav, prefs]) => main.binder.isLoading)
-			.pipe(this.mapData(([loading]) => loading));
-		this.currentView$ = this.store
-			.listen$(([main, nav, prefs]) => nav.navigationCollection.currentView)
-			.pipe(this.mapData(([currentView]) => currentView));
-		this.menuDisplayType$ = this.store
-			.listen$(([main, nav, prefs]) => nav.navigationCollection.menuDisplayType)
-			.pipe(this.mapData(([menuDisplayType]) => menuDisplayType));
-		this.searchString$ = this.store
-			.listen$(([main, nav, prefs]) => nav.navigationCollection.searchString)
-			.pipe(this.mapData(([searchString]) => searchString));
-		this.selectedSet$ = this.store
-			.listen$(
-				([main, nav, prefs]) => main.binder.allSets,
-				([main, nav, prefs]) => nav.navigationCollection.selectedSetId,
-			)
-			.pipe(this.mapData(([allSets, selectedSetId]) => allSets.find((set) => set.id === selectedSetId)));
-		this.selectedCard$ = this.store
-			.listen$(
-				([main, nav, prefs]) => main.binder.allSets,
-				([main, nav, prefs]) => nav.navigationCollection.selectedCardId,
-			)
-			.pipe(
-				this.mapData(([allSets, selectedCardId]) =>
-					selectedCardId
-						? allSets
-								.map((set) => set.allCards)
-								.reduce((a, b) => a.concat(b), [])
-								.find((card) => card.id === selectedCardId) ??
-						  // This is the case when it's not a collectible card for instance
-						  this.allCards.getCard(selectedCardId)
-						: null,
-				),
-			);
-		this.selectedCardBack$ = this.store
-			.listen$(
-				([main, nav, prefs]) => main.binder.cardBacks,
-				([main, nav, prefs]) => nav.navigationCollection.selectedCardBackId,
-			)
-			.pipe(
-				this.mapData(([cardBacks, selectedCardBackId]) =>
-					cardBacks.find((cardBack) => cardBack.id === selectedCardBackId),
-				),
-			);
-	}
+    ngAfterContentInit() {
+        this.loading$ = this.store
+            .listen$(([main, nav, prefs]) => main.binder.isLoading)
+            .pipe(this.mapData(([loading]) => loading));
+        this.currentView$ = this.store
+            .listen$(([main, nav, prefs]) => nav.navigationCollection.currentView)
+            .pipe(this.mapData(([currentView]) => currentView));
+        this.menuDisplayType$ = this.store
+            .listen$(([main, nav, prefs]) => nav.navigationCollection.menuDisplayType)
+            .pipe(this.mapData(([menuDisplayType]) => menuDisplayType));
+        this.searchString$ = this.store
+            .listen$(([main, nav, prefs]) => nav.navigationCollection.searchString)
+            .pipe(this.mapData(([searchString]) => searchString));
+        this.selectedSet$ = this.store
+            .listen$(
+                ([main, nav, prefs]) => main.binder.allSets,
+                ([main, nav, prefs]) => nav.navigationCollection.selectedSetId,
+            )
+            .pipe(this.mapData(([allSets, selectedSetId]) => allSets.find((set) => set.id === selectedSetId)));
+        this.selectedCard$ = this.store
+            .listen$(
+                ([main, nav, prefs]) => main.binder.allSets,
+                ([main, nav, prefs]) => nav.navigationCollection.selectedCardId,
+            )
+            .pipe(
+                this.mapData(([allSets, selectedCardId]) =>
+                    selectedCardId
+                        ? allSets
+                            .map((set) => set.allCards)
+                            .reduce((a, b) => a.concat(b), [])
+                            .find((card) => card.id === selectedCardId) ??
+                        // This is the case when it's not a collectible card for instance
+                        this.allCards.getCard(selectedCardId)
+                        : null,
+                ),
+            );
+        this.selectedCardBack$ = this.store
+            .listen$(
+                ([main, nav, prefs]) => main.binder.cardBacks,
+                ([main, nav, prefs]) => nav.navigationCollection.selectedCardBackId,
+            )
+            .pipe(
+                this.mapData(([cardBacks, selectedCardBackId]) =>
+                    cardBacks.find((cardBack) => cardBack.id === selectedCardBackId),
+                ),
+            );
+    }
 }

@@ -1,18 +1,18 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component } from '@angular/core';
-import { LocalizationFacadeService } from '@services/localization-facade.service';
-import { OverwolfService } from '../../../services/overwolf.service';
-import { PreferencesService } from '../../../services/preferences.service';
-import { Knob } from '../preference-slider.component';
+import {AfterViewInit, ChangeDetectionStrategy, Component} from '@angular/core';
+import {LocalizationFacadeService} from '@services/localization-facade.service';
+import {OverwolfService} from '../../../services/overwolf.service';
+import {PreferencesService} from '../../../services/preferences.service';
+import {Knob} from '../preference-slider.component';
 
 @Component({
-	selector: 'settings-general-launch',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/global/forms.scss`,
-		`../../../../css/component/settings/settings-common.component.scss`,
-		`../../../../css/component/settings/general/settings-general-launch.component.scss`,
-	],
-	template: `
+    selector: 'settings-general-launch',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/global/forms.scss`,
+        `../../../../css/component/settings/settings-common.component.scss`,
+        `../../../../css/component/settings/general/settings-general-launch.component.scss`,
+    ],
+    template: `
 		<div class="settings-group general-launch">
 			<section class="toggle-label">
 				<preference-toggle
@@ -101,58 +101,59 @@ import { Knob } from '../preference-slider.component';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsGeneralLaunchComponent implements AfterViewInit {
-	resetText = this.i18n.translateString('settings.general.launch.reset-prefs-button-default');
-	confirmationShown = false;
-	showResetConfirmationText = false;
-	sizeKnobs: readonly Knob[] = [
-		{
-			absoluteValue: 100,
-			label: this.i18n.translateString('settings.global.knob-zoom.normal'),
-		},
-		{
-			absoluteValue: 200,
-			label: this.i18n.translateString('settings.global.knob-zoom.zoom-200'),
-		},
-		{
-			absoluteValue: 400,
-			label: this.i18n.translateString('settings.global.knob-zoom.zoom-400'),
-		},
-	];
+    resetText = this.i18n.translateString('settings.general.launch.reset-prefs-button-default');
+    confirmationShown = false;
+    showResetConfirmationText = false;
+    sizeKnobs: readonly Knob[] = [
+        {
+            absoluteValue: 100,
+            label: this.i18n.translateString('settings.global.knob-zoom.normal'),
+        },
+        {
+            absoluteValue: 200,
+            label: this.i18n.translateString('settings.global.knob-zoom.zoom-200'),
+        },
+        {
+            absoluteValue: 400,
+            label: this.i18n.translateString('settings.global.knob-zoom.zoom-400'),
+        },
+    ];
 
-	private reloadWindows;
+    private reloadWindows;
 
-	constructor(
-		private readonly ow: OverwolfService,
-		private readonly prefs: PreferencesService,
-		private readonly i18n: LocalizationFacadeService,
-	) {}
+    constructor(
+        private readonly ow: OverwolfService,
+        private readonly prefs: PreferencesService,
+        private readonly i18n: LocalizationFacadeService,
+    ) {
+    }
 
-	ngAfterViewInit() {
-		this.reloadWindows = this.ow.getMainWindow().reloadWindows;
-	}
+    ngAfterViewInit() {
+        this.reloadWindows = this.ow.getMainWindow().reloadWindows;
+    }
 
-	toggleOverlay = () => {
-		this.reloadWindows();
-	};
+    toggleOverlay = () => {
+        this.reloadWindows();
+    };
 
-	async reset() {
-		if (!this.confirmationShown) {
-			this.confirmationShown = true;
-			this.resetText = this.i18n.translateString('settings.general.launch.reset-prefs-button-confirmation');
-			return;
-		}
+    async reset() {
+        if (!this.confirmationShown) {
+            this.confirmationShown = true;
+            this.resetText = this.i18n.translateString('settings.general.launch.reset-prefs-button-confirmation');
+            return;
+        }
 
-		this.resetText = this.i18n.translateString('settings.general.launch.reset-prefs-button-default');
-		this.confirmationShown = false;
-		this.showResetConfirmationText = true;
-		await this.prefs.reset();
-		this.reloadWindows();
-	}
+        this.resetText = this.i18n.translateString('settings.general.launch.reset-prefs-button-default');
+        this.confirmationShown = false;
+        this.showResetConfirmationText = true;
+        await this.prefs.reset();
+        this.reloadWindows();
+    }
 
-	async restartApp() {
-		this.ow.relaunchApp();
-	}
+    async restartApp() {
+        this.ow.relaunchApp();
+    }
 }

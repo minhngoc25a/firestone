@@ -2,94 +2,94 @@
 @import '../../global/fonts';
 
 .cards {
-	position: relative;
-	top: -2px;
-	flex-grow: 1;
-	display: flex;
-	flex-direction: column;
+  position: relative;
+  top: -2px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 
-	.set-title {
-		@extend %set-result;
-		display: flex;
-		flex-shrink: 0;
-		align-items: center;
-		margin: 0;
-		padding-bottom: 15px;
+  .set-title {
+    @extend %set-result;
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    margin: 0;
+    padding-bottom: 15px;
 
-		img {
-			width: 53px;
-			margin-left: 5px;
-			margin-right: 11px;
-		}
-	}
+    img {
+      width: 53px;
+      margin-left: 5px;
+      margin-right: 11px;
+    }
+  }
 
-	collection-empty-state {
-		flex-grow: 1;
-		display: flex;
-	}
+  collection-empty-state {
+    flex-grow: 1;
+    display: flex;
+  }
 
-	.show-filter {
-		@extend %search-active;
-		display: flex;
-		flex-shrink: 0;
-		align-items: center;
-		margin-right: 20px;
-		margin-bottom: 20px;
-		justify-content: flex-start;
-		--color-7: var(--color-5);
+  .show-filter {
+    @extend %search-active;
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    justify-content: flex-start;
+    --color-7: var(--color-5);
 
-		& > * {
-			width: 150px;
-			margin-right: 10px;
+    & > * {
+      width: 150px;
+      margin-right: 10px;
 
-			::ng-deep {
-				filter-dropdown {
-					width: 100%;
-				}
-			}
-		}
+      ::ng-deep {
+        filter-dropdown {
+          width: 100%;
+        }
+      }
+    }
 
-		card-owned-filter ::ng-deep ng-select select-dropdown .below {
-			width: 300px !important;
-		}
-	}
+    card-owned-filter ::ng-deep ng-select select-dropdown .below {
+      width: 300px !important;
+    }
+  }
 
-	.cards-list {
-		flex-grow: 1;
-		display: flex;
+  .cards-list {
+    flex-grow: 1;
+    display: flex;
 
-		.card-container {
-			display: flex;
-			align-items: start;
-			justify-content: center;
-			position: relative;
-			top: -20px; // So that there is not a big gap at the top (which looks weird because of hte scrollbar)
-			transition: all 0.15s ease;
-		}
-	}
+    .card-container {
+      display: flex;
+      align-items: start;
+      justify-content: center;
+      position: relative;
+      top: -20px; // So that there is not a big gap at the top (which looks weird because of hte scrollbar)
+      transition: all 0.15s ease;
+    }
+  }
 
-	::ng-deep virtual-scroller {
-		width: 100%;
-		flex-grow: 1;
-		height: 100%;
+  ::ng-deep virtual-scroller {
+    width: 100%;
+    flex-grow: 1;
+    height: 100%;
 
-		.scrollable-content {
-			width: 100%;
-			height: auto;
-			display: flex;
-			flex-wrap: wrap;
-		}
-	}
+    .scrollable-content {
+      width: 100%;
+      height: auto;
+      display: flex;
+      flex-wrap: wrap;
+    }
+  }
 }
 
 .loading {
-	font-family: 'Open Sans', sans-serif;
-	font-weight: 400;
-	font-size: 16px;
-	color: #d9c3ab;
-	height: 100%;
-	width: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: #d9c3ab;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

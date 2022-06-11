@@ -1,14 +1,14 @@
 @import '../global/variables';
 
 .menu-selection {
-	color: var(--menu-selection-color);
+  color: var(--menu-selection-color);
 
-	li,
-	button.menu-item {
-		&:hover {
-			&:not(.disabled) {
-				color: var(--on-menu-selection-color);
-			}
-		}
-	}
+  li,
+  button.menu-item {
+    &:hover {
+      &:not(.disabled) {
+        color: var(--on-menu-selection-color);
+      }
+    }
+  }
 }

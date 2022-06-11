@@ -1,7 +1,7 @@
-import { BattlegroundsStoreEvent } from './_battlegrounds-store-event';
+import {BattlegroundsStoreEvent} from './_battlegrounds-store-event';
 
 export class BgsTripleCreatedEvent extends BattlegroundsStoreEvent {
-	constructor(public readonly heroCardId: string) {
-		super('BgsTripleCreatedEvent');
-	}
+    constructor(public readonly heroCardId: string) {
+        super('BgsTripleCreatedEvent');
+    }
 }

@@ -1,295 +1,293 @@
-import { Injectable } from '@angular/core';
-import { MemoryUpdate } from '@models/memory/memory-update';
-import { LocalizationFacadeService } from '@services/localization-facade.service';
-import { OwNotificationsService } from '@services/notifications.service';
-import { OverwolfService } from '@services/overwolf.service';
-import { Action, CurrentState } from '@services/plugins/mind-vision/mind-vision-actions';
-import { MindVisionFacadeService } from '@services/plugins/mind-vision/mind-vision-facade.service';
-import { MindVisionStateActive } from '@services/plugins/mind-vision/states/mind-vision-state-active';
-import { MindVisionStateIdle } from '@services/plugins/mind-vision/states/mind-vision-state-idle';
-import { MindVisionStateInit } from '@services/plugins/mind-vision/states/mind-vision-state-init';
-import { MindVisionStateListening } from '@services/plugins/mind-vision/states/mind-vision-state-listening';
-import { MindVisionStateReset } from '@services/plugins/mind-vision/states/mind-vision-state-reset';
-import { MindVisionStateTearDown } from '@services/plugins/mind-vision/states/mind-vision-state-tear-down';
-import { MindVisionState } from '@services/plugins/mind-vision/states/_mind-vision-state';
-import { sleep } from '@services/utils';
-import { BehaviorSubject } from 'rxjs';
-import { filter, switchMap } from 'rxjs/operators';
-import { Events } from '../../events.service';
+import {Injectable} from '@angular/core';
+import {MemoryUpdate} from '@models/memory/memory-update';
+import {LocalizationFacadeService} from '@services/localization-facade.service';
+import {OwNotificationsService} from '@services/notifications.service';
+import {OverwolfService} from '@services/overwolf.service';
+import {Action, CurrentState} from '@services/plugins/mind-vision/mind-vision-actions';
+import {MindVisionFacadeService} from '@services/plugins/mind-vision/mind-vision-facade.service';
+import {MindVisionStateActive} from '@services/plugins/mind-vision/states/mind-vision-state-active';
+import {MindVisionStateIdle} from '@services/plugins/mind-vision/states/mind-vision-state-idle';
+import {MindVisionStateInit} from '@services/plugins/mind-vision/states/mind-vision-state-init';
+import {MindVisionStateListening} from '@services/plugins/mind-vision/states/mind-vision-state-listening';
+import {MindVisionStateReset} from '@services/plugins/mind-vision/states/mind-vision-state-reset';
+import {MindVisionStateTearDown} from '@services/plugins/mind-vision/states/mind-vision-state-tear-down';
+import {MindVisionState} from '@services/plugins/mind-vision/states/_mind-vision-state';
+import {sleep} from '@services/utils';
+import {BehaviorSubject} from 'rxjs';
+import {filter, switchMap} from 'rxjs/operators';
+import {Events} from '../../events.service';
 
 @Injectable()
 export class MindVisionStateMachineService {
-	private states: Map<CurrentState, MindVisionState> = new Map();
-	private currentState: MindVisionState;
+    private states: Map<CurrentState, MindVisionState> = new Map();
+    private currentState: MindVisionState;
+    private fsm: FSM = {
+        [CurrentState.IDLE]: {
+            transitions: [
+                {transition: Action.GAME_START, to: CurrentState.INIT},
+                // { transition: Action.GAME_LEFT, to: CurrentState.TEAR_DOWN },
+            ],
+        },
+        [CurrentState.INIT]: {
+            transitions: [
+                {transition: Action.INIT_COMPLETE, to: CurrentState.LISTENING},
+                {transition: Action.GAME_LEFT, to: CurrentState.TEAR_DOWN},
+            ],
+        },
+        [CurrentState.LISTENING]: {
+            transitions: [
+                {transition: Action.LISTENING_COMPLETE, to: CurrentState.ACTIVE},
+                // This can happen if the sanity check fails and requires a reset
+                {transition: Action.RESET, to: CurrentState.RESET},
+                {transition: Action.GAME_LEFT, to: CurrentState.TEAR_DOWN},
+            ],
+        },
+        [CurrentState.ACTIVE]: {
+            transitions: [
+                {transition: Action.GAME_LEFT, to: CurrentState.TEAR_DOWN},
+                {transition: Action.RESET, to: CurrentState.RESET},
+                // { transition: Transition.ERROR, to: CurrentState.ERROR },
+            ],
+        },
+        [CurrentState.RESET]: {
+            transitions: [
+                {transition: Action.RESET_COMPLETE, to: CurrentState.LISTENING},
+                {transition: Action.GAME_LEFT, to: CurrentState.TEAR_DOWN},
+            ],
+        },
+        [CurrentState.TEAR_DOWN]: {
+            transitions: [{transition: Action.TEAR_DOWN_COMPLETE, to: CurrentState.IDLE}],
+        },
+    };
+    private globalEventQueue = new BehaviorSubject<{ first: string; second: string }>(null);
 
-	private memoryUpdateListener = async (changes: string | 'reset') => {
-		console.log('[mind-vision] memory update', CurrentState[this.currentState?.stateId()], changes);
-		const changesToBroadcast: MemoryUpdate | 'reset' = changes === 'reset' ? changes : JSON.parse(changes);
-		// Happens when the plugin is reset, we need to resubscribe
-		if (changesToBroadcast === 'reset' || changesToBroadcast.ShouldReset) {
-			console.warn('[mind-vision] memory update is reset', changesToBroadcast);
-			this.performAction(Action.RESET);
-		}
-		this.events.broadcast(Events.MEMORY_UPDATE, changesToBroadcast);
-	};
+    constructor(
+        private readonly mindVisionFacade: MindVisionFacadeService,
+        private readonly ow: OverwolfService,
+        private readonly events: Events,
+        private readonly notifs: OwNotificationsService,
+        private readonly i18n: LocalizationFacadeService,
+    ) {
+        this.setup();
+    }
 
-	private dispatcher = async (action: Action) => {
-		await this.performAction(action);
-	};
+    public async callMindVision<T>(apiCall: () => Promise<T>): Promise<T> {
+        // We are on desktop
+        if (this.currentState.stateId() === CurrentState.IDLE) {
+            console.debug('[mind-vision] [api] calling mind vision while on desktop', apiCall);
+            return null;
+        }
 
-	private fsm: FSM = {
-		[CurrentState.IDLE]: {
-			transitions: [
-				{ transition: Action.GAME_START, to: CurrentState.INIT },
-				// { transition: Action.GAME_LEFT, to: CurrentState.TEAR_DOWN },
-			],
-		},
-		[CurrentState.INIT]: {
-			transitions: [
-				{ transition: Action.INIT_COMPLETE, to: CurrentState.LISTENING },
-				{ transition: Action.GAME_LEFT, to: CurrentState.TEAR_DOWN },
-			],
-		},
-		[CurrentState.LISTENING]: {
-			transitions: [
-				{ transition: Action.LISTENING_COMPLETE, to: CurrentState.ACTIVE },
-				// This can happen if the sanity check fails and requires a reset
-				{ transition: Action.RESET, to: CurrentState.RESET },
-				{ transition: Action.GAME_LEFT, to: CurrentState.TEAR_DOWN },
-			],
-		},
-		[CurrentState.ACTIVE]: {
-			transitions: [
-				{ transition: Action.GAME_LEFT, to: CurrentState.TEAR_DOWN },
-				{ transition: Action.RESET, to: CurrentState.RESET },
-				// { transition: Transition.ERROR, to: CurrentState.ERROR },
-			],
-		},
-		[CurrentState.RESET]: {
-			transitions: [
-				{ transition: Action.RESET_COMPLETE, to: CurrentState.LISTENING },
-				{ transition: Action.GAME_LEFT, to: CurrentState.TEAR_DOWN },
-			],
-		},
-		[CurrentState.TEAR_DOWN]: {
-			transitions: [{ transition: Action.TEAR_DOWN_COMPLETE, to: CurrentState.IDLE }],
-		},
-	};
+        await this.waitForActiveState();
+        // Active state should be able to raise an error if something went wrong with the call
+        // Active state performs the call. If the call fails, it will raise an error (going to ERROR state) and
+        // return null.
+        const result = await this.currentState.apiCall(apiCall);
+        if (result === 'reset') {
+            console.log(
+                '[mind-vision] [api] callMindVision requests reset',
+                CurrentState[this.currentState?.stateId()],
+                apiCall,
+            );
+            await sleep(100);
+            await this.waitForActiveState();
+            return this.callMindVision(apiCall);
+        } else {
+            console.debug(
+                '[mind-vision] [api] callMindVision requests success',
+                CurrentState[this.currentState?.stateId()],
+                result,
+                apiCall,
+            );
+            return result;
+        }
+    }
 
-	private globalEventQueue = new BehaviorSubject<{ first: string; second: string }>(null);
+    private memoryUpdateListener = async (changes: string | 'reset') => {
+        console.log('[mind-vision] memory update', CurrentState[this.currentState?.stateId()], changes);
+        const changesToBroadcast: MemoryUpdate | 'reset' = changes === 'reset' ? changes : JSON.parse(changes);
+        // Happens when the plugin is reset, we need to resubscribe
+        if (changesToBroadcast === 'reset' || changesToBroadcast.ShouldReset) {
+            console.warn('[mind-vision] memory update is reset', changesToBroadcast);
+            this.performAction(Action.RESET);
+        }
+        this.events.broadcast(Events.MEMORY_UPDATE, changesToBroadcast);
+    };
 
-	constructor(
-		private readonly mindVisionFacade: MindVisionFacadeService,
-		private readonly ow: OverwolfService,
-		private readonly events: Events,
-		private readonly notifs: OwNotificationsService,
-		private readonly i18n: LocalizationFacadeService,
-	) {
-		this.setup();
-	}
+    private dispatcher = async (action: Action) => {
+        await this.performAction(action);
+    };
 
-	public async callMindVision<T>(apiCall: () => Promise<T>): Promise<T> {
-		// We are on desktop
-		if (this.currentState.stateId() === CurrentState.IDLE) {
-			console.debug('[mind-vision] [api] calling mind vision while on desktop', apiCall);
-			return null;
-		}
+    private async setup() {
+        this.states
+            .set(CurrentState.IDLE, new MindVisionStateIdle(this.mindVisionFacade, this.dispatcher, this.ow))
+            .set(CurrentState.INIT, new MindVisionStateInit(this.mindVisionFacade, this.dispatcher, this.ow))
+            .set(CurrentState.LISTENING, new MindVisionStateListening(this.mindVisionFacade, this.dispatcher, this.ow))
+            .set(CurrentState.ACTIVE, new MindVisionStateActive(this.mindVisionFacade, this.dispatcher, this.ow))
+            .set(
+                CurrentState.RESET,
+                new MindVisionStateReset(this.mindVisionFacade, this.dispatcher, this.notifs, this.i18n),
+            )
+            .set(CurrentState.TEAR_DOWN, new MindVisionStateTearDown(this.mindVisionFacade, this.dispatcher, this.ow));
 
-		await this.waitForActiveState();
-		// Active state should be able to raise an error if something went wrong with the call
-		// Active state performs the call. If the call fails, it will raise an error (going to ERROR state) and
-		// return null.
-		const result = await this.currentState.apiCall(apiCall);
-		if (result === 'reset') {
-			console.log(
-				'[mind-vision] [api] callMindVision requests reset',
-				CurrentState[this.currentState?.stateId()],
-				apiCall,
-			);
-			await sleep(100);
-			await this.waitForActiveState();
-			return this.callMindVision(apiCall);
-		} else {
-			console.debug(
-				'[mind-vision] [api] callMindVision requests success',
-				CurrentState[this.currentState?.stateId()],
-				result,
-				apiCall,
-			);
-			return result;
-		}
-	}
+        this.globalEventQueue
+            .asObservable()
+            .pipe(
+                filter((msg) => msg !== null),
+                switchMap(async (msg) => {
+                    const {first, second} = msg;
+                    this.handleGlobalEvent(first, second);
+                }),
+            )
+            .subscribe();
 
-	private async setup() {
-		this.states
-			.set(CurrentState.IDLE, new MindVisionStateIdle(this.mindVisionFacade, this.dispatcher, this.ow))
-			.set(CurrentState.INIT, new MindVisionStateInit(this.mindVisionFacade, this.dispatcher, this.ow))
-			.set(CurrentState.LISTENING, new MindVisionStateListening(this.mindVisionFacade, this.dispatcher, this.ow))
-			.set(CurrentState.ACTIVE, new MindVisionStateActive(this.mindVisionFacade, this.dispatcher, this.ow))
-			.set(
-				CurrentState.RESET,
-				new MindVisionStateReset(this.mindVisionFacade, this.dispatcher, this.notifs, this.i18n),
-			)
-			.set(CurrentState.TEAR_DOWN, new MindVisionStateTearDown(this.mindVisionFacade, this.dispatcher, this.ow));
+        this.mindVisionFacade.globalEventListener = async (first: string, second: string) => {
+            console.debug('[mind-vision] enqueueing', first, second);
+            this.globalEventQueue.next({first, second});
+        };
+        this.mindVisionFacade.memoryUpdateListener = this.memoryUpdateListener;
 
-		this.globalEventQueue
-			.asObservable()
-			.pipe(
-				filter((msg) => msg !== null),
-				switchMap(async (msg) => {
-					const { first, second } = msg;
-					this.handleGlobalEvent(first, second);
-				}),
-			)
-			.subscribe();
+        this.currentState = this.states.get(CurrentState.IDLE);
+        await this.performAction(Action.STARTUP);
 
-		this.mindVisionFacade.globalEventListener = async (first: string, second: string) => {
-			console.debug('[mind-vision] enqueueing', first, second);
-			this.globalEventQueue.next({ first, second });
-		};
-		this.mindVisionFacade.memoryUpdateListener = this.memoryUpdateListener;
+        this.ow.addGameInfoUpdatedListener(async (res: any) => {
+            console.debug('[mind-vision] state changed', CurrentState[this.currentState?.stateId()], res);
+            if (this.ow.exitGame(res)) {
+                console.log('[mind-vision] game left', res);
+                this.performTransition(Action.GAME_LEFT);
+            } else if (res.gameChanged) {
+                const inGame = this.ow.gameRunning(res.gameInfo) || (await this.ow.inGame());
+                console.debug('[mind-vision] game changed', res, inGame);
+                if (inGame) {
+                    console.debug('[mind-vision] performing GAME_START', res);
+                    this.performAction(Action.GAME_START);
+                }
+            }
+        });
+    }
 
-		this.currentState = this.states.get(CurrentState.IDLE);
-		await this.performAction(Action.STARTUP);
+    private async performAction(action: Action, payload: any = null) {
+        // The state has a direct transition to another state
+        const newState = this.getNextState(this.currentState, action);
+        console.debug(
+            '[mind-vision] performing action',
+            CurrentState[this.currentState?.stateId()],
+            '->',
+            Action[action],
+            '->',
+            CurrentState[newState?.stateId()],
+        );
+        if (newState) {
+            console.debug(
+                '[mind-vision] got direct next state',
+                CurrentState[this.currentState?.stateId()],
+                '->',
+                Action[action],
+                '->',
+                CurrentState[newState.stateId()],
+            );
+            await this.setState(newState);
+            return;
+        }
 
-		this.ow.addGameInfoUpdatedListener(async (res: any) => {
-			console.debug('[mind-vision] state changed', CurrentState[this.currentState?.stateId()], res);
-			if (this.ow.exitGame(res)) {
-				console.log('[mind-vision] game left', res);
-				this.performTransition(Action.GAME_LEFT);
-			} else if (res.gameChanged) {
-				const inGame = this.ow.gameRunning(res.gameInfo) || (await this.ow.inGame());
-				console.debug('[mind-vision] game changed', res, inGame);
-				if (inGame) {
-					console.debug('[mind-vision] performing GAME_START', res);
-					this.performAction(Action.GAME_START);
-				}
-			}
-		});
-	}
+        // No direct transition, we perform the action
+        const transition: Action = await this.currentState.performAction(action, payload);
+        console.debug('[mind-vision] got transition', Action[action], Action[transition]);
+        if (transition) {
+            this.performTransition(transition);
+        }
+    }
 
-	private async performAction(action: Action, payload: any = null) {
-		// The state has a direct transition to another state
-		const newState = this.getNextState(this.currentState, action);
-		console.debug(
-			'[mind-vision] performing action',
-			CurrentState[this.currentState?.stateId()],
-			'->',
-			Action[action],
-			'->',
-			CurrentState[newState?.stateId()],
-		);
-		if (newState) {
-			console.debug(
-				'[mind-vision] got direct next state',
-				CurrentState[this.currentState?.stateId()],
-				'->',
-				Action[action],
-				'->',
-				CurrentState[newState.stateId()],
-			);
-			await this.setState(newState);
-			return;
-		}
+    private async performTransition(transition: Action) {
+        console.debug(
+            '[mind-vision] performing transition',
+            Action[transition],
+            CurrentState[this.currentState?.stateId()],
+        );
+        const newState = this.getNextState(this.currentState, transition);
+        if (newState) {
+            await this.setState(newState);
+        }
+    }
 
-		// No direct transition, we perform the action
-		const transition: Action = await this.currentState.performAction(action, payload);
-		console.debug('[mind-vision] got transition', Action[action], Action[transition]);
-		if (transition) {
-			this.performTransition(transition);
-		}
-	}
+    private getNextState(currentState: MindVisionState, transition: Action): MindVisionState {
+        const newState = this.fsm[currentState.stateId()].transitions.find((t) => t.transition === transition)?.to;
+        console.debug(
+            '[mind-vision] next state',
+            Action[transition],
+            CurrentState[this.currentState?.stateId()],
+            CurrentState[newState],
+        );
+        return this.states.get(newState);
+    }
 
-	private async performTransition(transition: Action) {
-		console.debug(
-			'[mind-vision] performing transition',
-			Action[transition],
-			CurrentState[this.currentState?.stateId()],
-		);
-		const newState = this.getNextState(this.currentState, transition);
-		if (newState) {
-			await this.setState(newState);
-		}
-	}
+    private async setState(newState: MindVisionState) {
+        if (newState?.stateId() != this.currentState?.stateId()) {
+            await this.currentState.onExit();
+            this.currentState = newState;
+            await this.currentState.onEnter();
+        }
+    }
 
-	private getNextState(currentState: MindVisionState, transition: Action): MindVisionState {
-		const newState = this.fsm[currentState.stateId()].transitions.find((t) => t.transition === transition)?.to;
-		console.debug(
-			'[mind-vision] next state',
-			Action[transition],
-			CurrentState[this.currentState?.stateId()],
-			CurrentState[newState],
-		);
-		return this.states.get(newState);
-	}
+    private async handleGlobalEvent(first: string, second: string) {
+        // console.debug('[mind-vision] processing', first, second);
+        if (this.currentState?.stateId() === CurrentState.RESET) {
+            console.debug(
+                'no-format',
+                '[mind-vision] received global event',
+                CurrentState[this.currentState?.stateId()],
+                first,
+                second,
+            );
+            return;
+        }
+        console.log(
+            'no-format',
+            '[mind-vision] received global event',
+            CurrentState[this.currentState?.stateId()],
+            first,
+            second,
+        );
+        if (this.hasRootMemoryReadingError(first) || this.hasRootMemoryReadingError(second)) {
+            console.warn('[mind-vision] global event has root memory reading error');
+            await this.performAction(Action.RESET);
+        } else if (first === 'mindvision-instantiate-error') {
+            this.notifs.notifyError(
+                this.i18n.translateString('app.internal.memory.reading-error-title'),
+                this.i18n.translateString('app.internal.memory.reading-error-text'),
+                first,
+            );
+        } else if (first === 'reset') {
+            console.warn('[mind-vision] first is reset', first, second);
+            await this.performAction(Action.RESET);
+        } else {
+            // this.performAction(Action.GLOBAL_EVENT, { first, second });
+        }
+    }
 
-	private async setState(newState: MindVisionState) {
-		if (newState?.stateId() != this.currentState?.stateId()) {
-			await this.currentState.onExit();
-			this.currentState = newState;
-			await this.currentState.onEnter();
-		}
-	}
+    private hasRootMemoryReadingError(message: string): boolean {
+        return message && message.includes('ReadProcessMemory') && message.includes('WriteProcessMemory');
+    }
 
-	private async handleGlobalEvent(first: string, second: string) {
-		// console.debug('[mind-vision] processing', first, second);
-		if (this.currentState?.stateId() === CurrentState.RESET) {
-			console.debug(
-				'no-format',
-				'[mind-vision] received global event',
-				CurrentState[this.currentState?.stateId()],
-				first,
-				second,
-			);
-			return;
-		}
-		console.log(
-			'no-format',
-			'[mind-vision] received global event',
-			CurrentState[this.currentState?.stateId()],
-			first,
-			second,
-		);
-		if (this.hasRootMemoryReadingError(first) || this.hasRootMemoryReadingError(second)) {
-			console.warn('[mind-vision] global event has root memory reading error');
-			await this.performAction(Action.RESET);
-		} else if (first === 'mindvision-instantiate-error') {
-			this.notifs.notifyError(
-				this.i18n.translateString('app.internal.memory.reading-error-title'),
-				this.i18n.translateString('app.internal.memory.reading-error-text'),
-				first,
-			);
-		} else if (first === 'reset') {
-			console.warn('[mind-vision] first is reset', first, second);
-			await this.performAction(Action.RESET);
-		} else {
-			// this.performAction(Action.GLOBAL_EVENT, { first, second });
-		}
-	}
-
-	private hasRootMemoryReadingError(message: string): boolean {
-		return message && message.includes('ReadProcessMemory') && message.includes('WriteProcessMemory');
-	}
-
-	private async waitForActiveState() {
-		return new Promise<void>((resolve) => {
-			const dbWait = () => {
-				if (this.currentState?.stateId() === CurrentState.ACTIVE) {
-					resolve();
-				} else {
-					setTimeout(() => dbWait(), 500);
-				}
-			};
-			dbWait();
-		});
-	}
+    private async waitForActiveState() {
+        return new Promise<void>((resolve) => {
+            const dbWait = () => {
+                if (this.currentState?.stateId() === CurrentState.ACTIVE) {
+                    resolve();
+                } else {
+                    setTimeout(() => dbWait(), 500);
+                }
+            };
+            dbWait();
+        });
+    }
 }
 
 interface FSM {
-	[currentState: string]: {
-		transitions: readonly {
-			transition: Action;
-			to: CurrentState;
-		}[];
-	};
+    [currentState: string]: {
+        transitions: readonly {
+            transition: Action;
+            to: CurrentState;
+        }[];
+    };
 }

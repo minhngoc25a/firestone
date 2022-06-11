@@ -1,22 +1,22 @@
 import {
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	HostListener,
-	OnDestroy,
-	OnInit,
-	ViewRef,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    HostListener,
+    OnDestroy,
+    OnInit,
+    ViewRef,
 } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { Events } from '../../../services/events.service';
+import {Subscription} from 'rxjs';
+import {Events} from '../../../services/events.service';
 
 @Component({
-	selector: 'settings-modal',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/settings/modal/settings-modal.component.scss`,
-	],
-	template: `
+    selector: 'settings-modal',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/settings/modal/settings-modal.component.scss`,
+    ],
+    template: `
 		<div class="settings-modal" *ngIf="currentModal">
 			<ng-container [ngSwitch]="currentModal">
 				<modal-video-settings-changed *ngSwitchCase="'video-capture'" (dismiss)="closeModal()">
@@ -24,34 +24,35 @@ import { Events } from '../../../services/events.service';
 			</ng-container>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsModalComponent implements OnInit, OnDestroy {
-	currentModal: string;
+    currentModal: string;
 
-	private eventsSubscription: Subscription;
+    private eventsSubscription: Subscription;
 
-	constructor(private events: Events, private cdr: ChangeDetectorRef) {}
+    constructor(private events: Events, private cdr: ChangeDetectorRef) {
+    }
 
-	ngOnInit() {
-		this.eventsSubscription = this.events
-			.on(Events.SETTINGS_DISPLAY_MODAL)
-			.subscribe((data) => this.handleNewModal(data));
-	}
+    ngOnInit() {
+        this.eventsSubscription = this.events
+            .on(Events.SETTINGS_DISPLAY_MODAL)
+            .subscribe((data) => this.handleNewModal(data));
+    }
 
-	@HostListener('window:beforeunload')
-	ngOnDestroy() {
-		this.eventsSubscription?.unsubscribe();
-	}
+    @HostListener('window:beforeunload')
+    ngOnDestroy() {
+        this.eventsSubscription?.unsubscribe();
+    }
 
-	closeModal() {
-		this.currentModal = undefined;
-	}
+    closeModal() {
+        this.currentModal = undefined;
+    }
 
-	private handleNewModal(data) {
-		this.currentModal = data.data[0];
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    private handleNewModal(data) {
+        this.currentModal = data.data[0];
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 }

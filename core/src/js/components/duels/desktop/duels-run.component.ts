@@ -1,27 +1,31 @@
 import {
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
-	Input,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
 } from '@angular/core';
-import { DuelsRewardsInfo } from '@firestone-hs/retrieve-users-duels-runs/dist/duels-rewards-info';
-import { DuelsRunInfo } from '@firestone-hs/retrieve-users-duels-runs/dist/duels-run-info';
-import { CardsFacadeService } from '@services/cards-facade.service';
-import { DuelsRun } from '../../../models/duels/duels-run';
-import { RunStep } from '../../../models/duels/run-step';
-import { GameStat } from '../../../models/mainwindow/stats/game-stat';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
-import { DuelsToggleExpandedRunEvent } from '../../../services/mainwindow/store/events/duels/duels-toggle-expanded-run-event';
-import { DuelsViewPersonalDeckDetailsEvent } from '../../../services/mainwindow/store/events/duels/duels-view-personal-deck-details-event';
-import { MainWindowStoreEvent } from '../../../services/mainwindow/store/events/main-window-store-event';
-import { OverwolfService } from '../../../services/overwolf.service';
+import {DuelsRewardsInfo} from '@firestone-hs/retrieve-users-duels-runs/dist/duels-rewards-info';
+import {DuelsRunInfo} from '@firestone-hs/retrieve-users-duels-runs/dist/duels-run-info';
+import {CardsFacadeService} from '@services/cards-facade.service';
+import {DuelsRun} from '../../../models/duels/duels-run';
+import {RunStep} from '../../../models/duels/run-step';
+import {GameStat} from '../../../models/mainwindow/stats/game-stat';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
+import {
+    DuelsToggleExpandedRunEvent
+} from '../../../services/mainwindow/store/events/duels/duels-toggle-expanded-run-event';
+import {
+    DuelsViewPersonalDeckDetailsEvent
+} from '../../../services/mainwindow/store/events/duels/duels-view-personal-deck-details-event';
+import {MainWindowStoreEvent} from '../../../services/mainwindow/store/events/main-window-store-event';
+import {OverwolfService} from '../../../services/overwolf.service';
 
 @Component({
-	selector: 'duels-run',
-	styleUrls: [`../../../../css/global/menu.scss`, `../../../../css/component/duels/desktop/duels-run.component.scss`],
-	template: `
+    selector: 'duels-run',
+    styleUrls: [`../../../../css/global/menu.scss`, `../../../../css/component/duels/desktop/duels-run.component.scss`],
+    template: `
 		<div class="duels-run">
 			<div class="mode-color-code {{ gameMode }}"></div>
 
@@ -98,165 +102,166 @@ import { OverwolfService } from '../../../services/overwolf.service';
 			</ul>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DuelsRunComponent implements AfterViewInit {
-	@Input() set isExpanded(value: boolean) {
-		this._isExpanded = value;
-		this.updateValues();
-	}
+    @Input() displayLoot: boolean;
+    @Input() displayShortLoot: boolean;
+    @Input() hideDeckLink = false;
+    gameMode: 'duels' | 'paid-duels';
+    deckstring: string;
+    gameModeImage: string;
+    gameModeTooltip: string;
+    rating: number;
+    playerCardId: string;
+    playerClassImage: string;
+    playerClassTooltip: string;
+    heroPowerCardId: string;
+    heroPowerImage: string;
+    heroPowerTooltip: string;
+    signatureTreasureCardId: string;
+    signatureTreasureImage: string;
+    signatureTreasureTooltip: string;
+    wins: number;
+    losses: number;
+    deltaRating: number;
+    steps: readonly RunStep[];
+    rewards: readonly DuelsRewardsInfo[];
+    private stateUpdater: EventEmitter<MainWindowStoreEvent>;
 
-	@Input() set run(value: DuelsRun) {
-		this._run = value;
-		this.updateValues();
-	}
+    constructor(
+        private readonly ow: OverwolfService,
+        private readonly i18n: LocalizationFacadeService,
+        private readonly allCards: CardsFacadeService,
+        private readonly cdr: ChangeDetectorRef,
+    ) {
+    }
 
-	@Input() displayLoot: boolean;
-	@Input() displayShortLoot: boolean;
-	@Input() hideDeckLink = false;
+    _isExpanded: boolean;
 
-	gameMode: 'duels' | 'paid-duels';
-	deckstring: string;
-	gameModeImage: string;
-	gameModeTooltip: string;
-	rating: number;
-	playerCardId: string;
-	playerClassImage: string;
-	playerClassTooltip: string;
-	heroPowerCardId: string;
-	heroPowerImage: string;
-	heroPowerTooltip: string;
-	signatureTreasureCardId: string;
-	signatureTreasureImage: string;
-	signatureTreasureTooltip: string;
-	wins: number;
-	losses: number;
-	deltaRating: number;
-	steps: readonly RunStep[];
-	rewards: readonly DuelsRewardsInfo[];
-	_isExpanded: boolean;
+    @Input() set isExpanded(value: boolean) {
+        this._isExpanded = value;
+        this.updateValues();
+    }
 
-	private _run: DuelsRun;
-	private stateUpdater: EventEmitter<MainWindowStoreEvent>;
+    private _run: DuelsRun;
 
-	constructor(
-		private readonly ow: OverwolfService,
-		private readonly i18n: LocalizationFacadeService,
-		private readonly allCards: CardsFacadeService,
-		private readonly cdr: ChangeDetectorRef,
-	) {}
+    @Input() set run(value: DuelsRun) {
+        this._run = value;
+        this.updateValues();
+    }
 
-	ngAfterViewInit() {
-		this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
-	}
+    ngAfterViewInit() {
+        this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
+    }
 
-	toggleShowMore() {
-		this.stateUpdater.next(new DuelsToggleExpandedRunEvent(this._run?.id));
-	}
+    toggleShowMore() {
+        this.stateUpdater.next(new DuelsToggleExpandedRunEvent(this._run?.id));
+    }
 
-	showDeck() {
-		this.stateUpdater.next(new DuelsViewPersonalDeckDetailsEvent(this.deckstring));
-	}
+    showDeck() {
+        this.stateUpdater.next(new DuelsViewPersonalDeckDetailsEvent(this.deckstring));
+    }
 
-	isReplayInfo(value: GameStat | DuelsRunInfo): boolean {
-		return (value as GameStat).buildNumber != null;
-	}
+    isReplayInfo(value: GameStat | DuelsRunInfo): boolean {
+        return (value as GameStat).buildNumber != null;
+    }
 
-	isLootInfo(value: GameStat | DuelsRunInfo): boolean {
-		return (value as DuelsRunInfo).bundleType === 'treasure';
-	}
+    isLootInfo(value: GameStat | DuelsRunInfo): boolean {
+        return (value as DuelsRunInfo).bundleType === 'treasure';
+    }
 
-	buildSteps(steps: readonly (GameStat | DuelsRunInfo)[]): readonly RunStep[] {
-		if (!steps) {
-			return [];
-		}
+    buildSteps(steps: readonly (GameStat | DuelsRunInfo)[]): readonly RunStep[] {
+        if (!steps) {
+            return [];
+        }
 
-		const result: RunStep[] = [];
-		for (let i = 0; i < steps.length; i++) {
-			if ((steps[i] as GameStat).opponentCardId) {
-				result.push(
-					GameStat.create({
-						...steps[i],
-					} as RunStep) as RunStep,
-				);
-			} else if ((steps[i] as DuelsRunInfo).chosenOptionIndex && result.length > 0) {
-				const lastGameIndex = result.length - 1;
-				const info: DuelsRunInfo = steps[i] as DuelsRunInfo;
-				result[lastGameIndex] = GameStat.create({
-					...result[lastGameIndex],
-					treasureCardId:
-						info.bundleType === 'treasure'
-							? info[`option${info.chosenOptionIndex}`]
-							: result[lastGameIndex].treasureCardId,
-					lootCardIds:
-						info.bundleType === 'loot' ? this.extractLoot(info) : result[lastGameIndex].lootCardIds,
-				} as RunStep) as RunStep;
-			}
-		}
-		return result;
-	}
+        const result: RunStep[] = [];
+        for (let i = 0; i < steps.length; i++) {
+            if ((steps[i] as GameStat).opponentCardId) {
+                result.push(
+                    GameStat.create({
+                        ...steps[i],
+                    } as RunStep) as RunStep,
+                );
+            } else if ((steps[i] as DuelsRunInfo).chosenOptionIndex && result.length > 0) {
+                const lastGameIndex = result.length - 1;
+                const info: DuelsRunInfo = steps[i] as DuelsRunInfo;
+                result[lastGameIndex] = GameStat.create({
+                    ...result[lastGameIndex],
+                    treasureCardId:
+                        info.bundleType === 'treasure'
+                            ? info[`option${info.chosenOptionIndex}`]
+                            : result[lastGameIndex].treasureCardId,
+                    lootCardIds:
+                        info.bundleType === 'loot' ? this.extractLoot(info) : result[lastGameIndex].lootCardIds,
+                } as RunStep) as RunStep;
+            }
+        }
+        return result;
+    }
 
-	private updateValues() {
-		if (!this._run) {
-			return;
-		}
+    private updateValues() {
+        if (!this._run) {
+            return;
+        }
 
-		this.deckstring = this._run.initialDeckList;
-		this.gameMode = this._run.type;
-		this.gameModeImage =
-			this._run.type === 'duels'
-				? 'assets/images/deck/ranks/casual_duels.png'
-				: 'assets/images/deck/ranks/heroic_duels.png';
-		this.gameModeTooltip =
-			this._run.type === 'duels'
-				? this.i18n.translateString('global.game-mode.casual-duels')
-				: this.i18n.translateString('global.game-mode.heroic-duels');
-		this.wins = this._run.wins;
-		this.losses = this._run.losses;
-		this.rating = this._run.ratingAtStart;
-		this.deltaRating =
-			this._run.ratingAtEnd && !isNaN(this._run.ratingAtEnd)
-				? this._run.ratingAtEnd - this._run.ratingAtStart
-				: null;
-		this.steps = this.buildSteps(this._run.steps);
-		this.rewards = this._run.rewards;
+        this.deckstring = this._run.initialDeckList;
+        this.gameMode = this._run.type;
+        this.gameModeImage =
+            this._run.type === 'duels'
+                ? 'assets/images/deck/ranks/casual_duels.png'
+                : 'assets/images/deck/ranks/heroic_duels.png';
+        this.gameModeTooltip =
+            this._run.type === 'duels'
+                ? this.i18n.translateString('global.game-mode.casual-duels')
+                : this.i18n.translateString('global.game-mode.heroic-duels');
+        this.wins = this._run.wins;
+        this.losses = this._run.losses;
+        this.rating = this._run.ratingAtStart;
+        this.deltaRating =
+            this._run.ratingAtEnd && !isNaN(this._run.ratingAtEnd)
+                ? this._run.ratingAtEnd - this._run.ratingAtStart
+                : null;
+        this.steps = this.buildSteps(this._run.steps);
+        this.rewards = this._run.rewards;
 
-		this.playerClassImage = this._run.heroCardId
-			? `https://static.zerotoheroes.com/hearthstone/cardart/256x/${this._run.heroCardId}.jpg`
-			: null;
-		this.playerCardId = this._run.heroCardId;
-		const heroCard = this._run.heroCardId ? this.allCards.getCard(this._run.heroCardId) : null;
-		this.playerClassTooltip = heroCard ? `${heroCard.name} (${heroCard.playerClass})` : null;
+        this.playerClassImage = this._run.heroCardId
+            ? `https://static.zerotoheroes.com/hearthstone/cardart/256x/${this._run.heroCardId}.jpg`
+            : null;
+        this.playerCardId = this._run.heroCardId;
+        const heroCard = this._run.heroCardId ? this.allCards.getCard(this._run.heroCardId) : null;
+        this.playerClassTooltip = heroCard ? `${heroCard.name} (${heroCard.playerClass})` : null;
 
-		this.heroPowerCardId = this._run.heroPowerCardId;
-		this.heroPowerImage = this._run.heroPowerCardId
-			? `https://static.zerotoheroes.com/hearthstone/cardart/256x/${this._run.heroPowerCardId}.jpg`
-			: null;
-		const heroPowerCard = this._run.heroPowerCardId ? this.allCards.getCard(this._run.heroPowerCardId) : null;
-		this.heroPowerTooltip = heroPowerCard ? heroPowerCard.name : null;
+        this.heroPowerCardId = this._run.heroPowerCardId;
+        this.heroPowerImage = this._run.heroPowerCardId
+            ? `https://static.zerotoheroes.com/hearthstone/cardart/256x/${this._run.heroPowerCardId}.jpg`
+            : null;
+        const heroPowerCard = this._run.heroPowerCardId ? this.allCards.getCard(this._run.heroPowerCardId) : null;
+        this.heroPowerTooltip = heroPowerCard ? heroPowerCard.name : null;
 
-		this.signatureTreasureCardId = this._run.signatureTreasureCardId;
-		this.signatureTreasureImage = this._run.signatureTreasureCardId
-			? `https://static.zerotoheroes.com/hearthstone/cardart/256x/${this._run.signatureTreasureCardId}.jpg`
-			: null;
-		const signatureTreasureCard = this._run.signatureTreasureCardId
-			? this.allCards.getCard(this._run.signatureTreasureCardId)
-			: null;
-		this.signatureTreasureTooltip = signatureTreasureCard ? signatureTreasureCard.name : null;
+        this.signatureTreasureCardId = this._run.signatureTreasureCardId;
+        this.signatureTreasureImage = this._run.signatureTreasureCardId
+            ? `https://static.zerotoheroes.com/hearthstone/cardart/256x/${this._run.signatureTreasureCardId}.jpg`
+            : null;
+        const signatureTreasureCard = this._run.signatureTreasureCardId
+            ? this.allCards.getCard(this._run.signatureTreasureCardId)
+            : null;
+        this.signatureTreasureTooltip = signatureTreasureCard ? signatureTreasureCard.name : null;
 
-		// if (!(this.cdr as ViewRef)?.destroyed) {
-		// 	this.cdr.detectChanges();
-		// }
-	}
+        // if (!(this.cdr as ViewRef)?.destroyed) {
+        // 	this.cdr.detectChanges();
+        // }
+    }
 
-	private extractLoot(info: DuelsRunInfo): readonly string[] {
-		if (info.chosenOptionIndex <= 0) {
-			return null;
-		}
-		const result = info[`option${info.chosenOptionIndex}Contents`];
-		if (result && result.length === 3 && result.every((item) => item === '0')) {
-			return null;
-		}
-		return result;
-	}
+    private extractLoot(info: DuelsRunInfo): readonly string[] {
+        if (info.chosenOptionIndex <= 0) {
+            return null;
+        }
+        const result = info[`option${info.chosenOptionIndex}Contents`];
+        if (result && result.length === 3 && result.every((item) => item === '0')) {
+            return null;
+        }
+        return result;
+    }
 }

@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { LocalizationFacadeService } from '@services/localization-facade.service';
-import { buildRankText, GameStat } from '../../models/mainwindow/stats/game-stat';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {LocalizationFacadeService} from '@services/localization-facade.service';
+import {buildRankText, GameStat} from '../../models/mainwindow/stats/game-stat';
 
 @Component({
-	selector: 'rank-image',
-	styleUrls: [`../../../css/global/menu.scss`, `../../../css/component/replays/rank-image.component.scss`],
-	template: `
+    selector: 'rank-image',
+    styleUrls: [`../../../css/global/menu.scss`, `../../../css/component/replays/rank-image.component.scss`],
+    template: `
 		<div
 			class="rank-image {{ gameMode }}"
 			[helpTooltip]="rankTooltip ? rankTooltip : playerRank ? playerRankImageTooltip : rankIssueTooltip"
@@ -19,35 +19,35 @@ import { buildRankText, GameStat } from '../../models/mainwindow/stats/game-stat
 			<div class="rank-text" *ngIf="rankText">{{ rankText }}</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RankImageComponent {
-	@Input() set stat(value: GameStat) {
-		if (!value) {
-			return;
-		}
+    @Input() gameMode: string;
+    @Input() rankTooltip: string;
+    playerRank: string;
+    playerRankImage: string;
+    playerRankArt: string;
+    playerRankDecoration: string;
+    playerRankImageTooltip: string;
+    isLegend: boolean;
+    rankText: string;
+    rankIssueTooltip = this.i18n.translateString('app.replays.replay-info.rank-issue-tooltip');
 
-		this.playerRank = value.playerRank;
-		this.isLegend = value.playerRank != null ? `${value.playerRank}`?.startsWith('legend') : false;
-		const rankImage = value.buildPlayerRankImage(this.i18n);
-		this.playerRankImage = rankImage.frameImage;
-		this.playerRankArt = rankImage.medalImage;
-		this.playerRankImageTooltip = rankImage.tooltip;
-		this.playerRankDecoration = rankImage.frameDecoration;
-		this.rankText = buildRankText(value.playerRank, value.gameMode, value.additionalResult);
-	}
+    constructor(private readonly i18n: LocalizationFacadeService) {
+    }
 
-	@Input() gameMode: string;
-	@Input() rankTooltip: string;
+    @Input() set stat(value: GameStat) {
+        if (!value) {
+            return;
+        }
 
-	playerRank: string;
-	playerRankImage: string;
-	playerRankArt: string;
-	playerRankDecoration: string;
-	playerRankImageTooltip: string;
-	isLegend: boolean;
-	rankText: string;
-	rankIssueTooltip = this.i18n.translateString('app.replays.replay-info.rank-issue-tooltip');
-
-	constructor(private readonly i18n: LocalizationFacadeService) {}
+        this.playerRank = value.playerRank;
+        this.isLegend = value.playerRank != null ? `${value.playerRank}`?.startsWith('legend') : false;
+        const rankImage = value.buildPlayerRankImage(this.i18n);
+        this.playerRankImage = rankImage.frameImage;
+        this.playerRankArt = rankImage.medalImage;
+        this.playerRankImageTooltip = rankImage.tooltip;
+        this.playerRankDecoration = rankImage.frameDecoration;
+        this.rankText = buildRankText(value.playerRank, value.gameMode, value.additionalResult);
+    }
 }

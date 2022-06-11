@@ -1,72 +1,73 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 export enum BgsSimulatorKeyboardControl {
-	PlayerHero,
-	OpponentHero,
-	PlayerHeroPower,
-	OpponentHeroPower,
-	PlayerAddMinion,
-	OpponentAddMinion,
+    PlayerHero,
+    OpponentHero,
+    PlayerHeroPower,
+    OpponentHeroPower,
+    PlayerAddMinion,
+    OpponentAddMinion,
 }
+
 @Injectable()
 export class BgsSimulatorKeyboardControls {
-	private static CONTROL_KEYS = Object.values(BgsSimulatorKeyboardControl)
-		.filter((key) => typeof key !== 'string')
-		.map((key) => key as BgsSimulatorKeyboardControl);
+    private static CONTROL_KEYS = Object.values(BgsSimulatorKeyboardControl)
+        .filter((key) => typeof key !== 'string')
+        .map((key) => key as BgsSimulatorKeyboardControl);
 
-	private allowControl: boolean;
-	private controls: {
-		[key: string]: () => void | Promise<void>;
-	} = {};
+    private allowControl: boolean;
+    private controls: {
+        [key: string]: () => void | Promise<void>;
+    } = {};
 
-	public init(allowKeyboardControl: boolean): BgsSimulatorKeyboardControls {
-		this.allowControl = allowKeyboardControl;
-		return this;
-	}
+    public static getKeyName(key: BgsSimulatorKeyboardControl): string {
+        switch (key) {
+            case BgsSimulatorKeyboardControl.PlayerHero:
+                return 'h';
+            case BgsSimulatorKeyboardControl.OpponentHero:
+                return 'H';
+            case BgsSimulatorKeyboardControl.PlayerHeroPower:
+                return 'p';
+            case BgsSimulatorKeyboardControl.OpponentHeroPower:
+                return 'P';
+            case BgsSimulatorKeyboardControl.PlayerAddMinion:
+                return 'm';
+            case BgsSimulatorKeyboardControl.OpponentAddMinion:
+                return 'M';
+        }
+    }
 
-	public control(
-		key: BgsSimulatorKeyboardControl,
-		handler: () => void | Promise<void>,
-	): BgsSimulatorKeyboardControls {
-		this.controls[key] = handler;
-		return this;
-	}
+    public init(allowKeyboardControl: boolean): BgsSimulatorKeyboardControls {
+        this.allowControl = allowKeyboardControl;
+        return this;
+    }
 
-	public handleKeyDown(event: KeyboardEvent) {
-		if (!this.allowControl) {
-			return;
-		}
+    public control(
+        key: BgsSimulatorKeyboardControl,
+        handler: () => void | Promise<void>,
+    ): BgsSimulatorKeyboardControls {
+        this.controls[key] = handler;
+        return this;
+    }
 
-		const key = this.getKey(event);
-		if (key != null && !!this.controls[key]) {
-			this.controls[key]();
-		}
-	}
+    public handleKeyDown(event: KeyboardEvent) {
+        if (!this.allowControl) {
+            return;
+        }
 
-	public tearDown() {
-		this.controls = {};
-	}
+        const key = this.getKey(event);
+        if (key != null && !!this.controls[key]) {
+            this.controls[key]();
+        }
+    }
 
-	public static getKeyName(key: BgsSimulatorKeyboardControl): string {
-		switch (key) {
-			case BgsSimulatorKeyboardControl.PlayerHero:
-				return 'h';
-			case BgsSimulatorKeyboardControl.OpponentHero:
-				return 'H';
-			case BgsSimulatorKeyboardControl.PlayerHeroPower:
-				return 'p';
-			case BgsSimulatorKeyboardControl.OpponentHeroPower:
-				return 'P';
-			case BgsSimulatorKeyboardControl.PlayerAddMinion:
-				return 'm';
-			case BgsSimulatorKeyboardControl.OpponentAddMinion:
-				return 'M';
-		}
-	}
+    public tearDown() {
+        this.controls = {};
+    }
 
-	private getKey(event: KeyboardEvent): BgsSimulatorKeyboardControl {
-		return BgsSimulatorKeyboardControls.CONTROL_KEYS.find(
-			(key) => BgsSimulatorKeyboardControls.getKeyName(key) === event.key,
-		);
-	}
+    private getKey(event: KeyboardEvent): BgsSimulatorKeyboardControl {
+        return BgsSimulatorKeyboardControls.CONTROL_KEYS.find(
+            (key) => BgsSimulatorKeyboardControls.getKeyName(key) === event.key,
+        );
+    }
 }

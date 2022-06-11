@@ -1,56 +1,56 @@
 :host() {
-	flex-direction: column;
-	overflow: auto;
+  flex-direction: column;
+  overflow: auto;
 }
 
 .decktracker-deck-details {
-	display: flex;
-	flex-grow: 1;
-	padding-right: 10px;
-	margin-top: 10px;
-	--decklist-width: 210px;
-	flex-wrap: wrap;
+  display: flex;
+  flex-grow: 1;
+  padding-right: 10px;
+  margin-top: 10px;
+  --decklist-width: 210px;
+  flex-wrap: wrap;
 
-	.global-stats {
-		width: 100%;
-		flex-shrink: 0;
+  .global-stats {
+    width: 100%;
+    flex-shrink: 0;
 
-		::ng-deep .winrate,
-		::ng-deep .games {
-			display: none;
-		}
-	}
+    ::ng-deep .winrate,
+    ::ng-deep .games {
+      display: none;
+    }
+  }
 
-	.container {
-		display: flex;
-		width: 100%;
-	}
+  .container {
+    display: flex;
+    width: 100%;
+  }
 
-	.deck-list-container {
-		order: 2;
-		margin-left: 20px;
-		margin-right: 20px;
-		display: flex;
-		flex-direction: column;
-		width: var(--decklist-width);
+  .deck-list-container {
+    order: 2;
+    margin-left: 20px;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: column;
+    width: var(--decklist-width);
 
-		.copy-deckcode {
-			margin-bottom: 10px;
-			justify-content: flex-start;
+    .copy-deckcode {
+      margin-bottom: 10px;
+      justify-content: flex-start;
 
-			::ng-deep .copy-deckstring {
-				--icon-color: var(--color-5);
+      ::ng-deep .copy-deckstring {
+        --icon-color: var(--color-5);
 
-				&:hover {
-					--icon-color: var(--color-1);
-				}
-			}
-		}
-	}
+        &:hover {
+          --icon-color: var(--color-1);
+        }
+      }
+    }
+  }
 
-	deck-winrate-matrix {
-		margin-top: -10px;
-		margin-right: auto;
-		max-width: calc(100% - var(--decklist-width));
-	}
+  deck-winrate-matrix {
+    margin-top: -10px;
+    margin-right: auto;
+    max-width: calc(100% - var(--decklist-width));
+  }
 }

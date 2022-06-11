@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { SimpleBarChartData } from '@components/common/chart/simple-bar-chart-data';
-import { DuelsHeroInfo, DuelsHeroInfoTopDeck } from '@components/overlays/duels-ooc/duels-hero-info';
-import { LocalizationFacadeService } from '@services/localization-facade.service';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {SimpleBarChartData} from '@components/common/chart/simple-bar-chart-data';
+import {DuelsHeroInfo, DuelsHeroInfoTopDeck} from '@components/overlays/duels-ooc/duels-hero-info';
+import {LocalizationFacadeService} from '@services/localization-facade.service';
 
 @Component({
-	selector: 'duels-hero-info',
-	styleUrls: [
-		'../../../../css/global/components-global.scss',
-		'../../../../css/component/overlays/duels-ooc/duels-hero-info.component.scss',
-	],
-	template: `
+    selector: 'duels-hero-info',
+    styleUrls: [
+        '../../../../css/global/components-global.scss',
+        '../../../../css/component/overlays/duels-ooc/duels-hero-info.component.scss',
+    ],
+    template: `
 		<div class="hero-info">
 			<div class="bio">
 				<img [src]="heroPortrait" class="portrait" />
@@ -91,54 +91,55 @@ import { LocalizationFacadeService } from '@services/localization-facade.service
 			<div class="footer" [owTranslate]="'duels.hero-info.footer'"></div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DuelsHeroInfoComponent {
-	@Input() set heroInfo(value: DuelsHeroInfo) {
-		// console.debug('setting hero info', value);
-		this.heroPortrait = this.i18n.getCardImage(value.cardId, { isHighRes: true, isHeroSkin: true });
-		this.name = value.name;
-		this.globalWinrate = value.globalWinrate;
-		this.playerWinrate = value.playerWinrate;
-		this.globalPopularity = value.globalPopularity;
-		this.playerMatches = this.i18n.translateString('duels.hero-info.player-matches', {
-			value: value.playerMatches,
-		});
-		this.globalWinDistribution = {
-			data:
-				value.globalWinDistribution?.map((input) => ({
-					label: '' + input.winNumber,
-					// To never show an empty bar
-					value: input.value,
-				})) ?? [],
-		} as SimpleBarChartData;
-		this.totalDecks = value.topDecks.length;
-		this.decks = value.topDecks.slice(0, 6);
-		this.totalRuns = value.globalTotalMatches;
-		// console.debug('globalWinDistrib', this.globalWinDistribution, value.globalWinDistribution, value);
-	}
+    heroPortrait: string;
+    name: string;
+    globalWinrate: number;
+    playerWinrate: number;
+    globalPopularity: number;
+    playerMatches: string;
+    globalWinDistribution: SimpleBarChartData;
+    decks: readonly DuelsHeroInfoTopDeck[];
+    totalDecks: number;
+    totalRuns: number;
 
-	heroPortrait: string;
-	name: string;
-	globalWinrate: number;
-	playerWinrate: number;
-	globalPopularity: number;
-	playerMatches: string;
-	globalWinDistribution: SimpleBarChartData;
-	decks: readonly DuelsHeroInfoTopDeck[];
-	totalDecks: number;
-	totalRuns: number;
+    constructor(private readonly i18n: LocalizationFacadeService) {
+    }
 
-	constructor(private readonly i18n: LocalizationFacadeService) {}
+    @Input() set heroInfo(value: DuelsHeroInfo) {
+        // console.debug('setting hero info', value);
+        this.heroPortrait = this.i18n.getCardImage(value.cardId, {isHighRes: true, isHeroSkin: true});
+        this.name = value.name;
+        this.globalWinrate = value.globalWinrate;
+        this.playerWinrate = value.playerWinrate;
+        this.globalPopularity = value.globalPopularity;
+        this.playerMatches = this.i18n.translateString('duels.hero-info.player-matches', {
+            value: value.playerMatches,
+        });
+        this.globalWinDistribution = {
+            data:
+                value.globalWinDistribution?.map((input) => ({
+                    label: '' + input.winNumber,
+                    // To never show an empty bar
+                    value: input.value,
+                })) ?? [],
+        } as SimpleBarChartData;
+        this.totalDecks = value.topDecks.length;
+        this.decks = value.topDecks.slice(0, 6);
+        this.totalRuns = value.globalTotalMatches;
+        // console.debug('globalWinDistrib', this.globalWinDistribution, value.globalWinDistribution, value);
+    }
 
-	buildValue(value: number, decimals = 2): string {
-		if (value === 100) {
-			return '100';
-		}
-		return !value ? '-' : value.toFixed(decimals);
-	}
+    buildValue(value: number, decimals = 2): string {
+        if (value === 100) {
+            return '100';
+        }
+        return !value ? '-' : value.toFixed(decimals);
+    }
 
-	getArt(cardId: string): string {
-		return `https://static.zerotoheroes.com/hearthstone/cardart/256x/${cardId}.jpg`;
-	}
+    getArt(cardId: string): string {
+        return `https://static.zerotoheroes.com/hearthstone/cardart/256x/${cardId}.jpg`;
+    }
 }

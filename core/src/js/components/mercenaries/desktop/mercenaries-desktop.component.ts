@@ -1,30 +1,32 @@
 import {
-	AfterContentInit,
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
+    AfterContentInit,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
 } from '@angular/core';
-import { LocalizationFacadeService } from '@services/localization-facade.service';
-import { Observable } from 'rxjs';
-import { distinctUntilChanged, filter, map, takeUntil, tap } from 'rxjs/operators';
-import { MercenariesCategoryId } from '../../../models/mercenaries/mercenary-category-id.type';
-import { MainWindowStoreEvent } from '../../../services/mainwindow/store/events/main-window-store-event';
-import { MercenariesSelectCategoryEvent } from '../../../services/mainwindow/store/events/mercenaries/mercenaries-select-category-event';
-import { OverwolfService } from '../../../services/overwolf.service';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { cdLog } from '../../../services/ui-store/app-ui-store.service';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
+import {LocalizationFacadeService} from '@services/localization-facade.service';
+import {Observable} from 'rxjs';
+import {distinctUntilChanged, filter, map, takeUntil, tap} from 'rxjs/operators';
+import {MercenariesCategoryId} from '../../../models/mercenaries/mercenary-category-id.type';
+import {MainWindowStoreEvent} from '../../../services/mainwindow/store/events/main-window-store-event';
+import {
+    MercenariesSelectCategoryEvent
+} from '../../../services/mainwindow/store/events/mercenaries/mercenaries-select-category-event';
+import {OverwolfService} from '../../../services/overwolf.service';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {cdLog} from '../../../services/ui-store/app-ui-store.service';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
 
 @Component({
-	selector: 'mercenaries-desktop',
-	styleUrls: [
-		`../../../../css/component/app-section.component.scss`,
-		`../../../../css/component/menu-selection.component.scss`,
-		`../../../../css/component/mercenaries/desktop/mercenaries-desktop.component.scss`,
-	],
-	template: `
+    selector: 'mercenaries-desktop',
+    styleUrls: [
+        `../../../../css/component/app-section.component.scss`,
+        `../../../../css/component/menu-selection.component.scss`,
+        `../../../../css/component/mercenaries/desktop/mercenaries-desktop.component.scss`,
+    ],
+    template: `
 		<div class="app-section mercenaries">
 			<section class="main divider">
 				<with-loading [isLoading]="loading$ | async">
@@ -77,73 +79,73 @@ import { AbstractSubscriptionComponent } from '../../abstract-subscription.compo
 			</section>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MercenariesDesktopComponent
-	extends AbstractSubscriptionComponent
-	implements AfterContentInit, AfterViewInit {
-	loading$: Observable<boolean>;
-	menuDisplayType$: Observable<string>;
-	categories$: Observable<readonly MercenariesCategoryId[]>;
-	selectedCategoryId$: Observable<MercenariesCategoryId>;
+    extends AbstractSubscriptionComponent
+    implements AfterContentInit, AfterViewInit {
+    loading$: Observable<boolean>;
+    menuDisplayType$: Observable<string>;
+    categories$: Observable<readonly MercenariesCategoryId[]>;
+    selectedCategoryId$: Observable<MercenariesCategoryId>;
 
-	private stateUpdater: EventEmitter<MainWindowStoreEvent>;
+    private stateUpdater: EventEmitter<MainWindowStoreEvent>;
 
-	constructor(
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-		private readonly ow: OverwolfService,
-		private readonly i18n: LocalizationFacadeService,
-	) {
-		super(store, cdr);
-	}
+    constructor(
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+        private readonly ow: OverwolfService,
+        private readonly i18n: LocalizationFacadeService,
+    ) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.loading$ = this.store
-			.listen$(([main, nav]) => main.mercenaries.loading)
-			.pipe(
-				map(([loading]) => loading),
-				distinctUntilChanged(),
-				// startWith(true),
-				tap((info) => cdLog('emitting loading in ', this.constructor.name, info)),
-				takeUntil(this.destroyed$),
-			);
-		this.menuDisplayType$ = this.store
-			.listen$(([main, nav]) => nav.navigationMercenaries.menuDisplayType)
-			.pipe(
-				map(([menuDisplayType]) => menuDisplayType),
-				distinctUntilChanged(),
-				tap((info) => cdLog('emitting menuDisplayType in ', this.constructor.name, info)),
-				takeUntil(this.destroyed$),
-			);
-		this.selectedCategoryId$ = this.store
-			.listen$(([main, nav]) => nav.navigationMercenaries.selectedCategoryId)
-			.pipe(
-				map(([selectedCategoryId]) => selectedCategoryId),
-				filter((selectedCategoryId) => !!selectedCategoryId),
-				distinctUntilChanged(),
-				tap((info) => cdLog('emitting selectedCategoryId in ', this.constructor.name, info)),
-				takeUntil(this.destroyed$),
-			);
-		this.categories$ = this.store
-			.listen$(([main, nav]) => main.mercenaries.categoryIds)
-			.pipe(
-				map(([categories]) => categories ?? []),
-				distinctUntilChanged(),
-				tap((info) => cdLog('emitting categories in ', this.constructor.name, info)),
-				takeUntil(this.destroyed$),
-			);
-	}
+    ngAfterContentInit() {
+        this.loading$ = this.store
+            .listen$(([main, nav]) => main.mercenaries.loading)
+            .pipe(
+                map(([loading]) => loading),
+                distinctUntilChanged(),
+                // startWith(true),
+                tap((info) => cdLog('emitting loading in ', this.constructor.name, info)),
+                takeUntil(this.destroyed$),
+            );
+        this.menuDisplayType$ = this.store
+            .listen$(([main, nav]) => nav.navigationMercenaries.menuDisplayType)
+            .pipe(
+                map(([menuDisplayType]) => menuDisplayType),
+                distinctUntilChanged(),
+                tap((info) => cdLog('emitting menuDisplayType in ', this.constructor.name, info)),
+                takeUntil(this.destroyed$),
+            );
+        this.selectedCategoryId$ = this.store
+            .listen$(([main, nav]) => nav.navigationMercenaries.selectedCategoryId)
+            .pipe(
+                map(([selectedCategoryId]) => selectedCategoryId),
+                filter((selectedCategoryId) => !!selectedCategoryId),
+                distinctUntilChanged(),
+                tap((info) => cdLog('emitting selectedCategoryId in ', this.constructor.name, info)),
+                takeUntil(this.destroyed$),
+            );
+        this.categories$ = this.store
+            .listen$(([main, nav]) => main.mercenaries.categoryIds)
+            .pipe(
+                map(([categories]) => categories ?? []),
+                distinctUntilChanged(),
+                tap((info) => cdLog('emitting categories in ', this.constructor.name, info)),
+                takeUntil(this.destroyed$),
+            );
+    }
 
-	ngAfterViewInit() {
-		this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
-	}
+    ngAfterViewInit() {
+        this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
+    }
 
-	getCatName(categoryId: MercenariesCategoryId) {
-		return this.i18n.translateString(`mercenaries.menu.${categoryId}`);
-	}
+    getCatName(categoryId: MercenariesCategoryId) {
+        return this.i18n.translateString(`mercenaries.menu.${categoryId}`);
+    }
 
-	selectCategory(categoryId: MercenariesCategoryId) {
-		this.stateUpdater.next(new MercenariesSelectCategoryEvent(categoryId));
-	}
+    selectCategory(categoryId: MercenariesCategoryId) {
+        this.stateUpdater.next(new MercenariesSelectCategoryEvent(categoryId));
+    }
 }

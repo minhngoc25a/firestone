@@ -1,6 +1,7 @@
-import { Directive } from '@angular/core';
+import {Directive} from '@angular/core';
 
 @Directive({
-	selector: '[rippleOnClick]',
+    selector: '[rippleOnClick]',
 })
-export class RippleOnClickDirective {}
+export class RippleOnClickDirective {
+}

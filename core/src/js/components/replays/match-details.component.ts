@@ -1,16 +1,18 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { Observable } from 'rxjs';
-import { BgsStatsFilterId } from '../../models/battlegrounds/post-match/bgs-stats-filter-id.type';
-import { MatchDetail } from '../../models/mainwindow/replays/match-detail';
-import { ChangeMatchStatsNumberOfTabsEvent } from '../../services/mainwindow/store/events/replays/change-match-stats-number-of-tabs-event';
-import { SelectMatchStatsTabEvent } from '../../services/mainwindow/store/events/replays/select-match-stats-tab-event';
-import { AppUiStoreFacadeService } from '../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../abstract-subscription.component';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {Observable} from 'rxjs';
+import {BgsStatsFilterId} from '../../models/battlegrounds/post-match/bgs-stats-filter-id.type';
+import {MatchDetail} from '../../models/mainwindow/replays/match-detail';
+import {
+    ChangeMatchStatsNumberOfTabsEvent
+} from '../../services/mainwindow/store/events/replays/change-match-stats-number-of-tabs-event';
+import {SelectMatchStatsTabEvent} from '../../services/mainwindow/store/events/replays/select-match-stats-tab-event';
+import {AppUiStoreFacadeService} from '../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../abstract-subscription.component';
 
 @Component({
-	selector: 'match-details',
-	styleUrls: [`../../../css/component/replays/match-details.component.scss`],
-	template: `
+    selector: 'match-details',
+    styleUrls: [`../../../css/component/replays/match-details.component.scss`],
+    template: `
 		<div
 			class="match-details {{ value.selectedView }}"
 			*ngIf="{ selectedView: selectedView$ | async, selectedReplay: selectedReplay$ | async } as value"
@@ -39,45 +41,45 @@ import { AbstractSubscriptionComponent } from '../abstract-subscription.componen
 			></bgs-post-match-stats>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatchDetailsComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	selectedView$: Observable<string>;
-	selectedReplay$: Observable<MatchDetail>;
-	selectedTabs$: Observable<readonly BgsStatsFilterId[]>;
+    selectedView$: Observable<string>;
+    selectedReplay$: Observable<MatchDetail>;
+    selectedTabs$: Observable<readonly BgsStatsFilterId[]>;
 
-	constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
-		super(store, cdr);
-	}
+    constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.selectedView$ = this.store
-			.listen$(([main, nav, prefs]) => nav.navigationReplays)
-			.pipe(this.mapData(([nav]) => (nav.currentView === 'match-details' ? nav.selectedTab : null)));
-		this.selectedReplay$ = this.store
-			.listen$(([main, nav, prefs]) => nav.navigationReplays.selectedReplay)
-			.pipe(this.mapData(([selectedReplay]) => selectedReplay));
-		this.selectedTabs$ = this.store
-			.listen$(
-				([main, nav, prefs]) => nav.navigationReplays.selectedStatsTabs,
-				([main, nav, prefs]) => nav.navigationReplays.numberOfDisplayedTabs,
-			)
-			.pipe(
-				this.mapData(([selectedStatsTabs, numberOfDisplayedTabs]) =>
-					selectedStatsTabs.slice(0, numberOfDisplayedTabs),
-				),
-			);
-	}
+    ngAfterContentInit() {
+        this.selectedView$ = this.store
+            .listen$(([main, nav, prefs]) => nav.navigationReplays)
+            .pipe(this.mapData(([nav]) => (nav.currentView === 'match-details' ? nav.selectedTab : null)));
+        this.selectedReplay$ = this.store
+            .listen$(([main, nav, prefs]) => nav.navigationReplays.selectedReplay)
+            .pipe(this.mapData(([selectedReplay]) => selectedReplay));
+        this.selectedTabs$ = this.store
+            .listen$(
+                ([main, nav, prefs]) => nav.navigationReplays.selectedStatsTabs,
+                ([main, nav, prefs]) => nav.navigationReplays.numberOfDisplayedTabs,
+            )
+            .pipe(
+                this.mapData(([selectedStatsTabs, numberOfDisplayedTabs]) =>
+                    selectedStatsTabs.slice(0, numberOfDisplayedTabs),
+                ),
+            );
+    }
 
-	selectTabHandler: (tab: string, tabIndex: number) => void = (tab: BgsStatsFilterId, tabIndex: number) => {
-		this.store.send(new SelectMatchStatsTabEvent(tab, tabIndex));
-	};
+    selectTabHandler: (tab: string, tabIndex: number) => void = (tab: BgsStatsFilterId, tabIndex: number) => {
+        this.store.send(new SelectMatchStatsTabEvent(tab, tabIndex));
+    };
 
-	changeTabsNumberHandler = (numbersOfTabs: number) => {
-		this.store.send(new ChangeMatchStatsNumberOfTabsEvent(numbersOfTabs));
-	};
+    changeTabsNumberHandler = (numbersOfTabs: number) => {
+        this.store.send(new ChangeMatchStatsNumberOfTabsEvent(numbersOfTabs));
+    };
 
-	parseInt(value: string | number): number {
-		return parseInt('' + value);
-	}
+    parseInt(value: string | number): number {
+        return parseInt('' + value);
+    }
 }

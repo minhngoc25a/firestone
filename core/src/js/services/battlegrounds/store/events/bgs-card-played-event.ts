@@ -1,8 +1,8 @@
-import { GameEvent } from '../../../../models/game-event';
-import { BattlegroundsStoreEvent } from './_battlegrounds-store-event';
+import {GameEvent} from '../../../../models/game-event';
+import {BattlegroundsStoreEvent} from './_battlegrounds-store-event';
 
 export class BgsCardPlayedEvent extends BattlegroundsStoreEvent {
-	constructor(public readonly gameEvent: GameEvent) {
-		super('BgsCardPlayedEvent');
-	}
+    constructor(public readonly gameEvent: GameEvent) {
+        super('BgsCardPlayedEvent');
+    }
 }

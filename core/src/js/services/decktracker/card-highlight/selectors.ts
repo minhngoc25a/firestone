@@ -1,76 +1,76 @@
-import { CardClass, CardType, GameTag, Race, RarityTYpe, SpellSchool } from '@firestone-hs/reference-data';
-import { DeckState } from '../../../models/decktracker/deck-state';
-import { Handler, SelectorOptions } from './cards-highlight.service';
+import {CardClass, CardType, GameTag, Race, RarityTYpe, SpellSchool} from '@firestone-hs/reference-data';
+import {DeckState} from '../../../models/decktracker/deck-state';
+import {Handler, SelectorOptions} from './cards-highlight.service';
 
 export const and = (
-	...filters: ((h: Handler, d?: DeckState, options?: SelectorOptions) => boolean)[]
+    ...filters: ((h: Handler, d?: DeckState, options?: SelectorOptions) => boolean)[]
 ): ((handler: Handler, d?: DeckState, options?: SelectorOptions) => boolean) => {
-	return (handler, deckState, options?: SelectorOptions) =>
-		filters.every((filter) => filter(handler, deckState, options));
+    return (handler, deckState, options?: SelectorOptions) =>
+        filters.every((filter) => filter(handler, deckState, options));
 };
 
 export const or = (
-	...filters: ((h: Handler, d?: DeckState, options?: SelectorOptions) => boolean)[]
+    ...filters: ((h: Handler, d?: DeckState, options?: SelectorOptions) => boolean)[]
 ): ((handler: Handler, d?: DeckState, options?: SelectorOptions) => boolean) => {
-	return (handler, deckState, options?: SelectorOptions) =>
-		filters.filter((f) => !!f).some((filter) => filter(handler, deckState, options));
+    return (handler, deckState, options?: SelectorOptions) =>
+        filters.filter((f) => !!f).some((filter) => filter(handler, deckState, options));
 };
 
 export const not = (
-	filter: (h: Handler, d?: DeckState, options?: SelectorOptions) => boolean,
+    filter: (h: Handler, d?: DeckState, options?: SelectorOptions) => boolean,
 ): ((handler: Handler, d?: DeckState, options?: SelectorOptions) => boolean) => {
-	return (handler, deckState, options?: SelectorOptions) => !filter(handler, deckState, options);
+    return (handler, deckState, options?: SelectorOptions) => !filter(handler, deckState, options);
 };
 
 const inZoneId = (zone: string) => (handler: Handler, d?: DeckState, options?: SelectorOptions): boolean =>
-	options?.uniqueZone || handler.zoneProvider()?.id?.toLowerCase() === zone?.toLowerCase();
+    options?.uniqueZone || handler.zoneProvider()?.id?.toLowerCase() === zone?.toLowerCase();
 const inZoneName = (zone: string) => (handler: Handler, d?: DeckState, options?: SelectorOptions): boolean =>
-	handler.deckCardProvider()?.zone?.toLowerCase() === zone?.toLowerCase();
+    handler.deckCardProvider()?.zone?.toLowerCase() === zone?.toLowerCase();
 export const inDeck = or(inZoneId('deck'), inZoneId('deck-top'), inZoneId('deck-bottom'));
 export const inHand = inZoneId('hand');
 export const inOther = inZoneId('other');
 export const inGraveyard = inZoneName('GRAVEYARD');
 
 export const effectiveCostLess = (cost: number) => (handler: Handler): boolean => {
-	return handler.deckCardProvider()?.getEffectiveManaCost() < cost;
+    return handler.deckCardProvider()?.getEffectiveManaCost() < cost;
 };
 
 export const effectiveCostMore = (cost: number) => (handler: Handler): boolean => {
-	return handler.deckCardProvider()?.getEffectiveManaCost() > cost;
+    return handler.deckCardProvider()?.getEffectiveManaCost() > cost;
 };
 
 export const effectiveCostEqual = (cost: number) => (handler: Handler): boolean => {
-	return handler.deckCardProvider()?.getEffectiveManaCost() === cost;
+    return handler.deckCardProvider()?.getEffectiveManaCost() === cost;
 };
 
 export const baseCostEqual = (cost: number) => (handler: Handler): boolean => {
-	return handler.deckCardProvider()?.manaCost === cost;
+    return handler.deckCardProvider()?.manaCost === cost;
 };
 
 export const notInInitialDeck = (handler: Handler): boolean => {
-	return handler.deckCardProvider().creatorCardId != null || handler.deckCardProvider().creatorCardIds?.length > 0;
+    return handler.deckCardProvider().creatorCardId != null || handler.deckCardProvider().creatorCardIds?.length > 0;
 };
 
 export const healthBiggerThanAttack = (handler: Handler): boolean => {
-	return handler.referenceCardProvider().health > handler.referenceCardProvider().attack;
+    return handler.referenceCardProvider().health > handler.referenceCardProvider().attack;
 };
 
 export const spellPlayedThisMatch = (handler: Handler, deckState: DeckState, options?: SelectorOptions): boolean => {
-	return deckState?.spellsPlayedThisMatch
-		.map((spell) => spell.entityId)
-		.includes(handler.deckCardProvider()?.entityId);
+    return deckState?.spellsPlayedThisMatch
+        .map((spell) => spell.entityId)
+        .includes(handler.deckCardProvider()?.entityId);
 };
 export const cardsPlayedThisMatch = (handler: Handler, deckState: DeckState, options?: SelectorOptions): boolean => {
-	return (
-		deckState?.cardsPlayedThisMatch.map((card) => card.entityId).includes(handler.deckCardProvider()?.entityId) ||
-		deckState?.cardsPlayedThisMatch
-			.map((card) => card.entityId)
-			.includes(-(handler.deckCardProvider()?.entityId ?? 0))
-	);
+    return (
+        deckState?.cardsPlayedThisMatch.map((card) => card.entityId).includes(handler.deckCardProvider()?.entityId) ||
+        deckState?.cardsPlayedThisMatch
+            .map((card) => card.entityId)
+            .includes(-(handler.deckCardProvider()?.entityId ?? 0))
+    );
 };
 
 const hasMechanic = (mechanic: GameTag) => (handler: Handler): boolean =>
-	(handler.referenceCardProvider()?.mechanics ?? []).includes(GameTag[mechanic]);
+    (handler.referenceCardProvider()?.mechanics ?? []).includes(GameTag[mechanic]);
 export const battlecry = hasMechanic(GameTag.BATTLECRY);
 export const corrupt = hasMechanic(GameTag.CORRUPT);
 export const corrupted = hasMechanic(GameTag.CORRUPTED);
@@ -88,7 +88,7 @@ export const taunt = hasMechanic(GameTag.TAUNT);
 export const dredge = hasMechanic(GameTag.DREDGE);
 
 export const spellSchool = (spellSchool: SpellSchool) => (handler: Handler): boolean => {
-	return handler.referenceCardProvider()?.spellSchool === SpellSchool[spellSchool];
+    return handler.referenceCardProvider()?.spellSchool === SpellSchool[spellSchool];
 };
 export const arcane = spellSchool(SpellSchool.ARCANE);
 export const fel = spellSchool(SpellSchool.FEL);
@@ -98,23 +98,23 @@ export const holy = spellSchool(SpellSchool.HOLY);
 export const nature = spellSchool(SpellSchool.NATURE);
 export const shadow = spellSchool(SpellSchool.SHADOW);
 export const hasSpellSchool = (handler: Handler): boolean => {
-	return !!handler.referenceCardProvider()?.spellSchool;
+    return !!handler.referenceCardProvider()?.spellSchool;
 };
 
 export const cardType = (type: CardType) => (handler: Handler): boolean => {
-	return (
-		handler.deckCardProvider()?.cardType?.toLowerCase() === CardType[type].toLowerCase() ||
-		handler.referenceCardProvider()?.type?.toLowerCase() === CardType[type].toLowerCase()
-	);
+    return (
+        handler.deckCardProvider()?.cardType?.toLowerCase() === CardType[type].toLowerCase() ||
+        handler.referenceCardProvider()?.type?.toLowerCase() === CardType[type].toLowerCase()
+    );
 };
 export const minion = cardType(CardType.MINION);
 export const spell = cardType(CardType.SPELL);
 export const weapon = cardType(CardType.WEAPON);
 
 export const race = (race: Race) => (handler: Handler): boolean => {
-	return (
-		handler.referenceCardProvider()?.race === Race[race] || handler.referenceCardProvider()?.race === Race[Race.ALL]
-	);
+    return (
+        handler.referenceCardProvider()?.race === Race[race] || handler.referenceCardProvider()?.race === Race[Race.ALL]
+    );
 };
 export const beast = race(Race.BEAST);
 export const demon = race(Race.DEMON);
@@ -125,17 +125,17 @@ export const naga = race(Race.NAGA);
 export const pirate = race(Race.PIRATE);
 
 export const cardClass = (cardClass: CardClass) => (handler: Handler): boolean => {
-	return handler.referenceCardProvider()?.cardClass === CardClass[cardClass];
+    return handler.referenceCardProvider()?.cardClass === CardClass[cardClass];
 };
 export const neutral = cardClass(CardClass.NEUTRAL);
 export const rogue = cardClass(CardClass.ROGUE);
 
 export const rarity = (rarity: RarityTYpe) => (handler: Handler): boolean => {
-	return handler.referenceCardProvider()?.rarity?.toLowerCase() === rarity?.toLowerCase();
+    return handler.referenceCardProvider()?.rarity?.toLowerCase() === rarity?.toLowerCase();
 };
 export const legendary = rarity('Legendary');
 
 // TODO: implement it
 export const damage = (handler: Handler): boolean => {
-	return true;
+    return true;
 };

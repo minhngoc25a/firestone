@@ -1,21 +1,22 @@
-import { MainWindowStoreEvent } from '../main-window-store-event';
+import {MainWindowStoreEvent} from '../main-window-store-event';
 
 export class MercenariesViewMercDetailsEvent implements MainWindowStoreEvent {
-	public static eventName(): string {
-		return 'MercenariesViewMercDetailsEvent';
-	}
+    constructor(public readonly mercenaryId: number) {
+    }
 
-	constructor(public readonly mercenaryId: number) {}
+    public static eventName(): string {
+        return 'MercenariesViewMercDetailsEvent';
+    }
 
-	public eventName(): string {
-		return 'MercenariesViewMercDetailsEvent';
-	}
+    public eventName(): string {
+        return 'MercenariesViewMercDetailsEvent';
+    }
 
-	public isNavigationEvent(): boolean {
-		return true;
-	}
+    public isNavigationEvent(): boolean {
+        return true;
+    }
 
-	public isResetHistoryEvent(): boolean {
-		return false;
-	}
+    public isResetHistoryEvent(): boolean {
+        return false;
+    }
 }

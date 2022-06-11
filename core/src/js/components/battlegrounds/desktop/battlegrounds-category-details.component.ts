@@ -1,17 +1,17 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { Observable } from 'rxjs';
-import { distinctUntilChanged, filter, map, takeUntil, tap } from 'rxjs/operators';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { cdLog } from '../../../services/ui-store/app-ui-store.service';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {Observable} from 'rxjs';
+import {distinctUntilChanged, filter, map, takeUntil, tap} from 'rxjs/operators';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {cdLog} from '../../../services/ui-store/app-ui-store.service';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
 
 @Component({
-	selector: 'battlegrounds-category-details',
-	styleUrls: [
-		`../../../../css/component/app-section.component.scss`,
-		`../../../../css/component/battlegrounds/desktop/battlegrounds-category-details.component.scss`,
-	],
-	template: `
+    selector: 'battlegrounds-category-details',
+    styleUrls: [
+        `../../../../css/component/app-section.component.scss`,
+        `../../../../css/component/battlegrounds/desktop/battlegrounds-category-details.component.scss`,
+    ],
+    template: `
 		<div
 			class="battlegrounds-category-details"
 			scrollable
@@ -35,26 +35,26 @@ import { AbstractSubscriptionComponent } from '../../abstract-subscription.compo
 			<battlegrounds-simulator *ngIf="selectedCategoryId === 'bgs-category-simulator'"> </battlegrounds-simulator>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BattlegroundsCategoryDetailsComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	selectedCategoryId$: Observable<string>;
+    selectedCategoryId$: Observable<string>;
 
-	constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
-		super(store, cdr);
-	}
+    constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit(): void {
-		this.selectedCategoryId$ = this.store
-			.listen$(([main, nav]) => nav.navigationBattlegrounds.selectedCategoryId)
-			.pipe(
-				filter(([selectedCategoryId]) => !!selectedCategoryId),
-				map(([selectedCategoryId]) => selectedCategoryId),
-				distinctUntilChanged(),
-				tap((selectedCategoryId) =>
-					cdLog('emitting selectedCategoryId in ', this.constructor.name, selectedCategoryId),
-				),
-				takeUntil(this.destroyed$),
-			);
-	}
+    ngAfterContentInit(): void {
+        this.selectedCategoryId$ = this.store
+            .listen$(([main, nav]) => nav.navigationBattlegrounds.selectedCategoryId)
+            .pipe(
+                filter(([selectedCategoryId]) => !!selectedCategoryId),
+                map(([selectedCategoryId]) => selectedCategoryId),
+                distinctUntilChanged(),
+                tap((selectedCategoryId) =>
+                    cdLog('emitting selectedCategoryId in ', this.constructor.name, selectedCategoryId),
+                ),
+                takeUntil(this.destroyed$),
+            );
+    }
 }

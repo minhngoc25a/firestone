@@ -1,224 +1,231 @@
 .opponent-overview {
-	display: flex;
-	flex-grow: 1;
-	flex-shrink: 1;
-	background: rgba(255, 255, 255, 0.08);
-	padding: 10px;
-	position: relative;
-	height: 100%;
-	width: 100%;
+  display: flex;
+  flex-grow: 1;
+  flex-shrink: 1;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 10px;
+  position: relative;
+  height: 100%;
+  width: 100%;
 
-	.portrait {
-		flex-grow: 0;
-		flex-shrink: 0;
-		display: flex;
-		flex-direction: column;
-		width: 70px;
-		position: relative;
-		margin-right: 30px;
-		align-items: center;
-		justify-content: center;
+  .portrait {
+    flex-grow: 0;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    width: 70px;
+    position: relative;
+    margin-right: 30px;
+    align-items: center;
+    justify-content: center;
 
-		::ng-deep .icon {
-			width: 100%;
-			.hero-portrait {
-				width: 100%;
-				.hero-portrait-frame {
-					width: 100%;
-					height: auto;
+    ::ng-deep .icon {
+      width: 100%;
 
-					.aspect-ratio {
-						display: block;
-					}
-				}
-			}
-		}
+      .hero-portrait {
+        width: 100%;
 
-		.tavern {
-			position: absolute;
-			right: -18%;
-			top: 20%;
-			width: 50%;
-			z-index: 1;
-		}
-	}
+        .hero-portrait-frame {
+          width: 100%;
+          height: auto;
 
-	::ng-deep bgs-hero-portrait .health .value {
-		font-size: 16px;
-		margin-left: 1px;
-	}
+          .aspect-ratio {
+            display: block;
+          }
+        }
+      }
+    }
 
-	.main-info {
-		display: flex;
-		flex-direction: column;
-		border-right: 1px solid var(--color-3);
-		justify-content: center;
-		margin-right: 10px;
-		overflow: visible;
-		flex-grow: 1;
-		flex-shrink: 0;
+    .tavern {
+      position: absolute;
+      right: -18%;
+      top: 20%;
+      width: 50%;
+      z-index: 1;
+    }
+  }
 
-		::ng-deep bgs-board {
-			width: 520px;
-			.board {
-				top: -8px;
+  ::ng-deep bgs-hero-portrait .health .value {
+    font-size: 16px;
+    margin-left: 1px;
+  }
 
-				.minion-container {
-					margin-right: 15px;
+  .main-info {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--color-3);
+    justify-content: center;
+    margin-right: 10px;
+    overflow: visible;
+    flex-grow: 1;
+    flex-shrink: 0;
 
-					li {
-						width: 58px;
-						height: 85px;
-					}
+    ::ng-deep bgs-board {
+      width: 520px;
 
-					.card-stats {
-						.stat {
-							width: 30px;
-							height: 30px;
+      .board {
+        top: -8px;
 
-							&.attack {
-								left: -4px;
-								top: -7px;
-							}
+        .minion-container {
+          margin-right: 15px;
 
-							&.health {
-								right: -4px;
-								left: auto;
-								top: -7px;
-							}
-						}
-					}
-				}
-			}
-		}
+          li {
+            width: 58px;
+            height: 85px;
+          }
 
-		.filler {
-			display: flex;
-			flex-grow: 1;
-			height: 100%;
-		}
-	}
+          .card-stats {
+            .stat {
+              width: 30px;
+              height: 30px;
 
-	bgs-triples {
-		flex-grow: 0;
-		width: 160px;
-		flex-shrink: 0;
-		padding-left: 10px;
-	}
+              &.attack {
+                left: -4px;
+                top: -7px;
+              }
 
-	::ng-deep bgs-triples {
-		.triples-section.triples-section.triples-section {
-			flex-direction: column;
-			align-items: center;
-			width: 100%;
+              &.health {
+                right: -4px;
+                left: auto;
+                top: -7px;
+              }
+            }
+          }
+        }
+      }
+    }
 
-			.title {
-				width: auto;
-				margin: 0;
-			}
-			.subtitle {
-				margin: auto;
-			}
-			.triple-tiers {
-				justify-content: space-around;
-				align-items: center;
-				width: 100%;
-				flex-grow: 1;
-				flex-wrap: wrap;
+    .filler {
+      display: flex;
+      flex-grow: 1;
+      height: 100%;
+    }
+  }
 
-				.triple {
-					width: 45px;
-					height: 54px;
-					margin-right: 5px;
+  bgs-triples {
+    flex-grow: 0;
+    width: 160px;
+    flex-shrink: 0;
+    padding-left: 10px;
+  }
 
-					.number {
-						font-size: 20px;
-					}
-				}
-			}
-		}
-	}
+  ::ng-deep bgs-triples {
+    .triples-section.triples-section.triples-section {
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
 
-	.tavern-upgrades {
-		display: none;
-		width: auto;
-		flex-grow: 1;
-		flex-direction: column;
-		border-right: 1px solid var(--color-3);
-		padding-right: 10px;
-		align-items: flex-start;
-		max-width: 465px;
+      .title {
+        width: auto;
+        margin: 0;
+      }
 
-		.title {
-			margin-left: 20px;
-			margin-bottom: 10px;
-			text-align: center;
-		}
+      .subtitle {
+        margin: auto;
+      }
 
-		.upgrades {
-			display: flex;
-			flex-wrap: wrap;
-			overflow: hidden;
-			justify-content: flex-start;
+      .triple-tiers {
+        justify-content: space-around;
+        align-items: center;
+        width: 100%;
+        flex-grow: 1;
+        flex-wrap: wrap;
 
-			.upgrades {
-				display: flex;
-				flex-direction: column;
-			}
-		}
+        .triple {
+          width: 45px;
+          height: 54px;
+          margin-right: 5px;
 
-		.tavern-upgrade {
-			width: 90px;
-			// margin: auto;
-			flex-shrink: 0;
-		}
+          .number {
+            font-size: 20px;
+          }
+        }
+      }
+    }
+  }
 
-		.label {
-			margin-top: -10%;
-			text-align: center;
-		}
+  .tavern-upgrades {
+    display: none;
+    width: auto;
+    flex-grow: 1;
+    flex-direction: column;
+    border-right: 1px solid var(--color-3);
+    padding-right: 10px;
+    align-items: flex-start;
+    max-width: 465px;
 
-		::ng-deep tavern-level-icon .tavern-level-icon {
-			position: relative;
-			width: 60%;
-			margin: auto;
-		}
-	}
+    .title {
+      margin-left: 20px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
 
-	bgs-buddies {
-		display: none;
-		width: 170px;
-		flex-grow: 0;
-		flex-shrink: 0;
-	}
+    .upgrades {
+      display: flex;
+      flex-wrap: wrap;
+      overflow: hidden;
+      justify-content: flex-start;
 
-	.last-opponent-icon {
-		width: 28px;
-		height: 28px;
-		position: absolute;
-		top: 5px;
-		left: 5px;
-	}
+      .upgrades {
+        display: flex;
+        flex-direction: column;
+      }
+    }
+
+    .tavern-upgrade {
+      width: 90px;
+      // margin: auto;
+      flex-shrink: 0;
+    }
+
+    .label {
+      margin-top: -10%;
+      text-align: center;
+    }
+
+    ::ng-deep tavern-level-icon .tavern-level-icon {
+      position: relative;
+      width: 60%;
+      margin: auto;
+    }
+  }
+
+  bgs-buddies {
+    display: none;
+    width: 170px;
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+
+  .last-opponent-icon {
+    width: 28px;
+    height: 28px;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+  }
 }
 
 @media (min-width: 1450px) {
-	.opponent-overview {
-		.main-info {
-			flex-grow: 0;
-		}
-		.tavern-upgrades {
-			display: flex;
-		}
-		.filler {
-			display: none;
-		}
-	}
+  .opponent-overview {
+    .main-info {
+      flex-grow: 0;
+    }
+
+    .tavern-upgrades {
+      display: flex;
+    }
+
+    .filler {
+      display: none;
+    }
+  }
 }
 
 @media (min-width: 1550px) {
-	.opponent-overview {
-		bgs-buddies {
-			display: flex;
-		}
-	}
+  .opponent-overview {
+    bgs-buddies {
+      display: flex;
+    }
+  }
 }

@@ -1,24 +1,25 @@
-import { MainWindowStoreEvent } from '../main-window-store-event';
+import {MainWindowStoreEvent} from '../main-window-store-event';
 
 export class SearchCardsEvent implements MainWindowStoreEvent {
-	constructor(searchString: string) {
-		this.searchString = searchString;
-	}
-	readonly searchString: string;
+    readonly searchString: string;
 
-	public static eventName(): string {
-		return 'SearchCardsEvent';
-	}
+    constructor(searchString: string) {
+        this.searchString = searchString;
+    }
 
-	public eventName(): string {
-		return 'SearchCardsEvent';
-	}
+    public static eventName(): string {
+        return 'SearchCardsEvent';
+    }
 
-	public isNavigationEvent(): boolean {
-		return true;
-	}
+    public eventName(): string {
+        return 'SearchCardsEvent';
+    }
 
-	public isResetHistoryEvent(): boolean {
-		return false;
-	}
+    public isNavigationEvent(): boolean {
+        return true;
+    }
+
+    public isResetHistoryEvent(): boolean {
+        return false;
+    }
 }

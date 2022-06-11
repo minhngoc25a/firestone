@@ -1,34 +1,34 @@
 import {
-	AfterContentInit,
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
-	Input,
-	ViewEncapsulation,
-	ViewRef,
+    AfterContentInit,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    ViewEncapsulation,
+    ViewRef,
 } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
-import { CurrentAppType } from '../models/mainwindow/current-app.type';
-import { AdService } from '../services/ad.service';
-import { ChangeVisibleApplicationEvent } from '../services/mainwindow/store/events/change-visible-application-event';
-import { MainWindowStoreEvent } from '../services/mainwindow/store/events/main-window-store-event';
-import { OverwolfService } from '../services/overwolf.service';
-import { AppUiStoreFacadeService } from '../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from './abstract-subscription.component';
+import {TranslateService} from '@ngx-translate/core';
+import {Observable} from 'rxjs';
+import {CurrentAppType} from '../models/mainwindow/current-app.type';
+import {AdService} from '../services/ad.service';
+import {ChangeVisibleApplicationEvent} from '../services/mainwindow/store/events/change-visible-application-event';
+import {MainWindowStoreEvent} from '../services/mainwindow/store/events/main-window-store-event';
+import {OverwolfService} from '../services/overwolf.service';
+import {AppUiStoreFacadeService} from '../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from './abstract-subscription.component';
 
 declare let amplitude;
 
 @Component({
-	selector: 'menu-selection',
-	styleUrls: [
-		`../../css/global/components-global.scss`,
-		`../../css/global/menu.scss`,
-		`../../css/component/main-menu.component.scss`,
-	],
-	template: `
+    selector: 'menu-selection',
+    styleUrls: [
+        `../../css/global/components-global.scss`,
+        `../../css/global/menu.scss`,
+        `../../css/component/main-menu.component.scss`,
+    ],
+    template: `
 		<nav class="menu-selection main-menu">
 			<button
 				[attr.tabindex]="tabIndex$ | async"
@@ -200,60 +200,60 @@ declare let amplitude;
 			</button>
 		</nav>
 	`,
-	encapsulation: ViewEncapsulation.None,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuSelectionComponent extends AbstractSubscriptionComponent implements AfterContentInit, AfterViewInit {
-	userName$: Observable<string>;
-	avatarUrl$: Observable<string>;
-	tabIndex$: Observable<number>;
+    userName$: Observable<string>;
+    avatarUrl$: Observable<string>;
+    tabIndex$: Observable<number>;
 
-	@Input() selectedModule: string;
+    @Input() selectedModule: string;
 
-	showGoPremium: boolean;
+    showGoPremium: boolean;
 
-	private stateUpdater: EventEmitter<MainWindowStoreEvent>;
+    private stateUpdater: EventEmitter<MainWindowStoreEvent>;
 
-	constructor(
-		private ow: OverwolfService,
-		private adService: AdService,
-		private readonly translate: TranslateService,
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-	) {
-		super(store, cdr);
-	}
+    constructor(
+        private ow: OverwolfService,
+        private adService: AdService,
+        private readonly translate: TranslateService,
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+    ) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.userName$ = this.store
-			.listen$(([main, nav, prefs]) => main.currentUser)
-			.pipe(this.mapData(([currentUser]) => currentUser?.username));
-		this.avatarUrl$ = this.store
-			.listen$(([main, nav, prefs]) => main.currentUser)
-			.pipe(this.mapData(([currentUser]) => currentUser?.avatar ?? 'assets/images/social-share-login.png'));
-		this.tabIndex$ = this.store
-			.listen$(([main, nav]) => main.showFtue)
-			.pipe(this.mapData(([showFtue]) => (showFtue ? -1 : 0)));
-	}
+    ngAfterContentInit() {
+        this.userName$ = this.store
+            .listen$(([main, nav, prefs]) => main.currentUser)
+            .pipe(this.mapData(([currentUser]) => currentUser?.username));
+        this.avatarUrl$ = this.store
+            .listen$(([main, nav, prefs]) => main.currentUser)
+            .pipe(this.mapData(([currentUser]) => currentUser?.avatar ?? 'assets/images/social-share-login.png'));
+        this.tabIndex$ = this.store
+            .listen$(([main, nav]) => main.showFtue)
+            .pipe(this.mapData(([showFtue]) => (showFtue ? -1 : 0)));
+    }
 
-	async ngAfterViewInit() {
-		this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
-		this.showGoPremium = await this.adService.shouldDisplayAds();
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    async ngAfterViewInit() {
+        this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
+        this.showGoPremium = await this.adService.shouldDisplayAds();
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	selectModule(module: CurrentAppType) {
-		this.stateUpdater.next(new ChangeVisibleApplicationEvent(module));
-	}
+    selectModule(module: CurrentAppType) {
+        this.stateUpdater.next(new ChangeVisibleApplicationEvent(module));
+    }
 
-	login() {
-		this.ow.openLoginDialog();
-	}
+    login() {
+        this.ow.openLoginDialog();
+    }
 
-	goPremium() {
-		amplitude.getInstance().logEvent('subscription-click', { 'page': 'left-menu' });
-		this.ow.openStore();
-	}
+    goPremium() {
+        amplitude.getInstance().logEvent('subscription-click', {'page': 'left-menu'});
+        this.ow.openStore();
+    }
 }

@@ -1,26 +1,26 @@
-import { animate, keyframes, state, style, transition, trigger } from '@angular/animations';
+import {animate, keyframes, state, style, transition, trigger} from '@angular/animations';
 import {
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	ElementRef,
-	EventEmitter,
-	HostListener,
-	Input,
-	ViewRef,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    EventEmitter,
+    HostListener,
+    Input,
+    ViewRef,
 } from '@angular/core';
-import { Set } from '../../models/set';
-import { CollectionManager } from '../../services/collection/collection-manager.service';
-import { Events } from '../../services/events.service';
-import { SelectCollectionSetEvent } from '../../services/mainwindow/store/events/collection/select-collection-set-event';
-import { MainWindowStoreEvent } from '../../services/mainwindow/store/events/main-window-store-event';
-import { OverwolfService } from '../../services/overwolf.service';
+import {Set} from '../../models/set';
+import {CollectionManager} from '../../services/collection/collection-manager.service';
+import {Events} from '../../services/events.service';
+import {SelectCollectionSetEvent} from '../../services/mainwindow/store/events/collection/select-collection-set-event';
+import {MainWindowStoreEvent} from '../../services/mainwindow/store/events/main-window-store-event';
+import {OverwolfService} from '../../services/overwolf.service';
 
 @Component({
-	selector: 'set-view',
-	styleUrls: [`../../../css/component/collection/set.component.scss`, `../../../css/global/components-global.scss`],
-	template: `
+    selector: 'set-view',
+    styleUrls: [`../../../css/component/collection/set.component.scss`, `../../../css/global/components-global.scss`],
+    template: `
 		<div *ngIf="_cardSet" class="set" [ngClass]="{ 'coming-soon': !released }" (click)="browseSet()">
 			<div class="wrapper-for-flip" [@flipState]="flip">
 				<div class="box-side set-view">
@@ -138,139 +138,138 @@ import { OverwolfService } from '../../services/overwolf.service';
 			</div>
 		</div>
 	`,
-	animations: [
-		trigger('flipState', [
-			state(
-				'active',
-				style({
-					transform: 'rotateY(179deg)',
-				}),
-			),
-			state(
-				'inactive',
-				style({
-					transform: 'rotateY(0)',
-				}),
-			),
-			transition(
-				'active => inactive',
-				animate(
-					'600ms cubic-bezier(0.65,-0.29,0.40,1.5)',
-					keyframes([
-						style({ transform: 'rotateY(179deg)', offset: 0 }),
-						style({ transform: 'rotateY(0)', offset: 1 }),
-					]),
-				),
-			),
-			transition(
-				'inactive => active',
-				animate(
-					'600ms cubic-bezier(0.65,-0.29,0.40,1.5)',
-					keyframes([
-						style({ transform: 'rotateY(0)', offset: 0 }),
-						style({ transform: 'rotateY(179deg)', offset: 1 }),
-					]),
-				),
-			),
-		]),
-	],
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    animations: [
+        trigger('flipState', [
+            state(
+                'active',
+                style({
+                    transform: 'rotateY(179deg)',
+                }),
+            ),
+            state(
+                'inactive',
+                style({
+                    transform: 'rotateY(0)',
+                }),
+            ),
+            transition(
+                'active => inactive',
+                animate(
+                    '600ms cubic-bezier(0.65,-0.29,0.40,1.5)',
+                    keyframes([
+                        style({transform: 'rotateY(179deg)', offset: 0}),
+                        style({transform: 'rotateY(0)', offset: 1}),
+                    ]),
+                ),
+            ),
+            transition(
+                'inactive => active',
+                animate(
+                    '600ms cubic-bezier(0.65,-0.29,0.40,1.5)',
+                    keyframes([
+                        style({transform: 'rotateY(0)', offset: 0}),
+                        style({transform: 'rotateY(179deg)', offset: 1}),
+                    ]),
+                ),
+            ),
+        ]),
+    ],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SetComponent implements AfterViewInit {
-	private readonly MOUSE_OVER_DELAY = 300;
+    _displayName = false;
+    released = true;
+    epicTimer = 10;
+    epicFill = 0;
+    legendaryTimer = 40;
+    legendaryFill = 0;
+    flip = 'inactive';
+    private readonly MOUSE_OVER_DELAY = 300;
+    private movingToSet = false;
+    private timeoutHandler;
+    private stateUpdater: EventEmitter<MainWindowStoreEvent>;
 
-	@Input() set cardSet(set: Set) {
-		this._cardSet = set;
-		this.released = set.allCards && set.allCards.length > 0;
-		if (['classic', 'core', 'legacy', 'demon_hunter_initiate'].includes(set.id)) {
-			this._displayName = true;
-		}
-		this.epicTimer = set.pityTimer?.packsUntilGuaranteedEpic ?? CollectionManager.EPIC_PITY_TIMER;
-		this.epicFill = ((10 - this.epicTimer) / 10) * 100;
-		this.legendaryTimer = set.pityTimer?.packsUntilGuaranteedLegendary ?? CollectionManager.LEGENDARY_PITY_TIMER;
-		this.legendaryFill = ((40 - this.legendaryTimer) / 40) * 100;
-	}
+    constructor(
+        private cdr: ChangeDetectorRef,
+        private elRef: ElementRef,
+        private ow: OverwolfService,
+        private events: Events,
+    ) {
+    }
 
-	_cardSet: Set;
-	_displayName = false;
-	released = true;
-	epicTimer = 10;
-	epicFill = 0;
-	legendaryTimer = 40;
-	legendaryFill = 0;
+    _cardSet: Set;
 
-	flip = 'inactive';
+    @Input() set cardSet(set: Set) {
+        this._cardSet = set;
+        this.released = set.allCards && set.allCards.length > 0;
+        if (['classic', 'core', 'legacy', 'demon_hunter_initiate'].includes(set.id)) {
+            this._displayName = true;
+        }
+        this.epicTimer = set.pityTimer?.packsUntilGuaranteedEpic ?? CollectionManager.EPIC_PITY_TIMER;
+        this.epicFill = ((10 - this.epicTimer) / 10) * 100;
+        this.legendaryTimer = set.pityTimer?.packsUntilGuaranteedLegendary ?? CollectionManager.LEGENDARY_PITY_TIMER;
+        this.legendaryFill = ((40 - this.legendaryTimer) / 40) * 100;
+    }
 
-	private movingToSet = false;
-	private timeoutHandler;
-	private stateUpdater: EventEmitter<MainWindowStoreEvent>;
+    ngAfterViewInit() {
+        this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
+    }
 
-	constructor(
-		private cdr: ChangeDetectorRef,
-		private elRef: ElementRef,
-		private ow: OverwolfService,
-		private events: Events,
-	) {}
+    isSimpleComplete() {
+        if (!this.released) {
+            return false;
+        }
+        return this._cardSet.ownedLimitCollectibleCards === this._cardSet.numberOfLimitCollectibleCards();
+    }
 
-	ngAfterViewInit() {
-		this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
-	}
+    isPremiumComplete() {
+        if (!this.released) {
+            return false;
+        }
+        return this._cardSet.ownedLimitCollectiblePremiumCards === this._cardSet.numberOfLimitCollectibleCards();
+    }
 
-	isSimpleComplete() {
-		if (!this.released) {
-			return false;
-		}
-		return this._cardSet.ownedLimitCollectibleCards === this._cardSet.numberOfLimitCollectibleCards();
-	}
+    getOwnedLimitCollectibleCards(): number {
+        return this._cardSet.allCards.map((card) => card.getNumberCollectedPremium()).reduce((c1, c2) => c1 + c2, 0);
+    }
 
-	isPremiumComplete() {
-		if (!this.released) {
-			return false;
-		}
-		return this._cardSet.ownedLimitCollectiblePremiumCards === this._cardSet.numberOfLimitCollectibleCards();
-	}
+    browseSet() {
+        if (!this.released) {
+            return;
+        }
+        if (this.timeoutHandler) {
+            clearTimeout(this.timeoutHandler);
+            this.timeoutHandler = null;
+        }
+        this.stateUpdater.next(new SelectCollectionSetEvent(this._cardSet.id));
+        this.movingToSet = true;
+    }
 
-	getOwnedLimitCollectibleCards(): number {
-		return this._cardSet.allCards.map((card) => card.getNumberCollectedPremium()).reduce((c1, c2) => c1 + c2, 0);
-	}
+    @HostListener('mouseenter') onMouseEnter() {
+        if (!this.released) {
+            return;
+        }
 
-	browseSet() {
-		if (!this.released) {
-			return;
-		}
-		if (this.timeoutHandler) {
-			clearTimeout(this.timeoutHandler);
-			this.timeoutHandler = null;
-		}
-		this.stateUpdater.next(new SelectCollectionSetEvent(this._cardSet.id));
-		this.movingToSet = true;
-	}
+        this.timeoutHandler = setTimeout(() => {
+            this.flip = 'active';
+            const rect = this.elRef.nativeElement.getBoundingClientRect();
 
-	@HostListener('mouseenter') onMouseEnter() {
-		if (!this.released) {
-			return;
-		}
+            this.events.broadcast(Events.SET_MOUSE_OVER, rect, this._cardSet.id);
+            if (!(this.cdr as ViewRef)?.destroyed) {
+                this.cdr.detectChanges();
+            }
+        }, this.MOUSE_OVER_DELAY);
+    }
 
-		this.timeoutHandler = setTimeout(() => {
-			this.flip = 'active';
-			const rect = this.elRef.nativeElement.getBoundingClientRect();
-
-			this.events.broadcast(Events.SET_MOUSE_OVER, rect, this._cardSet.id);
-			if (!(this.cdr as ViewRef)?.destroyed) {
-				this.cdr.detectChanges();
-			}
-		}, this.MOUSE_OVER_DELAY);
-	}
-
-	@HostListener('mouseleave')
-	onMouseLeave() {
-		if (!this.released) {
-			return;
-		}
-		clearTimeout(this.timeoutHandler);
-		this.flip = 'inactive';
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    @HostListener('mouseleave')
+    onMouseLeave() {
+        if (!this.released) {
+            return;
+        }
+        clearTimeout(this.timeoutHandler);
+        this.flip = 'inactive';
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 }

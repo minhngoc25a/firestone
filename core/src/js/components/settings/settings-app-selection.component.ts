@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
-	selector: 'settings-app-selection',
-	styleUrls: [
-		`../../../css/global/components-global.scss`,
-		`../../../css/global/menu.scss`,
-		`../../../css/component/settings/settings-app-selection.component.scss`,
-	],
-	template: `
+    selector: 'settings-app-selection',
+    styleUrls: [
+        `../../../css/global/components-global.scss`,
+        `../../../css/global/menu.scss`,
+        `../../../css/component/settings/settings-app-selection.component.scss`,
+    ],
+    template: `
 		<ul class="menu-selection">
 			<li [ngClass]="{ 'selected': selectedApp === 'general' }" (mousedown)="changeSelection('general')">
 				<span [owTranslate]="'settings.menu.general'"></span>
@@ -38,14 +38,14 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 			</li>
 		</ul>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsAppSelectionComponent {
-	@Input() selectedApp = 'general';
-	@Output() onAppSelected = new EventEmitter<string>();
+    @Input() selectedApp = 'general';
+    @Output() onAppSelected = new EventEmitter<string>();
 
-	changeSelection(selection: string) {
-		this.selectedApp = selection;
-		this.onAppSelected.next(selection);
-	}
+    changeSelection(selection: string) {
+        this.selectedApp = selection;
+        this.onAppSelected.next(selection);
+    }
 }

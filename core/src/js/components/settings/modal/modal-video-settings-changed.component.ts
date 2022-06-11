@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
-import { PreferencesService } from '../../../services/preferences.service';
+import {ChangeDetectionStrategy, Component, EventEmitter, Output} from '@angular/core';
+import {PreferencesService} from '../../../services/preferences.service';
 
 @Component({
-	selector: 'modal-video-settings-changed',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/settings/modal/modal-video-settings-changed.component.scss`,
-	],
-	template: `
+    selector: 'modal-video-settings-changed',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/settings/modal/modal-video-settings-changed.component.scss`,
+    ],
+    template: `
 		<div class="modal-video-settings-changed">
 			<button class="i-30 close-button" (mousedown)="close()">
 				<svg class="svg-icon-fill">
@@ -28,19 +28,20 @@ import { PreferencesService } from '../../../services/preferences.service';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModalVideoSettingsChangedComponent {
-	@Output() dismiss: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() dismiss: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-	constructor(private prefs: PreferencesService) {}
+    constructor(private prefs: PreferencesService) {
+    }
 
-	close() {
-		this.dismiss.next(true);
-	}
+    close() {
+        this.dismiss.next(true);
+    }
 
-	async confirm() {
-		await this.prefs.setHasSeenVideoCaptureChangeNotif(true);
-		this.close();
-	}
+    async confirm() {
+        await this.prefs.setHasSeenVideoCaptureChangeNotif(true);
+        this.close();
+    }
 }

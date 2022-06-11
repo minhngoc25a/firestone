@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef } from '@angular/core';
-import { CardsFacadeService } from '@services/cards-facade.service';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef} from '@angular/core';
+import {CardsFacadeService} from '@services/cards-facade.service';
 
 @Component({
-	selector: 'buff-info',
-	styleUrls: [`../../../css/component/tooltip/buff-info.component.scss`],
-	template: `
+    selector: 'buff-info',
+    styleUrls: [`../../../css/component/tooltip/buff-info.component.scss`],
+    template: `
 		<div class="buff-info">
 			<div class="header">
 				<div class="count" *ngIf="count > 1">x{{ count }}</div>
@@ -18,28 +18,29 @@ import { CardsFacadeService } from '@services/cards-facade.service';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BuffInfoComponent {
-	count: number;
-	name: string;
-	iconUrl: string;
-	text: string;
+    count: number;
+    name: string;
+    iconUrl: string;
+    text: string;
 
-	@Input() set buff(value: { bufferCardId: string; buffCardId: string; count: number }) {
-		this.updateBuff(value);
-	}
+    constructor(private readonly allCards: CardsFacadeService, private readonly cdr: ChangeDetectorRef) {
+    }
 
-	constructor(private readonly allCards: CardsFacadeService, private readonly cdr: ChangeDetectorRef) {}
+    @Input() set buff(value: { bufferCardId: string; buffCardId: string; count: number }) {
+        this.updateBuff(value);
+    }
 
-	private async updateBuff(value: { bufferCardId: string; buffCardId: string; count: number }) {
-		const card = this.allCards.getCard(value.buffCardId);
-		this.count = value.count;
-		this.name = card.name;
-		this.iconUrl = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.bufferCardId}.jpg`;
-		this.text = card.text?.replace(/<\/?[ib]>/g, '');
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    private async updateBuff(value: { bufferCardId: string; buffCardId: string; count: number }) {
+        const card = this.allCards.getCard(value.buffCardId);
+        this.count = value.count;
+        this.name = card.name;
+        this.iconUrl = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.bufferCardId}.jpg`;
+        this.text = card.text?.replace(/<\/?[ib]>/g, '');
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 }

@@ -1,16 +1,16 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { Observable } from 'rxjs';
-import { AchievementHistory } from '../../models/achievement/achievement-history';
-import { AppUiStoreFacadeService } from '../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../abstract-subscription.component';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {Observable} from 'rxjs';
+import {AchievementHistory} from '../../models/achievement/achievement-history';
+import {AppUiStoreFacadeService} from '../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../abstract-subscription.component';
 
 @Component({
-	selector: 'achievement-history',
-	styleUrls: [
-		`../../../css/component/achievements/achievement-history.component.scss`,
-		`../../../css/global/scrollbar.scss`,
-	],
-	template: `
+    selector: 'achievement-history',
+    styleUrls: [
+        `../../../css/component/achievements/achievement-history.component.scss`,
+        `../../../css/global/scrollbar.scss`,
+    ],
+    template: `
 		<div class="achievement-history">
 			<div class="history" scrollable>
 				<div class="top-container">
@@ -36,22 +36,22 @@ import { AbstractSubscriptionComponent } from '../abstract-subscription.componen
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AchievementHistoryComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	achievementHistory$: Observable<readonly AchievementHistory[]>;
+    achievementHistory$: Observable<readonly AchievementHistory[]>;
 
-	constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
-		super(store, cdr);
-	}
+    constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.achievementHistory$ = this.store
-			.listen$(([main, nav, prefs]) => main.achievements.achievementHistory)
-			.pipe(this.mapData(([history]) => history));
-	}
+    ngAfterContentInit() {
+        this.achievementHistory$ = this.store
+            .listen$(([main, nav, prefs]) => main.achievements.achievementHistory)
+            .pipe(this.mapData(([history]) => history));
+    }
 
-	trackById(index, history: AchievementHistory) {
-		return history.id;
-	}
+    trackById(index, history: AchievementHistory) {
+        return history.id;
+    }
 }

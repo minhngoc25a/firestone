@@ -1,22 +1,22 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { MercenarySelector, RewardItemType } from '@firestone-hs/reference-data';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { CardsFacadeService } from '../../../services/cards-facade.service';
-import { LocalizationService } from '../../../services/localization.service';
-import { getHeroRole } from '../../../services/mercenaries/mercenaries-utils';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { buildBounties } from '../../../services/ui-store/mercenaries-ui-helper';
-import { capitalizeFirstLetter, groupByFunction } from '../../../services/utils';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
-import { BountyForMerc } from './mercenaries-personal-hero-stats.component';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {MercenarySelector, RewardItemType} from '@firestone-hs/reference-data';
+import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
+import {CardsFacadeService} from '../../../services/cards-facade.service';
+import {LocalizationService} from '../../../services/localization.service';
+import {getHeroRole} from '../../../services/mercenaries/mercenaries-utils';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {buildBounties} from '../../../services/ui-store/mercenaries-ui-helper';
+import {capitalizeFirstLetter, groupByFunction} from '../../../services/utils';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
+import {BountyForMerc} from './mercenaries-personal-hero-stats.component';
 
 @Component({
-	selector: 'mercenaries-hero-details',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/mercenaries/desktop/mercenaries-hero-details.component.scss`,
-	],
-	template: `
+    selector: 'mercenaries-hero-details',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/mercenaries/desktop/mercenaries-hero-details.component.scss`,
+    ],
+    template: `
 		<div class="mercenaries-hero-details" *ngIf="merc$ | async as merc">
 			<div class="layout-main">
 				<div class="first">
@@ -161,258 +161,258 @@ import { BountyForMerc } from './mercenaries-personal-hero-stats.component';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MercenariesHeroDetailsComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	merc$: Observable<Merc>;
+    merc$: Observable<Merc>;
 
-	premium = new BehaviorSubject<'normal' | 'golden' | 'diamond'>('normal');
-	skinIndex = new BehaviorSubject<number>(0);
-	level = new BehaviorSubject<number>(31);
-	equipmentLevels = new BehaviorSubject<readonly number[]>([4, 4, 4]);
-	abilityLevels = new BehaviorSubject<readonly number[]>([5, 5, 5]);
+    premium = new BehaviorSubject<'normal' | 'golden' | 'diamond'>('normal');
+    skinIndex = new BehaviorSubject<number>(0);
+    level = new BehaviorSubject<number>(31);
+    equipmentLevels = new BehaviorSubject<readonly number[]>([4, 4, 4]);
+    abilityLevels = new BehaviorSubject<readonly number[]>([5, 5, 5]);
 
-	constructor(
-		private readonly allCards: CardsFacadeService,
-		private readonly i18n: LocalizationService,
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-	) {
-		super(store, cdr);
-	}
+    constructor(
+        private readonly allCards: CardsFacadeService,
+        private readonly i18n: LocalizationService,
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+    ) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit(): void {
-		console.log('not implemented yuet');
-		this.merc$ = combineLatest(
-			this.store.listen$(
-				([main, nav, prefs]) => nav.navigationMercenaries.selectedDetailsMercId,
-				([main, nav, prefs]) => main.mercenaries.referenceData,
-			),
-			this.premium.asObservable(),
-			this.skinIndex.asObservable(),
-			this.level.asObservable(),
-			this.equipmentLevels.asObservable(),
-			this.abilityLevels.asObservable(),
-		).pipe(
-			this.mapData(([[mercId, referenceData], premium, skinIndex, level, equipmentLevels, abilityLevels]) => {
-				const refMerc = referenceData.mercenaries.find((merc) => merc.id === mercId);
-				const refMercCard = this.allCards.getCardFromDbfId(refMerc.cardDbfId);
-				const allSkins = [...refMerc.skins].sort((a, b) => {
-					if (a.isDefaultVariation) {
-						return -1;
-					}
-					if (b.isDefaultVariation) {
-						return 1;
-					}
-					return a.artVariationId - b.artVariationId;
-				});
-				let skinValue = skinIndex % allSkins.length;
-				if (skinValue < 0) {
-					skinValue += allSkins.length;
-				}
-				const skin = allSkins[skinValue];
-				console.debug('selecting skin', skin, skinValue, skinIndex, allSkins);
-				const skinCardId = this.allCards.getCardFromDbfId(skin.cardId).id;
-				const refTasks = referenceData.taskChains.find((chain) => chain.mercenaryId === mercId).tasks;
-				console.debug('refTasks', refTasks);
-				const tasks: readonly TaskForMerc[] = refTasks.map((task, index) => {
-					return {
-						index: index + 1,
-						description: task.description,
-						title: task.title,
-						rewards: task.rewards.map((reward) => {
-							const isEquipment = reward.type === RewardItemType.MERCENARY_EQUIPMENT;
-							const imageUrl = isEquipment
-								? `https://static.zerotoheroes.com/hearthstone/cardart/256x/${
-										this.allCards.getCardFromDbfId(reward.equipmentDbfId).id
-								  }.jpg`
-								: reward.mercenarySelector === MercenarySelector.CONTEXT
-								? `https://static.zerotoheroes.com/hearthstone/cardart/256x/${refMercCard.id}.jpg`
-								: `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_random_coin.png`;
-							return {
-								type: reward.type,
-								quantity: reward.quantity,
-								cardId: null,
-								imageUrl: imageUrl,
-								isCoin: reward.type === RewardItemType.MERCENARY_CURRENCY,
-								isRandomCoin: reward.mercenarySelector !== MercenarySelector.CONTEXT,
-								isEquipment: isEquipment,
-							};
-						}),
-					};
-				});
-				const refBounties = buildBounties(refMerc, referenceData.bountySets);
-				const groupedBounties = groupByFunction((bounty: BountyForMerc) => bounty.bountySetName)(refBounties);
-				const finalBounties: readonly BountyForMercInternal[] = Object.values(groupedBounties).map(
-					(bounties) => {
-						return {
-							bountySetName: bounties[0].bountySetName,
-							sortOrder: bounties[0].sortOrder,
-							bountyNames: [...bounties]
-								.sort((a, b) => a.sortOrder - b.sortOrder)
-								.map((b) => b.bountyName),
-						};
-					},
-				);
-				console.debug('finalBountyies', finalBounties);
-				const isMaxed = level === 31;
-				const levelStat = refMerc.stats.find((stat) => (isMaxed ? stat.level === 30 : level === stat.level));
-				const attack = levelStat.attack + (isMaxed ? 1 : 0);
-				const health = levelStat.health + (isMaxed ? 5 : 0);
+    ngAfterContentInit(): void {
+        console.log('not implemented yuet');
+        this.merc$ = combineLatest(
+            this.store.listen$(
+                ([main, nav, prefs]) => nav.navigationMercenaries.selectedDetailsMercId,
+                ([main, nav, prefs]) => main.mercenaries.referenceData,
+            ),
+            this.premium.asObservable(),
+            this.skinIndex.asObservable(),
+            this.level.asObservable(),
+            this.equipmentLevels.asObservable(),
+            this.abilityLevels.asObservable(),
+        ).pipe(
+            this.mapData(([[mercId, referenceData], premium, skinIndex, level, equipmentLevels, abilityLevels]) => {
+                const refMerc = referenceData.mercenaries.find((merc) => merc.id === mercId);
+                const refMercCard = this.allCards.getCardFromDbfId(refMerc.cardDbfId);
+                const allSkins = [...refMerc.skins].sort((a, b) => {
+                    if (a.isDefaultVariation) {
+                        return -1;
+                    }
+                    if (b.isDefaultVariation) {
+                        return 1;
+                    }
+                    return a.artVariationId - b.artVariationId;
+                });
+                let skinValue = skinIndex % allSkins.length;
+                if (skinValue < 0) {
+                    skinValue += allSkins.length;
+                }
+                const skin = allSkins[skinValue];
+                console.debug('selecting skin', skin, skinValue, skinIndex, allSkins);
+                const skinCardId = this.allCards.getCardFromDbfId(skin.cardId).id;
+                const refTasks = referenceData.taskChains.find((chain) => chain.mercenaryId === mercId).tasks;
+                console.debug('refTasks', refTasks);
+                const tasks: readonly TaskForMerc[] = refTasks.map((task, index) => {
+                    return {
+                        index: index + 1,
+                        description: task.description,
+                        title: task.title,
+                        rewards: task.rewards.map((reward) => {
+                            const isEquipment = reward.type === RewardItemType.MERCENARY_EQUIPMENT;
+                            const imageUrl = isEquipment
+                                ? `https://static.zerotoheroes.com/hearthstone/cardart/256x/${
+                                    this.allCards.getCardFromDbfId(reward.equipmentDbfId).id
+                                }.jpg`
+                                : reward.mercenarySelector === MercenarySelector.CONTEXT
+                                    ? `https://static.zerotoheroes.com/hearthstone/cardart/256x/${refMercCard.id}.jpg`
+                                    : `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_random_coin.png`;
+                            return {
+                                type: reward.type,
+                                quantity: reward.quantity,
+                                cardId: null,
+                                imageUrl: imageUrl,
+                                isCoin: reward.type === RewardItemType.MERCENARY_CURRENCY,
+                                isRandomCoin: reward.mercenarySelector !== MercenarySelector.CONTEXT,
+                                isEquipment: isEquipment,
+                            };
+                        }),
+                    };
+                });
+                const refBounties = buildBounties(refMerc, referenceData.bountySets);
+                const groupedBounties = groupByFunction((bounty: BountyForMerc) => bounty.bountySetName)(refBounties);
+                const finalBounties: readonly BountyForMercInternal[] = Object.values(groupedBounties).map(
+                    (bounties) => {
+                        return {
+                            bountySetName: bounties[0].bountySetName,
+                            sortOrder: bounties[0].sortOrder,
+                            bountyNames: [...bounties]
+                                .sort((a, b) => a.sortOrder - b.sortOrder)
+                                .map((b) => b.bountyName),
+                        };
+                    },
+                );
+                console.debug('finalBountyies', finalBounties);
+                const isMaxed = level === 31;
+                const levelStat = refMerc.stats.find((stat) => (isMaxed ? stat.level === 30 : level === stat.level));
+                const attack = levelStat.attack + (isMaxed ? 1 : 0);
+                const health = levelStat.health + (isMaxed ? 5 : 0);
 
-				return {
-					cardId: skinCardId,
-					portraitUrl: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${skinCardId}.jpg`,
-					premium: capitalizeFirstLetter(premium),
-					level: level,
-					levelText: level === 31 ? 'Max level' : `Level ${level}`,
-					attack: attack,
-					health: health,
-					frameUrl: this.buildHeroFrame(getHeroRole(refMercCard.mercenaryRole), premium),
-					equipments: refMerc.equipments.map((refEquip, index) => {
-						const currentEquipmentLevel = equipmentLevels[index];
-						const currentRefEquip =
-							refEquip.tiers.find((tier) => tier.tier === currentEquipmentLevel) ??
-							refEquip.tiers[refEquip.tiers.length - 1];
-						const cardId = this.allCards.getCardFromDbfId(currentRefEquip.cardDbfId).id;
-						return {
-							cardId: cardId,
-							tier: currentRefEquip.tier,
-							imageUrl: this.i18n.getCardImage(cardId, { isHighRes: true }),
-						};
-					}),
-					abilities: refMerc.abilities.map((refAbility, index) => {
-						const currentAbilityLevel = abilityLevels[index];
-						const currentRefAbility =
-							refAbility.tiers.find((tier) => tier.tier === currentAbilityLevel) ??
-							refAbility.tiers[refAbility.tiers.length - 1];
-						const cardId = this.allCards.getCardFromDbfId(currentRefAbility.cardDbfId).id;
-						return {
-							cardId: cardId,
-							tier: currentRefAbility.tier,
-							imageUrl: this.i18n.getCardImage(cardId, { isHighRes: true }),
-						};
-					}),
-					bounties: finalBounties,
-					tasks: tasks,
-				};
-			}),
-		);
-	}
+                return {
+                    cardId: skinCardId,
+                    portraitUrl: `https://static.zerotoheroes.com/hearthstone/cardart/256x/${skinCardId}.jpg`,
+                    premium: capitalizeFirstLetter(premium),
+                    level: level,
+                    levelText: level === 31 ? 'Max level' : `Level ${level}`,
+                    attack: attack,
+                    health: health,
+                    frameUrl: this.buildHeroFrame(getHeroRole(refMercCard.mercenaryRole), premium),
+                    equipments: refMerc.equipments.map((refEquip, index) => {
+                        const currentEquipmentLevel = equipmentLevels[index];
+                        const currentRefEquip =
+                            refEquip.tiers.find((tier) => tier.tier === currentEquipmentLevel) ??
+                            refEquip.tiers[refEquip.tiers.length - 1];
+                        const cardId = this.allCards.getCardFromDbfId(currentRefEquip.cardDbfId).id;
+                        return {
+                            cardId: cardId,
+                            tier: currentRefEquip.tier,
+                            imageUrl: this.i18n.getCardImage(cardId, {isHighRes: true}),
+                        };
+                    }),
+                    abilities: refMerc.abilities.map((refAbility, index) => {
+                        const currentAbilityLevel = abilityLevels[index];
+                        const currentRefAbility =
+                            refAbility.tiers.find((tier) => tier.tier === currentAbilityLevel) ??
+                            refAbility.tiers[refAbility.tiers.length - 1];
+                        const cardId = this.allCards.getCardFromDbfId(currentRefAbility.cardDbfId).id;
+                        return {
+                            cardId: cardId,
+                            tier: currentRefAbility.tier,
+                            imageUrl: this.i18n.getCardImage(cardId, {isHighRes: true}),
+                        };
+                    }),
+                    bounties: finalBounties,
+                    tasks: tasks,
+                };
+            }),
+        );
+    }
 
-	buildHeroFrame(role: string, premium: 'normal' | 'golden' | 'diamond'): string {
-		switch (premium) {
-			case 'golden':
-				return `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_hero_frame_golden_${role}.png?v=5`;
-			case 'diamond':
-				return `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_hero_frame_diamond_${role}.png?v=5`;
-			case 'normal':
-			default:
-				return `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_hero_frame_${role}.png?v=5`;
-		}
-	}
+    buildHeroFrame(role: string, premium: 'normal' | 'golden' | 'diamond'): string {
+        switch (premium) {
+            case 'golden':
+                return `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_hero_frame_golden_${role}.png?v=5`;
+            case 'diamond':
+                return `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_hero_frame_diamond_${role}.png?v=5`;
+            case 'normal':
+            default:
+                return `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_hero_frame_${role}.png?v=5`;
+        }
+    }
 
-	incrementPremium() {
-		const newValue =
-			this.premium.value === 'normal' ? 'golden' : this.premium.value === 'golden' ? 'diamond' : 'normal';
-		this.premium.next(newValue);
-	}
+    incrementPremium() {
+        const newValue =
+            this.premium.value === 'normal' ? 'golden' : this.premium.value === 'golden' ? 'diamond' : 'normal';
+        this.premium.next(newValue);
+    }
 
-	decrementPremium() {
-		const newValue =
-			this.premium.value === 'normal' ? 'diamond' : this.premium.value === 'golden' ? 'normal' : 'golden';
-		this.premium.next(newValue);
-	}
+    decrementPremium() {
+        const newValue =
+            this.premium.value === 'normal' ? 'diamond' : this.premium.value === 'golden' ? 'normal' : 'golden';
+        this.premium.next(newValue);
+    }
 
-	incrementSkin() {
-		this.skinIndex.next(this.skinIndex.value + 1);
-	}
+    incrementSkin() {
+        this.skinIndex.next(this.skinIndex.value + 1);
+    }
 
-	decrementSkin() {
-		this.skinIndex.next(this.skinIndex.value - 1);
-	}
+    decrementSkin() {
+        this.skinIndex.next(this.skinIndex.value - 1);
+    }
 
-	incrementLevel() {
-		this.level.next(Math.min(31, this.level.value + 1));
-	}
+    incrementLevel() {
+        this.level.next(Math.min(31, this.level.value + 1));
+    }
 
-	decrementLevel() {
-		this.level.next(Math.max(1, this.level.value - 1));
-	}
+    decrementLevel() {
+        this.level.next(Math.max(1, this.level.value - 1));
+    }
 
-	incrementEquipmentLevel(equipmentIndex: number) {
-		const currentLevels = [...this.equipmentLevels.value];
-		const currentLevel = currentLevels[equipmentIndex];
-		currentLevels[equipmentIndex] = Math.min(4, currentLevel + 1);
-		this.equipmentLevels.next(currentLevels);
-	}
+    incrementEquipmentLevel(equipmentIndex: number) {
+        const currentLevels = [...this.equipmentLevels.value];
+        const currentLevel = currentLevels[equipmentIndex];
+        currentLevels[equipmentIndex] = Math.min(4, currentLevel + 1);
+        this.equipmentLevels.next(currentLevels);
+    }
 
-	decrementEquipmentLevel(equipmentIndex: number) {
-		const currentLevels = [...this.equipmentLevels.value];
-		const currentLevel = currentLevels[equipmentIndex];
-		currentLevels[equipmentIndex] = Math.max(0, currentLevel - 1);
-		this.equipmentLevels.next(currentLevels);
-	}
+    decrementEquipmentLevel(equipmentIndex: number) {
+        const currentLevels = [...this.equipmentLevels.value];
+        const currentLevel = currentLevels[equipmentIndex];
+        currentLevels[equipmentIndex] = Math.max(0, currentLevel - 1);
+        this.equipmentLevels.next(currentLevels);
+    }
 
-	incrementAbilityLevel(abilityIndex: number) {
-		const currentLevels = [...this.abilityLevels.value];
-		const currentLevel = currentLevels[abilityIndex];
-		currentLevels[abilityIndex] = Math.min(4, currentLevel + 1);
-		this.abilityLevels.next(currentLevels);
-	}
+    incrementAbilityLevel(abilityIndex: number) {
+        const currentLevels = [...this.abilityLevels.value];
+        const currentLevel = currentLevels[abilityIndex];
+        currentLevels[abilityIndex] = Math.min(4, currentLevel + 1);
+        this.abilityLevels.next(currentLevels);
+    }
 
-	decrementAbilityLevel(abilityIndex: number) {
-		console.debug('decrementing ability level', abilityIndex);
-		const currentLevels = [...this.abilityLevels.value];
-		const currentLevel = currentLevels[abilityIndex];
-		currentLevels[abilityIndex] = Math.max(0, currentLevel - 1);
-		this.abilityLevels.next(currentLevels);
-	}
+    decrementAbilityLevel(abilityIndex: number) {
+        console.debug('decrementing ability level', abilityIndex);
+        const currentLevels = [...this.abilityLevels.value];
+        const currentLevel = currentLevels[abilityIndex];
+        currentLevels[abilityIndex] = Math.max(0, currentLevel - 1);
+        this.abilityLevels.next(currentLevels);
+    }
 }
 
 interface Merc {
-	cardId: string;
-	premium: string;
-	portraitUrl: string;
-	frameUrl: string;
-	level: number;
-	levelText: string;
-	attack: number;
-	health: number;
-	equipments: readonly Equip[];
-	abilities: readonly Ability[];
-	bounties: readonly BountyForMercInternal[];
-	tasks: readonly TaskForMerc[];
+    cardId: string;
+    premium: string;
+    portraitUrl: string;
+    frameUrl: string;
+    level: number;
+    levelText: string;
+    attack: number;
+    health: number;
+    equipments: readonly Equip[];
+    abilities: readonly Ability[];
+    bounties: readonly BountyForMercInternal[];
+    tasks: readonly TaskForMerc[];
 }
 
 interface Equip {
-	cardId: string;
-	tier: number;
-	imageUrl: string;
+    cardId: string;
+    tier: number;
+    imageUrl: string;
 }
 
 interface Ability {
-	cardId: string;
-	tier: number;
-	imageUrl: string;
+    cardId: string;
+    tier: number;
+    imageUrl: string;
 }
 
 interface TaskForMerc {
-	index: number;
-	title: string;
-	description: string;
-	rewards: readonly {
-		type: RewardItemType;
-		quantity: number;
-		cardId: string;
-		imageUrl: string;
-		isCoin?: boolean;
-		isEquipment?: boolean;
-	}[];
+    index: number;
+    title: string;
+    description: string;
+    rewards: readonly {
+        type: RewardItemType;
+        quantity: number;
+        cardId: string;
+        imageUrl: string;
+        isCoin?: boolean;
+        isEquipment?: boolean;
+    }[];
 }
 
 interface BountyForMercInternal {
-	readonly bountySetName: string;
-	readonly bountyNames: readonly string[];
-	readonly sortOrder: number;
+    readonly bountySetName: string;
+    readonly bountyNames: readonly string[];
+    readonly sortOrder: number;
 }

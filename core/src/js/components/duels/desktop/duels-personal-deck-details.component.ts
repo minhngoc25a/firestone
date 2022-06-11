@@ -1,21 +1,21 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { distinctUntilChanged, filter, map, takeUntil, tap } from 'rxjs/operators';
-import { GameStat } from '../../../models/mainwindow/stats/game-stat';
-import { SetCard } from '../../../models/set';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { cdLog } from '../../../services/ui-store/app-ui-store.service';
-import { DeckInfo, getCurrentDeck } from '../../../services/ui-store/duels-ui-helper';
-import { arraysEqual } from '../../../services/utils';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
+import {distinctUntilChanged, filter, map, takeUntil, tap} from 'rxjs/operators';
+import {GameStat} from '../../../models/mainwindow/stats/game-stat';
+import {SetCard} from '../../../models/set';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {cdLog} from '../../../services/ui-store/app-ui-store.service';
+import {DeckInfo, getCurrentDeck} from '../../../services/ui-store/duels-ui-helper';
+import {arraysEqual} from '../../../services/utils';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
 
 @Component({
-	selector: 'duels-personal-deck-details',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/duels/desktop/duels-personal-deck-details.component.scss`,
-	],
-	template: `
+    selector: 'duels-personal-deck-details',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/duels/desktop/duels-personal-deck-details.component.scss`,
+    ],
+    template: `
 		<div
 			class="duels-personal-deck-details"
 			*ngIf="deck$ | async as deck"
@@ -87,111 +87,111 @@ import { AbstractSubscriptionComponent } from '../../abstract-subscription.compo
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DuelsPersonalDeckDetailsComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	deck$: Observable<DeckInfo>;
-	collection$: Observable<readonly SetCard[]>;
-	decklist$: Observable<string>;
-	expandedRunIds$: Observable<readonly string[]>;
+    deck$: Observable<DeckInfo>;
+    collection$: Observable<readonly SetCard[]>;
+    decklist$: Observable<string>;
+    expandedRunIds$: Observable<readonly string[]>;
 
-	currentDeck = new BehaviorSubject<'initial' | 'final'>('initial');
-	currentDeck$: Observable<'initial' | 'final'> = this.currentDeck.asObservable();
-	currentRunIndex = new BehaviorSubject<number>(0);
+    currentDeck = new BehaviorSubject<'initial' | 'final'>('initial');
+    currentDeck$: Observable<'initial' | 'final'> = this.currentDeck.asObservable();
+    currentRunIndex = new BehaviorSubject<number>(0);
 
-	constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
-		super(store, cdr);
-	}
+    constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit(): void {
-		this.expandedRunIds$ = this.store
-			.listen$(([main, nav]) => nav.navigationDuels.expandedRunIds)
-			.pipe(
-				map(([runIds]) => runIds),
-				takeUntil(this.destroyed$),
-			);
-		this.collection$ = combineLatest(
-			this.currentDeck.asObservable(),
-			this.store.listen$(([main, nav]) => main.binder.allSets),
-		).pipe(
-			map(([currentDeck, [allSets]]) =>
-				currentDeck === 'final'
-					? null
-					: (allSets.map((set) => set.allCards).reduce((a, b) => a.concat(b), []) as readonly SetCard[]),
-			),
-			distinctUntilChanged((a, b) => arraysEqual(a, b)),
-			takeUntil(this.destroyed$),
-		);
-		this.deck$ = this.store
-			.listen$(
-				([main, nav]) => main.duels.personalDeckStats,
-				([main, nav]) => main.duels.topDecks,
-				([main, nav]) => main.duels.additionalDeckDetails,
-				([main, nav]) => nav.navigationDuels.selectedPersonalDeckstring,
-				([main, nav]) => nav.navigationDuels.selectedDeckId,
-				([main, nav, prefs]) => prefs.duelsActiveTimeFilter,
-				([main, nav, prefs]) => prefs.duelsActiveHeroesFilter2,
-				([main, nav, prefs]) => prefs.duelsActiveGameModeFilter,
-				([main, nav, prefs]) => main.duels.currentDuelsMetaPatch,
-			)
-			.pipe(
-				filter(
-					([decks, topDecks, deckDetails, deckstring, deckId, timeFilter, classFilter, gameMode, patch]) =>
-						(!!deckstring?.length && !!decks?.length) || (deckId && !!topDecks?.length),
-				),
-				map(([decks, topDecks, deckDetails, deckstring, deckId, timeFilter, heroesFilter, gameMode, patch]) =>
-					getCurrentDeck(
-						decks,
-						deckstring,
-						topDecks,
-						deckId,
-						timeFilter,
-						heroesFilter,
-						gameMode,
-						patch,
-						0,
-						deckDetails,
-					),
-				),
-				tap((info) => cdLog('emitting deck in ', this.constructor.name, info)),
-				takeUntil(this.destroyed$),
-			);
-		this.decklist$ = combineLatest(
-			this.deck$,
-			this.expandedRunIds$,
-			this.currentDeck$,
-			this.currentRunIndex.asObservable(),
-		).pipe(
-			map(([deck, expandedRunIds, currentDeck, currentRunIndex]) => {
-				const result =
-					currentDeck === 'initial'
-						? deck.deck.initialDeckList
-						: this.getFinalDecklist(deck, expandedRunIds, currentRunIndex);
+    ngAfterContentInit(): void {
+        this.expandedRunIds$ = this.store
+            .listen$(([main, nav]) => nav.navigationDuels.expandedRunIds)
+            .pipe(
+                map(([runIds]) => runIds),
+                takeUntil(this.destroyed$),
+            );
+        this.collection$ = combineLatest(
+            this.currentDeck.asObservable(),
+            this.store.listen$(([main, nav]) => main.binder.allSets),
+        ).pipe(
+            map(([currentDeck, [allSets]]) =>
+                currentDeck === 'final'
+                    ? null
+                    : (allSets.map((set) => set.allCards).reduce((a, b) => a.concat(b), []) as readonly SetCard[]),
+            ),
+            distinctUntilChanged((a, b) => arraysEqual(a, b)),
+            takeUntil(this.destroyed$),
+        );
+        this.deck$ = this.store
+            .listen$(
+                ([main, nav]) => main.duels.personalDeckStats,
+                ([main, nav]) => main.duels.topDecks,
+                ([main, nav]) => main.duels.additionalDeckDetails,
+                ([main, nav]) => nav.navigationDuels.selectedPersonalDeckstring,
+                ([main, nav]) => nav.navigationDuels.selectedDeckId,
+                ([main, nav, prefs]) => prefs.duelsActiveTimeFilter,
+                ([main, nav, prefs]) => prefs.duelsActiveHeroesFilter2,
+                ([main, nav, prefs]) => prefs.duelsActiveGameModeFilter,
+                ([main, nav, prefs]) => main.duels.currentDuelsMetaPatch,
+            )
+            .pipe(
+                filter(
+                    ([decks, topDecks, deckDetails, deckstring, deckId, timeFilter, classFilter, gameMode, patch]) =>
+                        (!!deckstring?.length && !!decks?.length) || (deckId && !!topDecks?.length),
+                ),
+                map(([decks, topDecks, deckDetails, deckstring, deckId, timeFilter, heroesFilter, gameMode, patch]) =>
+                    getCurrentDeck(
+                        decks,
+                        deckstring,
+                        topDecks,
+                        deckId,
+                        timeFilter,
+                        heroesFilter,
+                        gameMode,
+                        patch,
+                        0,
+                        deckDetails,
+                    ),
+                ),
+                tap((info) => cdLog('emitting deck in ', this.constructor.name, info)),
+                takeUntil(this.destroyed$),
+            );
+        this.decklist$ = combineLatest(
+            this.deck$,
+            this.expandedRunIds$,
+            this.currentDeck$,
+            this.currentRunIndex.asObservable(),
+        ).pipe(
+            map(([deck, expandedRunIds, currentDeck, currentRunIndex]) => {
+                const result =
+                    currentDeck === 'initial'
+                        ? deck.deck.initialDeckList
+                        : this.getFinalDecklist(deck, expandedRunIds, currentRunIndex);
 
-				// FIXME: for some reason this is necessary here
-				setTimeout(() => this.cdr?.detectChanges(), 0);
-				return result;
-			}),
-			distinctUntilChanged(),
-			tap((info) => cdLog('emitting decklist in ', this.constructor.name, info)),
-			takeUntil(this.destroyed$),
-		);
-	}
+                // FIXME: for some reason this is necessary here
+                setTimeout(() => this.cdr?.detectChanges(), 0);
+                return result;
+            }),
+            distinctUntilChanged(),
+            tap((info) => cdLog('emitting decklist in ', this.constructor.name, info)),
+            takeUntil(this.destroyed$),
+        );
+    }
 
-	changeCurrentDeck(event) {
-		if (this.currentDeck.value === 'initial') {
-			this.currentDeck.next('final');
-		} else {
-			this.currentDeck.next('initial');
-		}
-	}
+    changeCurrentDeck(event) {
+        if (this.currentDeck.value === 'initial') {
+            this.currentDeck.next('final');
+        } else {
+            this.currentDeck.next('initial');
+        }
+    }
 
-	private getFinalDecklist(deck: DeckInfo, expandedRunIds: readonly string[], currentRunIndex: number) {
-		const currentRun = deck.deck.runs[currentRunIndex];
-		const runMatches: readonly GameStat[] = (currentRun?.steps ?? [])
-			.filter((step) => (step as GameStat).playerDecklist)
-			.map((step) => step as GameStat);
-		const result = runMatches.length > 0 ? runMatches[runMatches.length - 1].playerDecklist : null;
-		return result;
-	}
+    private getFinalDecklist(deck: DeckInfo, expandedRunIds: readonly string[], currentRunIndex: number) {
+        const currentRun = deck.deck.runs[currentRunIndex];
+        const runMatches: readonly GameStat[] = (currentRun?.steps ?? [])
+            .filter((step) => (step as GameStat).playerDecklist)
+            .map((step) => step as GameStat);
+        const result = runMatches.length > 0 ? runMatches[runMatches.length - 1].playerDecklist : null;
+        return result;
+    }
 }

@@ -1,18 +1,18 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
-import { PreferencesService } from '../../../services/preferences.service';
-import { Knob } from '../preference-slider.component';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
+import {PreferencesService} from '../../../services/preferences.service';
+import {Knob} from '../preference-slider.component';
 
 @Component({
-	selector: 'settings-decktracker-global',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/global/scrollbar-settings.scss`,
-		`../../../../css/global/forms.scss`,
-		`../../../../css/component/settings/settings-common.component.scss`,
-		`../../../../css/component/settings/decktracker/settings-decktracker-global.component.scss`,
-	],
-	template: `
+    selector: 'settings-decktracker-global',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/global/scrollbar-settings.scss`,
+        `../../../../css/global/forms.scss`,
+        `../../../../css/component/settings/settings-common.component.scss`,
+        `../../../../css/component/settings/decktracker/settings-decktracker-global.component.scss`,
+    ],
+    template: `
 		<div class="decktracker-appearance" scrollable>
 			<div class="title" [owTranslate]="'settings.decktracker.global.title'"></div>
 			<div class="settings-group">
@@ -113,39 +113,40 @@ import { Knob } from '../preference-slider.component';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsDecktrackerGlobalComponent {
-	resetText = this.i18n.translateString('settings.decktracker.global.reset-button');
-	confirmationShown = false;
-	showResetConfirmationText = false;
-	sizeKnobs: readonly Knob[] = [
-		{
-			percentageValue: 0,
-			label: this.i18n.translateString('settings.global.knob-sizes.small'),
-		},
-		{
-			percentageValue: 50,
-			label: this.i18n.translateString('settings.global.knob-sizes.medium'),
-		},
-		{
-			percentageValue: 100,
-			label: this.i18n.translateString('settings.global.knob-sizes.large'),
-		},
-	];
+    resetText = this.i18n.translateString('settings.decktracker.global.reset-button');
+    confirmationShown = false;
+    showResetConfirmationText = false;
+    sizeKnobs: readonly Knob[] = [
+        {
+            percentageValue: 0,
+            label: this.i18n.translateString('settings.global.knob-sizes.small'),
+        },
+        {
+            percentageValue: 50,
+            label: this.i18n.translateString('settings.global.knob-sizes.medium'),
+        },
+        {
+            percentageValue: 100,
+            label: this.i18n.translateString('settings.global.knob-sizes.large'),
+        },
+    ];
 
-	constructor(private readonly prefs: PreferencesService, private readonly i18n: LocalizationFacadeService) {}
+    constructor(private readonly prefs: PreferencesService, private readonly i18n: LocalizationFacadeService) {
+    }
 
-	async reset() {
-		if (!this.confirmationShown) {
-			this.confirmationShown = true;
-			this.resetText = this.i18n.translateString('settings.decktracker.global.reset-button-confirm');
-			return;
-		}
+    async reset() {
+        if (!this.confirmationShown) {
+            this.confirmationShown = true;
+            this.resetText = this.i18n.translateString('settings.decktracker.global.reset-button-confirm');
+            return;
+        }
 
-		this.resetText = this.i18n.translateString('settings.decktracker.global.reset-button');
-		this.confirmationShown = false;
-		this.showResetConfirmationText = true;
-		await this.prefs.resetDecktrackerPositions();
-	}
+        this.resetText = this.i18n.translateString('settings.decktracker.global.reset-button');
+        this.confirmationShown = false;
+        this.showResetConfirmationText = true;
+        await this.prefs.resetDecktrackerPositions();
+    }
 }

@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 
 @Component({
-	selector: 'settings-replays',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/settings/replays/settings-replays.component.scss`,
-	],
-	template: `
+    selector: 'settings-replays',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/settings/replays/settings-replays.component.scss`,
+    ],
+    template: `
 		<div class="replays">
 			<settings-replays-menu [selectedMenu]="_selectedMenu" (onMenuSelected)="onMenuSelected($event)">
 			</settings-replays-menu>
@@ -15,15 +15,15 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 			</ng-container>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsReplaysComponent {
-	_selectedMenu: string;
-	@Input() set selectedMenu(value: string) {
-		this._selectedMenu = value || 'general';
-	}
+    _selectedMenu: string;
+    @Input() set selectedMenu(value: string) {
+        this._selectedMenu = value || 'general';
+    }
 
-	onMenuSelected(selectedMenuItem) {
-		this.selectedMenu = selectedMenuItem;
-	}
+    onMenuSelected(selectedMenuItem) {
+        this.selectedMenu = selectedMenuItem;
+    }
 }

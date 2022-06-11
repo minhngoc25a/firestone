@@ -1,20 +1,20 @@
 import {
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	ElementRef,
-	EventEmitter,
-	Input,
-	Output,
-	ViewRef,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    Output,
+    ViewRef,
 } from '@angular/core';
-import { IOption } from 'ng-select';
+import {IOption} from 'ng-select';
 
 @Component({
-	selector: 'filter-dropdown',
-	styleUrls: [`../../css/global/scrollbar.scss`, `../../css/component/filter-dropdown.component.scss`],
-	template: `
+    selector: 'filter-dropdown',
+    styleUrls: [`../../css/global/scrollbar.scss`, `../../css/component/filter-dropdown.component.scss`],
+    template: `
 		<ng-select
 			*ngIf="_visible"
 			class="filter hero-sort-filter"
@@ -45,69 +45,71 @@ import { IOption } from 'ng-select';
 			</ng-template>
 		</ng-select>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterDropdownComponent implements AfterViewInit {
-	@Output() onOptionSelected: EventEmitter<IOption> = new EventEmitter<IOption>();
+    @Output() onOptionSelected: EventEmitter<IOption> = new EventEmitter<IOption>();
 
-	@Input() options: readonly IOption[];
-	@Input() placeholder: string;
+    @Input() options: readonly IOption[];
+    @Input() placeholder: string;
 
-	@Input() set filter(value: string) {
-		this._filter = value;
-		// Don't know why this is required, but it is.
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    constructor(private readonly cdr: ChangeDetectorRef, private readonly el: ElementRef) {
+    }
 
-	@Input() set visible(value: boolean) {
-		this._visible = value;
-		if (value) {
-			setTimeout(() => {
-				this.addCarets();
-			});
-		}
-	}
+    _visible: boolean;
 
-	_visible: boolean;
-	_filter: string;
+    @Input() set visible(value: boolean) {
+        this._visible = value;
+        if (value) {
+            setTimeout(() => {
+                this.addCarets();
+            });
+        }
+    }
 
-	constructor(private readonly cdr: ChangeDetectorRef, private readonly el: ElementRef) {}
+    _filter: string;
 
-	refresh() {
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    @Input() set filter(value: string) {
+        this._filter = value;
+        // Don't know why this is required, but it is.
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	ngAfterViewInit() {
-		this.addCarets();
-	}
+    refresh() {
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	private addCarets() {
-		const carets = this.el.nativeElement.querySelectorAll('.single .caret');
+    ngAfterViewInit() {
+        this.addCarets();
+    }
 
-		if (!!carets?.length) {
-			return;
-		}
+    select(option: IOption) {
+        this.onOptionSelected.next(option);
+    }
 
-		const singleEls: HTMLElement[] = this.el.nativeElement.querySelectorAll('.single');
+    private addCarets() {
+        const carets = this.el.nativeElement.querySelectorAll('.single .caret');
 
-		singleEls.forEach((singleEl) => {
-			const caretEl = singleEl.appendChild(document.createElement('i'));
-			caretEl.innerHTML = `<svg class="svg-icon-fill">
+        if (!!carets?.length) {
+            return;
+        }
+
+        const singleEls: HTMLElement[] = this.el.nativeElement.querySelectorAll('.single');
+
+        singleEls.forEach((singleEl) => {
+            const caretEl = singleEl.appendChild(document.createElement('i'));
+            caretEl.innerHTML = `<svg class="svg-icon-fill">
 					<use xlink:href="assets/svg/sprite.svg#arrow"/>
 				</svg>`;
-			caretEl.classList.add('i-30');
-			caretEl.classList.add('caret');
-		});
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
-
-	select(option: IOption) {
-		this.onOptionSelected.next(option);
-	}
+            caretEl.classList.add('i-30');
+            caretEl.classList.add('caret');
+        });
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 }

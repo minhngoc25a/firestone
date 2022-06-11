@@ -1,29 +1,29 @@
 @import 'variables';
 
 ::-webkit-scrollbar {
-	width: 5px;
-	height: 0;
-	display: none;
+  width: 5px;
+  height: 0;
+  display: none;
 }
 
 ::-webkit-scrollbar-track {
-	display: none;
+  display: none;
 }
 
 ::-webkit-scrollbar-thumb {
-	background: #5a5f87;
-	display: none;
+  background: #5a5f87;
+  display: none;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: #767faf;
-	display: none;
+  background: #767faf;
+  display: none;
 }
 
 ::-webkit-scrollbar-button {
-	display: none;
+  display: none;
 }
 
 ::-webkit-scrollbar-track-piece {
-	display: none;
+  display: none;
 }

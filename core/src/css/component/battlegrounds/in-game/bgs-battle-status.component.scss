@@ -1,167 +1,169 @@
 :host {
-	display: flex;
+  display: flex;
 }
 
 .battle-simulation {
-	display: flex;
-	color: var(--default-text-color);
+  display: flex;
+  color: var(--default-text-color);
 
-	.warning {
-		padding: 0;
-		display: flex;
-		align-items: center;
-		margin-right: -20px;
-		z-index: 1; // To cover the probas that have moved left
-		max-width: 20px;
-		max-height: 20px;
-		align-self: center;
-		margin-left: 10px;
-	}
+  .warning {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    margin-right: -20px;
+    z-index: 1; // To cover the probas that have moved left
+    max-width: 20px;
+    max-height: 20px;
+    align-self: center;
+    margin-left: 10px;
+  }
 
-	.probas {
-		display: flex;
-		flex-direction: column;
-		border-left: 1px solid var(--color-3);
-		border-right: 1px solid var(--color-3);
-		padding-left: 20px;
-		padding-right: 20px;
-		width: 205px;
+  .probas {
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--color-3);
+    border-right: 1px solid var(--color-3);
+    padding-left: 20px;
+    padding-right: 20px;
+    width: 205px;
 
-		.title {
-			text-indent: 15px;
-		}
-	}
+    .title {
+      text-indent: 15px;
+    }
+  }
 
-	.proba-items {
-		display: flex;
-	}
+  .proba-items {
+    display: flex;
+  }
 
-	.damage-container {
-		display: flex;
-		flex-direction: column;
-		width: 85px;
-		padding-left: 20px;
-		justify-content: center;
+  .damage-container {
+    display: flex;
+    flex-direction: column;
+    width: 85px;
+    padding-left: 20px;
+    justify-content: center;
 
-		.damage {
-			display: flex;
-			align-items: center;
-			justify-content: flex-start;
+    .damage {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
 
-			.damage-icon {
-				width: 20px;
-				height: 20px;
-				margin-right: 5px;
-			}
+      .damage-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+      }
 
-			.damage-value {
-				width: 30px;
-			}
+      .damage-value {
+        width: 30px;
+      }
 
-			&.received {
-				.damage-icon {
-					transform: rotate(180deg);
-				}
-			}
-		}
+      &.received {
+        .damage-icon {
+          transform: rotate(180deg);
+        }
+      }
+    }
 
-		&.lethal {
-			padding-left: 0;
+    &.lethal {
+      padding-left: 0;
 
-			.damage {
-				.damage-icon {
-					width: 20px;
-					height: 20px;
+      .damage {
+        .damage-icon {
+          width: 20px;
+          height: 20px;
 
-					::ng-deep svg {
-						width: 20px;
-						height: 20px;
-					}
-				}
-				&.dealt {
-					.damage-value.active {
-						color: #61ff47;
-					}
-				}
-				&.received {
-					.damage-icon {
-						transform: none;
-					}
+          ::ng-deep svg {
+            width: 20px;
+            height: 20px;
+          }
+        }
 
-					.damage-value.active {
-						color: #ff4747;
-					}
-				}
-			}
-		}
-	}
+        &.dealt {
+          .damage-value.active {
+            color: #61ff47;
+          }
+        }
 
-	.probas .title,
-	.damage-container .title {
-		display: none;
-	}
+        &.received {
+          .damage-icon {
+            transform: none;
+          }
 
-	.item {
-		flex-basis: 33%;
-		flex-grow: 0;
-		flex-shrink: 0;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
+          .damage-value.active {
+            color: #ff4747;
+          }
+        }
+      }
+    }
+  }
 
-		.value-container {
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-			align-items: center;
-		}
+  .probas .title,
+  .damage-container .title {
+    display: none;
+  }
 
-		.replay-icon {
-			width: 24px;
-			height: 20px;
-			margin-left: 5px;
-			color: var(--default-text-color);
-			--icon-color: var(--default-text-color);
+  .item {
+    flex-basis: 33%;
+    flex-grow: 0;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-			&:hover {
-				color: var(--default-title-color);
-				--icon-color: var(--default-title-color);
-			}
+    .value-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
 
-			.loading-icon {
-				// opacity: 0.7;
-				animation-name: spin;
-				animation-duration: 2000ms;
-				animation-iteration-count: 50; // In case something goes wrong, we don't hog the CPU all the time
-				animation-timing-function: linear;
-				transform: translateZ(
-					0
-				); // https://stackoverflow.com/questions/13176746/css-keyframe-animation-cpu-usage-is-high-should-it-be-this-way
-				// color: var(--default-text-color);
-				// --icon-color: var(--default-text-color);
-			}
-		}
+    .replay-icon {
+      width: 24px;
+      height: 20px;
+      margin-left: 5px;
+      color: var(--default-text-color);
+      --icon-color: var(--default-text-color);
 
-		&.win .value {
-			color: #61ff47;
-		}
+      &:hover {
+        color: var(--default-title-color);
+        --icon-color: var(--default-title-color);
+      }
 
-		&.lose .value {
-			color: #ff4747;
-		}
-	}
+      .loading-icon {
+        // opacity: 0.7;
+        animation-name: spin;
+        animation-duration: 2000ms;
+        animation-iteration-count: 50; // In case something goes wrong, we don't hog the CPU all the time
+        animation-timing-function: linear;
+        transform: translateZ(
+                        0
+        ); // https://stackoverflow.com/questions/13176746/css-keyframe-animation-cpu-usage-is-high-should-it-be-this-way
+        // color: var(--default-text-color);
+        // --icon-color: var(--default-text-color);
+      }
+    }
 
-	.message {
-		padding: 10px;
-		max-width: 250px;
-	}
+    &.win .value {
+      color: #61ff47;
+    }
+
+    &.lose .value {
+      color: #ff4747;
+    }
+  }
+
+  .message {
+    padding: 10px;
+    max-width: 250px;
+  }
 }
 
 @keyframes spin {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(-360deg);
-	}
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
 }

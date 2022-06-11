@@ -1,14 +1,15 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { Observable } from 'rxjs';
-import { AppUiStoreFacadeService } from '../../../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../../../abstract-subscription.component';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {Observable} from 'rxjs';
+import {AppUiStoreFacadeService} from '../../../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../../../abstract-subscription.component';
 
 export const DEFAULT_CARD_WIDTH = 170;
 export const DEFAULT_CARD_HEIGHT = 221;
+
 @Component({
-	selector: 'duels-deckbuilder',
-	styleUrls: [`../../../../../css/component/duels/desktop/deckbuilder/duels-deckbuilder.component.scss`],
-	template: `
+    selector: 'duels-deckbuilder',
+    styleUrls: [`../../../../../css/component/duels/desktop/deckbuilder/duels-deckbuilder.component.scss`],
+    template: `
 		<div class="duels-deckbuilder">
 			<!-- Area to the right should recap the mana curve and maybe other stats -->
 			<!-- Need a way to import a deck code -->
@@ -29,31 +30,31 @@ export const DEFAULT_CARD_HEIGHT = 221;
 			</ng-container>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DuelsDeckbuilderComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	currentStep$: Observable<CurrentStep>;
+    currentStep$: Observable<CurrentStep>;
 
-	constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
-		super(store, cdr);
-	}
+    constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.currentStep$ = this.store
-			.listen$(([main, nav]) => main.duels.deckbuilder)
-			.pipe(
-				this.mapData(([deckbuilder]) => {
-					if (!deckbuilder.currentHeroCardId) {
-						return 'hero';
-					} else if (!deckbuilder.currentHeroPowerCardId) {
-						return 'hero-power';
-					} else if (!deckbuilder.currentSignatureTreasureCardId) {
-						return 'signature-treasure';
-					}
-					return 'cards';
-				}),
-			);
-	}
+    ngAfterContentInit() {
+        this.currentStep$ = this.store
+            .listen$(([main, nav]) => main.duels.deckbuilder)
+            .pipe(
+                this.mapData(([deckbuilder]) => {
+                    if (!deckbuilder.currentHeroCardId) {
+                        return 'hero';
+                    } else if (!deckbuilder.currentHeroPowerCardId) {
+                        return 'hero-power';
+                    } else if (!deckbuilder.currentSignatureTreasureCardId) {
+                        return 'signature-treasure';
+                    }
+                    return 'cards';
+                }),
+            );
+    }
 }
 
 type CurrentStep = 'hero' | 'hero-power' | 'signature-treasure' | 'cards';

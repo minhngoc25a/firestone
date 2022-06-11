@@ -1,12 +1,12 @@
 export type CurrentAppType =
-	| 'collection'
-	| 'achievements'
-	| 'decktracker'
-	| 'replays'
-	| 'battlegrounds'
-	| 'mercenaries'
-	| 'general'
-	| 'duels'
-	| 'arena'
-	| 'stats'
-	| 'live';
+    | 'collection'
+    | 'achievements'
+    | 'decktracker'
+    | 'replays'
+    | 'battlegrounds'
+    | 'mercenaries'
+    | 'general'
+    | 'duels'
+    | 'arena'
+    | 'stats'
+    | 'live';

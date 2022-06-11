@@ -1,21 +1,22 @@
-import { MainWindowStoreEvent } from '../main-window-store-event';
+import {MainWindowStoreEvent} from '../main-window-store-event';
 
 export class DuelsViewPersonalDeckDetailsEvent implements MainWindowStoreEvent {
-	public static eventName(): string {
-		return 'DuelsViewPersonalDeckDetailsEvent';
-	}
+    constructor(public readonly deckstring: string) {
+    }
 
-	constructor(public readonly deckstring: string) {}
+    public static eventName(): string {
+        return 'DuelsViewPersonalDeckDetailsEvent';
+    }
 
-	public eventName(): string {
-		return 'DuelsViewPersonalDeckDetailsEvent';
-	}
+    public eventName(): string {
+        return 'DuelsViewPersonalDeckDetailsEvent';
+    }
 
-	public isNavigationEvent(): boolean {
-		return true;
-	}
+    public isNavigationEvent(): boolean {
+        return true;
+    }
 
-	public isResetHistoryEvent(): boolean {
-		return false;
-	}
+    public isResetHistoryEvent(): boolean {
+        return false;
+    }
 }

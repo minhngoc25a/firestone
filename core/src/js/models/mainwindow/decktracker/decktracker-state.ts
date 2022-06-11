@@ -1,15 +1,15 @@
-import { PatchInfo } from '../../patches';
-import { DeckFilters } from './deck-filters';
-import { DeckSummary } from './deck-summary';
+import {PatchInfo} from '../../patches';
+import {DeckFilters} from './deck-filters';
+import {DeckSummary} from './deck-summary';
 
 export class DecktrackerState {
-	readonly filters: DeckFilters = new DeckFilters();
-	readonly showHiddenDecks: boolean = false;
-	readonly decks: readonly DeckSummary[];
-	readonly patch: PatchInfo;
-	readonly isLoading: boolean = true;
+    readonly filters: DeckFilters = new DeckFilters();
+    readonly showHiddenDecks: boolean = false;
+    readonly decks: readonly DeckSummary[];
+    readonly patch: PatchInfo;
+    readonly isLoading: boolean = true;
 
-	public update(base: DecktrackerState): DecktrackerState {
-		return Object.assign(new DecktrackerState(), this, base);
-	}
+    public update(base: DecktrackerState): DecktrackerState {
+        return Object.assign(new DecktrackerState(), this, base);
+    }
 }

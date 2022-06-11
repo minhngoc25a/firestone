@@ -1,29 +1,29 @@
 .deck-name {
-	height: 30px;
-	border: 1px solid var(--color-1);
-	display: flex;
-	align-items: center;
-	justify-content: flex-start;
-	position: relative;
-	background: var(--color-7);
-	padding-left: 3px;
-	padding-right: 10px;
-	z-index: 1;
+  height: 30px;
+  border: 1px solid var(--color-1);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  background: var(--color-7);
+  padding-left: 3px;
+  padding-right: 10px;
+  z-index: 1;
 
-	span {
-		font-family: Sumana;
-		font-style: normal;
-		font-weight: normal;
-		line-height: normal;
-		font-size: 14px;
-		color: var(--color-1);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		flex-grow: 1;
-	}
+  span {
+    font-family: Sumana;
+    font-style: normal;
+    font-weight: normal;
+    line-height: normal;
+    font-size: 14px;
+    color: var(--color-1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+  }
 }
 
 copy-deckstring {
-	margin-left: 7px;
+  margin-left: 7px;
 }

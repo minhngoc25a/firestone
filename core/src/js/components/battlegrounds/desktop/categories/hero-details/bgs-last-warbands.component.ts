@@ -1,25 +1,25 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { Entity, EntityAsJS, EntityDefinition } from '@firestone-hs/replay-parser';
-import { CardsFacadeService } from '@services/cards-facade.service';
-import { Map } from 'immutable';
-import { Observable } from 'rxjs';
-import { distinctUntilChanged, filter, map, takeUntil, tap } from 'rxjs/operators';
-import { BgsPostMatchStatsForReview } from '../../../../../models/battlegrounds/bgs-post-match-stats-for-review';
-import { MinionStat } from '../../../../../models/battlegrounds/post-match/minion-stat';
-import { GameStat } from '../../../../../models/mainwindow/stats/game-stat';
-import { LocalizationFacadeService } from '../../../../../services/localization-facade.service';
-import { AppUiStoreFacadeService } from '../../../../../services/ui-store/app-ui-store-facade.service';
-import { arraysEqual } from '../../../../../services/utils';
-import { AbstractSubscriptionComponent } from '../../../../abstract-subscription.component';
-import { normalizeCardId } from '../../../post-match/card-utils';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {Entity, EntityAsJS, EntityDefinition} from '@firestone-hs/replay-parser';
+import {CardsFacadeService} from '@services/cards-facade.service';
+import {Map} from 'immutable';
+import {Observable} from 'rxjs';
+import {distinctUntilChanged, filter, map, takeUntil, tap} from 'rxjs/operators';
+import {BgsPostMatchStatsForReview} from '../../../../../models/battlegrounds/bgs-post-match-stats-for-review';
+import {MinionStat} from '../../../../../models/battlegrounds/post-match/minion-stat';
+import {GameStat} from '../../../../../models/mainwindow/stats/game-stat';
+import {LocalizationFacadeService} from '../../../../../services/localization-facade.service';
+import {AppUiStoreFacadeService} from '../../../../../services/ui-store/app-ui-store-facade.service';
+import {arraysEqual} from '../../../../../services/utils';
+import {AbstractSubscriptionComponent} from '../../../../abstract-subscription.component';
+import {normalizeCardId} from '../../../post-match/card-utils';
 
 @Component({
-	selector: 'bgs-last-warbands',
-	styleUrls: [
-		`../../../../../../css/global/components-global.scss`,
-		`../../../../../../css/component/battlegrounds/desktop/categories/hero-details/bgs-last-warbands.component.scss`,
-	],
-	template: `
+    selector: 'bgs-last-warbands',
+    styleUrls: [
+        `../../../../../../css/global/components-global.scss`,
+        `../../../../../../css/component/battlegrounds/desktop/categories/hero-details/bgs-last-warbands.component.scss`,
+    ],
+    template: `
 		<div class="bgs-last-warbands">
 			<with-loading [isLoading]="false" [mainTitle]="null" [subtitle]="null" svgName="loading-spiral">
 				<ng-container *ngIf="boards$ | async as boards; else emptyState">
@@ -94,130 +94,130 @@ import { normalizeCardId } from '../../../post-match/card-utils';
 			</with-loading>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsLastWarbandsComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	boards$: Observable<readonly KnownBoard[]>;
+    boards$: Observable<readonly KnownBoard[]>;
 
-	loading = true;
-	visible = false;
+    loading = true;
+    visible = false;
 
-	constructor(
-		private readonly allCards: CardsFacadeService,
-		private readonly i18n: LocalizationFacadeService,
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-	) {
-		super(store, cdr);
-	}
+    constructor(
+        private readonly allCards: CardsFacadeService,
+        private readonly i18n: LocalizationFacadeService,
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+    ) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.boards$ = this.store
-			.listen$(
-				([main, nav]) => main.battlegrounds.lastHeroPostMatchStats,
-				([main, nav]) => main.stats.gameStats,
-			)
-			.pipe(
-				filter(([postMatch, gameStats]) => !!postMatch && !!gameStats),
-				distinctUntilChanged((a, b) => arraysEqual(a, b)),
-				map(
-					([postMatch, gameStats]) =>
-						[
-							postMatch.filter((postMatch) => !!postMatch?.stats?.boardHistory?.length).slice(0, 5),
-							gameStats.stats,
-						] as [readonly BgsPostMatchStatsForReview[], readonly GameStat[]],
-				),
-				distinctUntilChanged((a, b) => this.compareValues(a, b)),
-				map(([stats, gameStats]) =>
-					stats.map((stat) => this.buildLastKnownBoard(stat, gameStats)).filter((board) => board),
-				),
-				tap((boards) => console.debug('[cd] emitting boards in ', this.constructor.name, boards)),
-				takeUntil(this.destroyed$),
-			);
-	}
+    ngAfterContentInit() {
+        this.boards$ = this.store
+            .listen$(
+                ([main, nav]) => main.battlegrounds.lastHeroPostMatchStats,
+                ([main, nav]) => main.stats.gameStats,
+            )
+            .pipe(
+                filter(([postMatch, gameStats]) => !!postMatch && !!gameStats),
+                distinctUntilChanged((a, b) => arraysEqual(a, b)),
+                map(
+                    ([postMatch, gameStats]) =>
+                        [
+                            postMatch.filter((postMatch) => !!postMatch?.stats?.boardHistory?.length).slice(0, 5),
+                            gameStats.stats,
+                        ] as [readonly BgsPostMatchStatsForReview[], readonly GameStat[]],
+                ),
+                distinctUntilChanged((a, b) => this.compareValues(a, b)),
+                map(([stats, gameStats]) =>
+                    stats.map((stat) => this.buildLastKnownBoard(stat, gameStats)).filter((board) => board),
+                ),
+                tap((boards) => console.debug('[cd] emitting boards in ', this.constructor.name, boards)),
+                takeUntil(this.destroyed$),
+            );
+    }
 
-	private compareValues(
-		a: [readonly BgsPostMatchStatsForReview[], readonly GameStat[]],
-		b: [readonly BgsPostMatchStatsForReview[], readonly GameStat[]],
-	): boolean {
-		if (!arraysEqual(a[1], b[1])) {
-			return false;
-		}
-		return JSON.stringify(a[0]) === JSON.stringify(b[0]);
-	}
+    private compareValues(
+        a: [readonly BgsPostMatchStatsForReview[], readonly GameStat[]],
+        b: [readonly BgsPostMatchStatsForReview[], readonly GameStat[]],
+    ): boolean {
+        if (!arraysEqual(a[1], b[1])) {
+            return false;
+        }
+        return JSON.stringify(a[0]) === JSON.stringify(b[0]);
+    }
 
-	private buildLastKnownBoard(postMatch: BgsPostMatchStatsForReview, gameStats: readonly GameStat[]): KnownBoard {
-		const bgsBoard = postMatch?.stats?.boardHistory[postMatch?.stats?.boardHistory.length - 1];
-		const boardEntities = bgsBoard.board.map((boardEntity) =>
-			boardEntity instanceof Entity || boardEntity.tags instanceof Map
-				? Entity.create(new Entity(), boardEntity as EntityDefinition)
-				: Entity.fromJS((boardEntity as unknown) as EntityAsJS),
-		) as readonly Entity[];
-		const review = gameStats.find((matchStat) => matchStat.reviewId === postMatch.reviewId);
-		const title =
-			review && review.additionalResult
-				? this.i18n.translateString(
-						'app.battlegrounds.personal-stats.hero-details.last-warbands.finished-position',
-						{ value: this.getFinishPlace(parseInt(review.additionalResult)) },
-				  )
-				: this.i18n.translateString('app.battlegrounds.personal-stats.hero-details.last-warbands.last-board');
-		const normalizedIds = [
-			...new Set(boardEntities.map((entity) => normalizeCardId(entity.cardID, this.allCards))),
-		];
-		const minionStats = normalizedIds.map(
-			(cardId) =>
-				({
-					cardId: cardId,
-					damageDealt: this.extractDamage(cardId, postMatch?.stats?.totalMinionsDamageDealt),
-					damageTaken: this.extractDamage(cardId, postMatch?.stats?.totalMinionsDamageTaken),
-				} as MinionStat),
-		);
-		const result = {
-			entities: boardEntities,
-			title: title,
-			minionStats: minionStats,
-			date: review
-				? this.formatDate(review.creationTimestamp)
-				: this.i18n.translateString('app.battlegrounds.personal-stats.hero-details.last-warbands.long-ago'),
-		} as KnownBoard;
-		return result;
-	}
+    private buildLastKnownBoard(postMatch: BgsPostMatchStatsForReview, gameStats: readonly GameStat[]): KnownBoard {
+        const bgsBoard = postMatch?.stats?.boardHistory[postMatch?.stats?.boardHistory.length - 1];
+        const boardEntities = bgsBoard.board.map((boardEntity) =>
+            boardEntity instanceof Entity || boardEntity.tags instanceof Map
+                ? Entity.create(new Entity(), boardEntity as EntityDefinition)
+                : Entity.fromJS((boardEntity as unknown) as EntityAsJS),
+        ) as readonly Entity[];
+        const review = gameStats.find((matchStat) => matchStat.reviewId === postMatch.reviewId);
+        const title =
+            review && review.additionalResult
+                ? this.i18n.translateString(
+                    'app.battlegrounds.personal-stats.hero-details.last-warbands.finished-position',
+                    {value: this.getFinishPlace(parseInt(review.additionalResult))},
+                )
+                : this.i18n.translateString('app.battlegrounds.personal-stats.hero-details.last-warbands.last-board');
+        const normalizedIds = [
+            ...new Set(boardEntities.map((entity) => normalizeCardId(entity.cardID, this.allCards))),
+        ];
+        const minionStats = normalizedIds.map(
+            (cardId) =>
+                ({
+                    cardId: cardId,
+                    damageDealt: this.extractDamage(cardId, postMatch?.stats?.totalMinionsDamageDealt),
+                    damageTaken: this.extractDamage(cardId, postMatch?.stats?.totalMinionsDamageTaken),
+                } as MinionStat),
+        );
+        const result = {
+            entities: boardEntities,
+            title: title,
+            minionStats: minionStats,
+            date: review
+                ? this.formatDate(review.creationTimestamp)
+                : this.i18n.translateString('app.battlegrounds.personal-stats.hero-details.last-warbands.long-ago'),
+        } as KnownBoard;
+        return result;
+    }
 
-	private formatDate(creationTimestamp: number): string {
-		return new Date(creationTimestamp).toLocaleString(this.i18n.formatCurrentLocale(), {
-			month: 'long',
-			day: 'numeric',
-		});
-	}
+    private formatDate(creationTimestamp: number): string {
+        return new Date(creationTimestamp).toLocaleString(this.i18n.formatCurrentLocale(), {
+            month: 'long',
+            day: 'numeric',
+        });
+    }
 
-	private getFinishPlace(finalPlace: number): string {
-		switch (finalPlace) {
-			case 1:
-			case 2:
-			case 3:
-			case 4:
-				return this.i18n.translateString(
-					`app.battlegrounds.personal-stats.hero-details.last-warbands.place-${finalPlace}`,
-				);
-			default:
-				return this.i18n.translateString(
-					`app.battlegrounds.personal-stats.hero-details.last-warbands.place-default`,
-					{ value: finalPlace },
-				);
-		}
-	}
+    private getFinishPlace(finalPlace: number): string {
+        switch (finalPlace) {
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+                return this.i18n.translateString(
+                    `app.battlegrounds.personal-stats.hero-details.last-warbands.place-${finalPlace}`,
+                );
+            default:
+                return this.i18n.translateString(
+                    `app.battlegrounds.personal-stats.hero-details.last-warbands.place-default`,
+                    {value: finalPlace},
+                );
+        }
+    }
 
-	private extractDamage(normalizedCardId: string, totalMinionsDamageDealt: { [cardId: string]: number }): number {
-		return Object.keys(totalMinionsDamageDealt)
-			.filter((cardId) => normalizeCardId(cardId, this.allCards) === normalizedCardId)
-			.map((cardId) => totalMinionsDamageDealt[cardId])
-			.reduce((a, b) => a + b, 0);
-	}
+    private extractDamage(normalizedCardId: string, totalMinionsDamageDealt: { [cardId: string]: number }): number {
+        return Object.keys(totalMinionsDamageDealt)
+            .filter((cardId) => normalizeCardId(cardId, this.allCards) === normalizedCardId)
+            .map((cardId) => totalMinionsDamageDealt[cardId])
+            .reduce((a, b) => a + b, 0);
+    }
 }
 
 interface KnownBoard {
-	readonly entities: readonly Entity[];
-	readonly title: string;
-	readonly minionStats: readonly MinionStat[];
-	readonly date: string;
+    readonly entities: readonly Entity[];
+    readonly title: string;
+    readonly minionStats: readonly MinionStat[];
+    readonly date: string;
 }

@@ -1,48 +1,55 @@
 .external-player {
-	::ng-deep {
-		.manastorm-player {
-			// Because the controls and other window elements take space
-			max-width: calc((100vh - 150px) * 16 / 12);
-		}
-		controls {
-			.discuss,
-			.divider {
-				display: none;
-			}
-			.view-online {
-				width: 75px;
-			}
-		}
-		.player-controls-content-left {
-			position: relative;
-		}
-		.replay-location-text.replay-location-text.replay-location-text {
-			position: absolute;
-			top: 35px;
-			display: block;
-			font-family: Open Sans;
-			font-style: normal;
-			font-weight: normal;
-			font-size: 10px;
-			color: var(--color-1);
-		}
-		turn-narrator,
-		.player-controls-content,
-		.player-control-element {
-			color: var(--color-1);
-			--icon-color: var(--color-1);
-			background-color: transparent;
-		}
-		.player-control-element:hover,
-		.player-controls-content.player-controls-content a:hover {
-			color: var(--color-1);
-			--icon-color: var(--color-1);
-			background-color: var(--on-control-button-background-color);
-		}
-		.player-control-element.toggled {
-			color: var(--color-4);
-			--icon-color: var(--color-4);
-			background-color: var(--color-1);
-		}
-	}
+  ::ng-deep {
+    .manastorm-player {
+      // Because the controls and other window elements take space
+      max-width: calc((100vh - 150px) * 16 / 12);
+    }
+
+    controls {
+      .discuss,
+      .divider {
+        display: none;
+      }
+
+      .view-online {
+        width: 75px;
+      }
+    }
+
+    .player-controls-content-left {
+      position: relative;
+    }
+
+    .replay-location-text.replay-location-text.replay-location-text {
+      position: absolute;
+      top: 35px;
+      display: block;
+      font-family: Open Sans;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 10px;
+      color: var(--color-1);
+    }
+
+    turn-narrator,
+    .player-controls-content,
+    .player-control-element {
+      color: var(--color-1);
+      --icon-color: var(--color-1);
+      background-color: transparent;
+    }
+
+    .player-control-element:hover,
+    .player-controls-content.player-controls-content a:hover {
+      color: var(--color-1);
+      --icon-color: var(--color-1);
+      background-color: var(--on-control-button-background-color);
+    }
+
+    .player-control-element.toggled {
+      color: var(--color-4);
+      --icon-color: var(--color-4);
+      background-color: var(--color-1);
+    }
+  }
 }

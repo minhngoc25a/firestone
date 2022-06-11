@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, Optional } from '@angular/core';
-import { BucketCard } from '@components/duels/desktop/deckbuilder/duels-bucket-cards-list.component';
-import { CardsFacadeService } from '@services/cards-facade.service';
-import { LocalizationFacadeService } from '@services/localization-facade.service';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, Optional} from '@angular/core';
+import {BucketCard} from '@components/duels/desktop/deckbuilder/duels-bucket-cards-list.component';
+import {CardsFacadeService} from '@services/cards-facade.service';
+import {LocalizationFacadeService} from '@services/localization-facade.service';
 
 @Component({
-	selector: 'duels-bucket-card',
-	styleUrls: [
-		'../../../../../css/global/components-global.scss',
-		'../../../../../css/component/duels/desktop/deckbuilder/duels-bucket-card.component.scss',
-	],
-	template: `
+    selector: 'duels-bucket-card',
+    styleUrls: [
+        '../../../../../css/global/components-global.scss',
+        '../../../../../css/component/duels/desktop/deckbuilder/duels-bucket-card.component.scss',
+    ],
+    template: `
 		<div
 			tabindex="0"
 			[attr.aria-label]="cardName"
@@ -50,36 +50,37 @@ import { LocalizationFacadeService } from '@services/localization-facade.service
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DuelsBucketCardComponent {
-	@Input() set card(card: BucketCard) {
-		this.setCardInfos(card);
-	}
+    cardId: string;
+    cardName: string;
+    manaCost: number;
+    rarity: string;
+    cardImage: string;
+    offeringRate: string;
 
-	cardId: string;
-	cardName: string;
-	manaCost: number;
-	rarity: string;
-	cardImage: string;
-	offeringRate: string;
+    constructor(
+        private readonly cdr: ChangeDetectorRef,
+        private readonly cards: CardsFacadeService,
+        @Optional() private readonly i18n: LocalizationFacadeService,
+    ) {
+    }
 
-	constructor(
-		private readonly cdr: ChangeDetectorRef,
-		private readonly cards: CardsFacadeService,
-		@Optional() private readonly i18n: LocalizationFacadeService,
-	) {}
+    @Input() set card(card: BucketCard) {
+        this.setCardInfos(card);
+    }
 
-	private setCardInfos(card: BucketCard) {
-		this.cardId = card.cardId;
-		this.cardName = card.cardName;
-		this.manaCost = card.manaCost;
-		this.rarity = card.rarity;
-		this.cardImage = `url(https://static.zerotoheroes.com/hearthstone/cardart/tiles/${card.cardId}.jpg?v=4)`;
-		this.offeringRate = card.offeringRate?.toLocaleString(this.i18n.formatCurrentLocale(), {
-			maximumFractionDigits: 1,
-			minimumFractionDigits: 1,
-			style: 'percent',
-		});
-	}
+    private setCardInfos(card: BucketCard) {
+        this.cardId = card.cardId;
+        this.cardName = card.cardName;
+        this.manaCost = card.manaCost;
+        this.rarity = card.rarity;
+        this.cardImage = `url(https://static.zerotoheroes.com/hearthstone/cardart/tiles/${card.cardId}.jpg?v=4)`;
+        this.offeringRate = card.offeringRate?.toLocaleString(this.i18n.formatCurrentLocale(), {
+            maximumFractionDigits: 1,
+            minimumFractionDigits: 1,
+            style: 'percent',
+        });
+    }
 }

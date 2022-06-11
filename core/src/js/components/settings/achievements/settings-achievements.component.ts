@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 
 @Component({
-	selector: 'settings-achievements',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/settings/achievements/settings-achievements.component.scss`,
-	],
-	template: `
+    selector: 'settings-achievements',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/settings/achievements/settings-achievements.component.scss`,
+    ],
+    template: `
 		<ul class="achievements">
 			<settings-achievements-menu [selectedMenu]="_selectedMenu" (onMenuSelected)="onMenuSelected($event)">
 			</settings-achievements-menu>
@@ -18,15 +18,15 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 			</ng-container>
 		</ul>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsAchievementsComponent {
-	_selectedMenu: string;
-	@Input() set selectedMenu(value: string) {
-		this._selectedMenu = value || 'notifications';
-	}
+    _selectedMenu: string;
+    @Input() set selectedMenu(value: string) {
+        this._selectedMenu = value || 'notifications';
+    }
 
-	onMenuSelected(selectedMenuItem) {
-		this.selectedMenu = selectedMenuItem;
-	}
+    onMenuSelected(selectedMenuItem) {
+        this.selectedMenu = selectedMenuItem;
+    }
 }

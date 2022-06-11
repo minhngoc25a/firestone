@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
-	selector: 'numeric-input',
-	styleUrls: [
-		`../../../css/global/components-global.scss`,
-		`../../../css/component/settings/settings-common.component.scss`,
-		`../../../css/component/settings/numeric-input.component.scss`,
-	],
-	template: `
+    selector: 'numeric-input',
+    styleUrls: [
+        `../../../css/global/components-global.scss`,
+        `../../../css/component/settings/settings-common.component.scss`,
+        `../../../css/component/settings/numeric-input.component.scss`,
+    ],
+    template: `
 		<div class="numeric-input" [ngClass]="{ 'disabled': disabled }">
 			<div class="label" [innerHTML]="label" [helpTooltip]="labelTooltip"></div>
 			<input
@@ -23,35 +23,35 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NumericInputComponent {
-	@Output() valueChange = new EventEmitter<number>();
+    @Output() valueChange = new EventEmitter<number>();
 
-	@Input() label: string;
-	@Input() value: number;
-	@Input() disabled: boolean;
-	@Input() incrementStep = 1;
-	@Input() minValue: number;
-	@Input() labelTooltip: string;
+    @Input() label: string;
+    @Input() value: number;
+    @Input() disabled: boolean;
+    @Input() incrementStep = 1;
+    @Input() minValue: number;
+    @Input() labelTooltip: string;
 
-	preventDrag(event: MouseEvent) {
-		event.stopPropagation();
-	}
+    preventDrag(event: MouseEvent) {
+        event.stopPropagation();
+    }
 
-	onModelChange(value: number) {
-		this.valueChange.next(value);
-	}
+    onModelChange(value: number) {
+        this.valueChange.next(value);
+    }
 
-	increment() {
-		this.valueChange.next(this.value + this.incrementStep);
-	}
+    increment() {
+        this.valueChange.next(this.value + this.incrementStep);
+    }
 
-	decrement() {
-		if (this.minValue != null) {
-			this.valueChange.next(Math.max(this.minValue, this.value - this.incrementStep));
-		} else {
-			this.valueChange.next(this.value - this.incrementStep);
-		}
-	}
+    decrement() {
+        if (this.minValue != null) {
+            this.valueChange.next(Math.max(this.minValue, this.value - this.incrementStep));
+        } else {
+            this.valueChange.next(this.value - this.incrementStep);
+        }
+    }
 }

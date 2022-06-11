@@ -1,19 +1,19 @@
-import { AfterContentInit, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { Observable } from 'rxjs';
-import { GameStat } from '../../../models/mainwindow/stats/game-stat';
-import { classesForPieChart, colorForClass, formatClass } from '../../../services/hs-utils';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
-import { InputPieChartData, InputPieChartOptions } from '../../common/chart/input-pie-chart-data';
+import {AfterContentInit, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {Observable} from 'rxjs';
+import {GameStat} from '../../../models/mainwindow/stats/game-stat';
+import {classesForPieChart, colorForClass, formatClass} from '../../../services/hs-utils';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
+import {InputPieChartData, InputPieChartOptions} from '../../common/chart/input-pie-chart-data';
 
 @Component({
-	selector: 'decktracker-ladder-stats',
-	styleUrls: [
-		`../../../../css/global/menu.scss`,
-		`../../../../css/component/decktracker/main/decktracker-ladder-stats.component.scss`,
-	],
-	template: `
+    selector: 'decktracker-ladder-stats',
+    styleUrls: [
+        `../../../../css/global/menu.scss`,
+        `../../../../css/component/decktracker/main/decktracker-ladder-stats.component.scss`,
+    ],
+    template: `
 		<div class="decktracker-ladder-stats">
 			<decktracker-stats-for-replays [replays]="replays$ | async"></decktracker-stats-for-replays>
 			<div class="graphs">
@@ -36,70 +36,70 @@ import { InputPieChartData, InputPieChartOptions } from '../../common/chart/inpu
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DecktrackerLadderStatsComponent
-	extends AbstractSubscriptionComponent
-	implements AfterContentInit, AfterViewInit {
-	replays$: Observable<readonly GameStat[]>;
-	playerPieChartData$: Observable<readonly InputPieChartData[]>;
-	opponentPieChartData$: Observable<readonly InputPieChartData[]>;
+    extends AbstractSubscriptionComponent
+    implements AfterContentInit, AfterViewInit {
+    replays$: Observable<readonly GameStat[]>;
+    playerPieChartData$: Observable<readonly InputPieChartData[]>;
+    opponentPieChartData$: Observable<readonly InputPieChartData[]>;
 
-	pieChartOptions: InputPieChartOptions;
+    pieChartOptions: InputPieChartOptions;
 
-	constructor(
-		private readonly i18n: LocalizationFacadeService,
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-	) {
-		super(store, cdr);
-	}
+    constructor(
+        private readonly i18n: LocalizationFacadeService,
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+    ) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.replays$ = this.store
-			.listen$(([main, nav, prefs]) => main.decktracker.decks)
-			.pipe(this.mapData(([decks]) => decks.map((deck) => deck.replays).reduce((a, b) => a.concat(b), [])));
-		this.playerPieChartData$ = this.replays$.pipe(this.mapData((replays) => this.buildPlayerPieChartData(replays)));
-		this.opponentPieChartData$ = this.replays$.pipe(
-			this.mapData((replays) => this.buildOpponentPieChartData(replays)),
-		);
-	}
+    ngAfterContentInit() {
+        this.replays$ = this.store
+            .listen$(([main, nav, prefs]) => main.decktracker.decks)
+            .pipe(this.mapData(([decks]) => decks.map((deck) => deck.replays).reduce((a, b) => a.concat(b), [])));
+        this.playerPieChartData$ = this.replays$.pipe(this.mapData((replays) => this.buildPlayerPieChartData(replays)));
+        this.opponentPieChartData$ = this.replays$.pipe(
+            this.mapData((replays) => this.buildOpponentPieChartData(replays)),
+        );
+    }
 
-	ngAfterViewInit() {
-		this.pieChartOptions = this.buildPieChartOptions();
-	}
+    ngAfterViewInit() {
+        this.pieChartOptions = this.buildPieChartOptions();
+    }
 
-	private buildPieChartOptions(): InputPieChartOptions {
-		return {
-			padding: {
-				top: 0,
-				bottom: 50,
-				left: 90,
-				right: 80,
-			},
-			showAllLabels: true,
-			aspectRatio: 1,
-			tooltipFontSize: 16,
-		};
-	}
+    private buildPieChartOptions(): InputPieChartOptions {
+        return {
+            padding: {
+                top: 0,
+                bottom: 50,
+                left: 90,
+                right: 80,
+            },
+            showAllLabels: true,
+            aspectRatio: 1,
+            tooltipFontSize: 16,
+        };
+    }
 
-	private buildPlayerPieChartData(replays: readonly GameStat[]): readonly InputPieChartData[] {
-		return classesForPieChart.map((className) => {
-			return {
-				label: formatClass(className, this.i18n),
-				data: replays.filter((replay) => replay.playerClass === className)?.length ?? 0,
-				color: `${colorForClass(className)}`,
-			};
-		});
-	}
+    private buildPlayerPieChartData(replays: readonly GameStat[]): readonly InputPieChartData[] {
+        return classesForPieChart.map((className) => {
+            return {
+                label: formatClass(className, this.i18n),
+                data: replays.filter((replay) => replay.playerClass === className)?.length ?? 0,
+                color: `${colorForClass(className)}`,
+            };
+        });
+    }
 
-	private buildOpponentPieChartData(replays: readonly GameStat[]): readonly InputPieChartData[] {
-		return classesForPieChart.map((className) => {
-			return {
-				label: formatClass(className, this.i18n),
-				data: replays.filter((replay) => replay.opponentClass === className)?.length ?? 0,
-				color: `${colorForClass(className)}`,
-			};
-		});
-	}
+    private buildOpponentPieChartData(replays: readonly GameStat[]): readonly InputPieChartData[] {
+        return classesForPieChart.map((className) => {
+            return {
+                label: formatClass(className, this.i18n),
+                data: replays.filter((replay) => replay.opponentClass === className)?.length ?? 0,
+                color: `${colorForClass(className)}`,
+            };
+        });
+    }
 }

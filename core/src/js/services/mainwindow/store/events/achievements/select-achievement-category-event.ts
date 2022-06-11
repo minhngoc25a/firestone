@@ -1,24 +1,25 @@
-import { MainWindowStoreEvent } from '../main-window-store-event';
+import {MainWindowStoreEvent} from '../main-window-store-event';
 
 export class SelectAchievementCategoryEvent implements MainWindowStoreEvent {
-	constructor(categoryId: string) {
-		this.categoryId = categoryId;
-	}
-	readonly categoryId: string;
+    readonly categoryId: string;
 
-	public static eventName(): string {
-		return 'SelectAchievementCategoryEvent';
-	}
+    constructor(categoryId: string) {
+        this.categoryId = categoryId;
+    }
 
-	public eventName(): string {
-		return 'SelectAchievementCategoryEvent';
-	}
+    public static eventName(): string {
+        return 'SelectAchievementCategoryEvent';
+    }
 
-	public isNavigationEvent(): boolean {
-		return true;
-	}
+    public eventName(): string {
+        return 'SelectAchievementCategoryEvent';
+    }
 
-	public isResetHistoryEvent(): boolean {
-		return false;
-	}
+    public isNavigationEvent(): boolean {
+        return true;
+    }
+
+    public isResetHistoryEvent(): boolean {
+        return false;
+    }
 }

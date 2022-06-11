@@ -1,88 +1,90 @@
 :host() {
-	pointer-events: none;
+  pointer-events: none;
 }
 
 .hero-selection-tooltip {
-	display: flex;
-	background: var(--color-4);
-	height: 460px;
-	width: 750px;
-	align-items: center;
-	padding: 10px;
-	position: relative;
-	font-family: Open Sans;
-	font-style: normal;
-	font-weight: normal;
-	color: var(--default-text-color);
-	font-size: 13px;
-	line-height: 22px;
-	pointer-events: none;
+  display: flex;
+  background: var(--color-4);
+  height: 460px;
+  width: 750px;
+  align-items: center;
+  padding: 10px;
+  position: relative;
+  font-family: Open Sans;
+  font-style: normal;
+  font-weight: normal;
+  color: var(--default-text-color);
+  font-size: 13px;
+  line-height: 22px;
+  pointer-events: none;
 
-	&.hidden {
-		display: none;
-	}
+  &.hidden {
+    display: none;
+  }
 
-	.hero-power,
-	.buddy {
-		width: 210px;
-		margin-right: 20px;
-	}
+  .hero-power,
+  .buddy {
+    width: 210px;
+    margin-right: 20px;
+  }
 
-	.infos {
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-		width: 250px; // So that the display isn't weird while all images are not loaded
-	}
+  .infos {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    width: 250px; // So that the display isn't weird while all images are not loaded
+  }
 
-	.name {
-		color: var(--default-title-color);
-		font-size: 16px;
-		margin-bottom: 10px;
-		text-align: center;
-		height: 30px;
-	}
+  .name {
+    color: var(--default-title-color);
+    font-size: 16px;
+    margin-bottom: 10px;
+    text-align: center;
+    height: 30px;
+  }
 
-	::ng-deep bgs-hero-stats {
-		.stats {
-			margin-top: 0;
-		}
-	}
+  ::ng-deep bgs-hero-stats {
+    .stats {
+      margin-top: 0;
+    }
+  }
 
-	::ng-deep bgs-hero-tribes {
-		.tribes.tribes {
-			.composition {
-				.tribe {
-					width: 20%;
-					min-width: auto;
-				}
-				.tribe-name {
-					display: none;
-				}
-			}
-		}
-	}
+  ::ng-deep bgs-hero-tribes {
+    .tribes.tribes {
+      .composition {
+        .tribe {
+          width: 20%;
+          min-width: auto;
+        }
+
+        .tribe-name {
+          display: none;
+        }
+      }
+    }
+  }
 }
 
 .hero-selection-tooltip.hero-selection-overlay {
-	width: 300px;
-	top: -50px;
+  width: 300px;
+  top: -50px;
 
-	.hero-power,
-	.buddy {
-		display: none;
-	}
+  .hero-power,
+  .buddy {
+    display: none;
+  }
 
-	.infos {
-		width: 100%;
-	}
+  .infos {
+    width: 100%;
+  }
 
-	// Position it to the other side of the hero
-	// Doesn't work because there isn't enough room to the right/left
-	&.left {
-		left: 375px;
-	}
-	&.right {
-		right: 375px;
-	}
+  // Position it to the other side of the hero
+  // Doesn't work because there isn't enough room to the right/left
+  &.left {
+    left: 375px;
+  }
+
+  &.right {
+    right: 375px;
+  }
 }

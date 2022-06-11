@@ -1,4 +1,4 @@
 export interface HeroStat {
-	readonly heroId: string;
-	readonly numberOfRecords: number;
+    readonly heroId: string;
+    readonly numberOfRecords: number;
 }

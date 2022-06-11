@@ -1,73 +1,74 @@
 :host {
-	display: flex;
-	flex-direction: column;
-	font-family: Open Sans;
-	font-style: normal;
-	font-weight: normal;
-	color: var(--default-text-color);
-	font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  font-family: Open Sans;
+  font-style: normal;
+  font-weight: normal;
+  color: var(--default-text-color);
+  font-size: 13px;
 }
 
 .logo-container {
-	width: 145px;
-	height: 33px;
-	display: flex;
-	align-items: center;
-	position: relative;
+  width: 145px;
+  height: 33px;
+  display: flex;
+  align-items: center;
+  position: relative;
 
-	.background-main-part,
-	.background-second-part {
-		height: 100%;
-		background: var(--color-7);
-	}
+  .background-main-part,
+  .background-second-part {
+    height: 100%;
+    background: var(--color-7);
+  }
 
-	.background-main-part {
-		width: 75px;
-	}
-	.background-second-part {
-		width: 40px;
-		border-top-right-radius: 33px 33px;
-		z-index: -1;
-	}
+  .background-main-part {
+    width: 75px;
+  }
 
-	.logo {
-		width: 100px;
-		height: 25px;
-		position: absolute;
-		top: 5px;
-		left: 5px;
-	}
+  .background-second-part {
+    width: 40px;
+    border-top-right-radius: 33px 33px;
+    z-index: -1;
+  }
+
+  .logo {
+    width: 100px;
+    height: 25px;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+  }
 }
 
 .simulation-overlay {
-	padding-top: 10px;
-	padding-bottom: 10px;
-	background-repeat: round;
-	background-image: radial-gradient(340px at 50% 50%, rgba(94, 11, 70, 0.7) 0%, rgba(43, 24, 39, 0.7) 100%),
-		url('https://static.zerotoheroes.com/hearthstone/asset/firestone/images/backgrounds/battlegrounds.jpg');
-	background-size: 100%;
-	background-repeat: no-repeat;
-	// background-size: contain;
-	display: flex;
-	flex-direction: column;
-	border-width: 1px;
-	border-style: solid;
-	border-image-slice: 1;
-	border-image-source: linear-gradient(to bottom right, rgba(255, 185, 72, 0) 0%, #ffb948 100%);
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-repeat: round;
+  background-image: radial-gradient(340px at 50% 50%, rgba(94, 11, 70, 0.7) 0%, rgba(43, 24, 39, 0.7) 100%),
+  url('https://static.zerotoheroes.com/hearthstone/asset/firestone/images/backgrounds/battlegrounds.jpg');
+  background-size: 100%;
+  background-repeat: no-repeat;
+  // background-size: contain;
+  display: flex;
+  flex-direction: column;
+  border-width: 1px;
+  border-style: solid;
+  border-image-slice: 1;
+  border-image-source: linear-gradient(to bottom right, rgba(255, 185, 72, 0) 0%, #ffb948 100%);
 }
 
 .title {
-	font-family: Open Sans;
-	font-style: normal;
-	font-weight: normal;
-	font-size: 14px;
-	color: #d9c3ab;
-	text-align: center;
-	margin-bottom: 10px;
+  font-family: Open Sans;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  color: #d9c3ab;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 ::ng-deep bgs-battle-status .battle-simulation.battle-simulation.battle-simulation {
-	.probas {
-		border-left: none;
-	}
+  .probas {
+    border-left: none;
+  }
 }

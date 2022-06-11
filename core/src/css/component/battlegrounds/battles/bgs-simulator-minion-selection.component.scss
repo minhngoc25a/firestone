@@ -1,336 +1,339 @@
 :host() {
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .container {
-	background: var(--popup-background-image);
-	font-size: 14px;
-	font-family: Open Sans;
-	pointer-events: all;
-	width: 710px;
-	min-height: 580px;
-	max-height: calc(100% - 100px);
-	height: 100%;
-	color: var(--default-text-color);
-	padding: 15px;
-	position: relative;
-	display: flex;
-	flex-direction: column;
+  background: var(--popup-background-image);
+  font-size: 14px;
+  font-family: Open Sans;
+  pointer-events: all;
+  width: 710px;
+  min-height: 580px;
+  max-height: calc(100% - 100px);
+  height: 100%;
+  color: var(--default-text-color);
+  padding: 15px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 
-	.content-container {
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		height: 100%;
-	}
+  .content-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
 
-	.close-button {
-		position: absolute;
-		top: 0;
-		right: 0;
-	}
+  .close-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
 
-	.title {
-		color: var(--default-title-color);
-		font-size: 20px;
-		margin-bottom: 15px;
-	}
+  .title {
+    color: var(--default-title-color);
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
 
-	.current-hero {
-		display: flex;
-		padding-bottom: 15px;
-		margin-bottom: 15px;
-		border-bottom: 1px solid var(--color-4);
-		justify-content: center;
+  .current-hero {
+    display: flex;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--color-4);
+    justify-content: center;
 
-		.hero-portrait-frame {
-			bgs-card-tooltip ::ng-deep .container {
-				.card {
-					width: 100%;
-				}
-				.stat-value {
-					font-size: 30px;
-				}
-			}
-		}
+    .hero-portrait-frame {
+      bgs-card-tooltip ::ng-deep .container {
+        .card {
+          width: 100%;
+        }
 
-		.abilities {
-			display: flex;
-			flex-direction: column;
-			margin-top: 30px;
+        .stat-value {
+          font-size: 30px;
+        }
+      }
+    }
 
-			.attributes {
-				display: grid;
-				grid-template-columns: repeat(3, 1fr);
-				column-gap: 10px;
+    .abilities {
+      display: flex;
+      flex-direction: column;
+      margin-top: 30px;
 
-				checkbox ::ng-deep {
-					label {
-						i {
-							margin-right: 6px;
-							--icon-color: var(--color-2);
-							--icon-color-secondary: var(--color-2);
-						}
-						p {
-							color: var(--default-text-color);
-						}
+      .attributes {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        column-gap: 10px;
 
-						&:hover,
-						&:focus {
-							i {
-								--icon-color: var(--color-1);
-							}
-						}
-					}
-				}
-				checkbox:focus {
-					::ng-deep label {
-						i {
-							--icon-color: var(--color-1);
-						}
-					}
-				}
-			}
+        checkbox ::ng-deep {
+          label {
+            i {
+              margin-right: 6px;
+              --icon-color: var(--color-2);
+              --icon-color-secondary: var(--color-2);
+            }
 
-			.stats {
-				display: flex;
-				margin-bottom: 15px;
-			}
+            p {
+              color: var(--default-text-color);
+            }
 
-			.input {
-				display: flex;
-				align-items: center;
-				margin-right: 15px;
+            &:hover,
+            &:focus {
+              i {
+                --icon-color: var(--color-1);
+              }
+            }
+          }
+        }
 
-				.label {
-					margin-right: 6px;
-				}
+        checkbox:focus {
+          ::ng-deep label {
+            i {
+              --icon-color: var(--color-1);
+            }
+          }
+        }
+      }
 
-				input {
-					background: var(--color-7);
-					width: 60px;
-					height: 25px;
-					border: 1px solid var(--color-3);
-					color: var(--color-3);
-					padding-left: 6px;
-					appearance: textfield;
-					cursor: text;
+      .stats {
+        display: flex;
+        margin-bottom: 15px;
+      }
 
-					&:focus {
-						outline: none;
-						border-color: var(--color-2);
-						color: var(--color-2);
-					}
+      .input {
+        display: flex;
+        align-items: center;
+        margin-right: 15px;
 
-					&:hover {
-						border-color: var(--color-2);
-						cursor: text;
-					}
-				}
+        .label {
+          margin-right: 6px;
+        }
 
-				// Use custom buttons instead
-				input[type='number']::-webkit-inner-spin-button,
-				input[type='number']::-webkit-outer-spin-button {
-					-webkit-appearance: none;
-				}
+        input {
+          background: var(--color-7);
+          width: 60px;
+          height: 25px;
+          border: 1px solid var(--color-3);
+          color: var(--color-3);
+          padding-left: 6px;
+          appearance: textfield;
+          cursor: text;
 
-				.buttons {
-					left: -20px;
-					position: relative;
-					display: flex;
-					flex-direction: column;
+          &:focus {
+            outline: none;
+            border-color: var(--color-2);
+            color: var(--color-2);
+          }
 
-					.arrow {
-						--icon-color: var(--color-3);
-						background: transparent;
-						width: 8px;
-						height: 5px;
-						margin-bottom: 2px;
+          &:hover {
+            border-color: var(--color-2);
+            cursor: text;
+          }
+        }
 
-						&.up {
-						}
+        // Use custom buttons instead
+        input[type='number']::-webkit-inner-spin-button,
+        input[type='number']::-webkit-outer-spin-button {
+          -webkit-appearance: none;
+        }
 
-						&.down {
-							transform: scale(-1);
-						}
+        .buttons {
+          left: -20px;
+          position: relative;
+          display: flex;
+          flex-direction: column;
 
-						&:hover {
-							background: transparent;
-							--icon-color: var(--color-2);
-						}
-					}
-				}
-			}
+          .arrow {
+            --icon-color: var(--color-3);
+            background: transparent;
+            width: 8px;
+            height: 5px;
+            margin-bottom: 2px;
 
-			&.disabled {
-				.attributes,
-				.stats {
-					pointer-events: none;
-					opacity: 0.4;
+            &.up {
+            }
 
-					.arrow {
-						display: none;
-					}
-				}
-			}
-		}
-	}
+            &.down {
+              transform: scale(-1);
+            }
 
-	.hero-portrait-frame {
-		position: relative;
-		width: 137px;
-		height: 190px;
-		margin-right: 20px;
-		filter: drop-shadow(0px 0px 8px rgba(223, 179, 211, 0.7));
-		flex-shrink: 0;
+            &:hover {
+              background: transparent;
+              --icon-color: var(--color-2);
+            }
+          }
+        }
+      }
 
-		.icon {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-		}
+      &.disabled {
+        .attributes,
+        .stats {
+          pointer-events: none;
+          opacity: 0.4;
 
-		.frame {
-			z-index: 1;
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-		}
+          .arrow {
+            display: none;
+          }
+        }
+      }
+    }
+  }
 
-		&.empty {
-			filter: none;
-		}
-	}
+  .hero-portrait-frame {
+    position: relative;
+    width: 137px;
+    height: 190px;
+    margin-right: 20px;
+    filter: drop-shadow(0px 0px 8px rgba(223, 179, 211, 0.7));
+    flex-shrink: 0;
 
-	.hero-selection {
-		display: flex;
-		flex-direction: column;
-		margin-top: 15px;
-		position: relative;
-		min-height: 0;
+    .icon {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
 
-		.header {
-			font-size: 16px;
-			margin-bottom: 15px;
-		}
+    .frame {
+      z-index: 1;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
 
-		.search {
-			position: absolute;
-			top: 0;
-			right: 0;
-			height: 30px;
-			display: flex;
+    &.empty {
+      filter: none;
+    }
+  }
 
-			.filter {
-				width: 125px;
-				margin-right: 15px;
-				position: relative;
-				top: -1px;
+  .hero-selection {
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;
+    position: relative;
+    min-height: 0;
 
-				::ng-deep filter-dropdown {
-					width: 100%;
-				}
-			}
+    .header {
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
 
-			.tribe-filter {
-			}
+    .search {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 30px;
+      display: flex;
 
-			label {
-				width: 210px;
-				height: 100%;
-				outline: 1px solid var(--color-3);
-				display: flex;
-				color: var(--color-3);
+      .filter {
+        width: 125px;
+        margin-right: 15px;
+        position: relative;
+        top: -1px;
 
-				&:focus-within,
-				&:hover {
-					// outline: none;
-					background: rgba(255, 255, 255, 0.08);
-				}
+        ::ng-deep filter-dropdown {
+          width: 100%;
+        }
+      }
 
-				.icon {
-					--icon-color: var(--color-2);
-				}
+      .tribe-filter {
+      }
 
-				input {
-					background: transparent;
-					border: none;
-					cursor: text;
-					flex-grow: 1;
-					color: var(--color-3);
+      label {
+        width: 210px;
+        height: 100%;
+        outline: 1px solid var(--color-3);
+        display: flex;
+        color: var(--color-3);
 
-					&:focus {
-						outline: none;
-						color: var(--color-2);
-					}
-				}
+        &:focus-within,
+        &:hover {
+          // outline: none;
+          background: rgba(255, 255, 255, 0.08);
+        }
 
-				&.search-active {
-					input {
-						outline: none;
-						color: var(--color-2);
-					}
-				}
-			}
+        .icon {
+          --icon-color: var(--color-2);
+        }
 
-			::selection {
-				background-color: var(--color-4);
-			}
+        input {
+          background: transparent;
+          border: none;
+          cursor: text;
+          flex-grow: 1;
+          color: var(--color-3);
 
-			::-webkit-input-placeholder {
-				color: var(--color-3);
-			}
-		}
+          &:focus {
+            outline: none;
+            color: var(--color-2);
+          }
+        }
 
-		.heroes {
-			min-height: 0;
-			overflow-y: scroll;
-			display: flex;
-			flex-wrap: wrap;
-			padding: 15px;
+        &.search-active {
+          input {
+            outline: none;
+            color: var(--color-2);
+          }
+        }
+      }
 
-			.hero-portrait-frame {
-				width: 119px;
-				height: 164px;
-				margin-right: 10px;
-			}
+      ::selection {
+        background-color: var(--color-4);
+      }
 
-			.hero-portrait-frame:not(.selected):not(:hover) {
-				filter: none;
-			}
-		}
-	}
+      ::-webkit-input-placeholder {
+        color: var(--color-3);
+      }
+    }
 
-	.controls {
-		margin-top: 15px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+    .heroes {
+      min-height: 0;
+      overflow-y: scroll;
+      display: flex;
+      flex-wrap: wrap;
+      padding: 15px;
 
-		.button {
-			width: 100px;
-			height: 30px;
-			background: var(--color-2);
-			color: var(--color-5);
-			border: none;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			font-family: 'Open Sans', sans-serif;
+      .hero-portrait-frame {
+        width: 119px;
+        height: 164px;
+        margin-right: 10px;
+      }
 
-			&.disabled {
-				opacity: 0.4;
-				pointer-events: none;
-			}
+      .hero-portrait-frame:not(.selected):not(:hover) {
+        filter: none;
+      }
+    }
+  }
 
-			&:hover:not(.disabled) {
-				background: var(--color-1);
-				color: var(--on-confirmation-text-color);
-			}
-		}
-	}
+  .controls {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .button {
+      width: 100px;
+      height: 30px;
+      background: var(--color-2);
+      color: var(--color-5);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Open Sans', sans-serif;
+
+      &.disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+
+      &:hover:not(.disabled) {
+        background: var(--color-1);
+        color: var(--on-confirmation-text-color);
+      }
+    }
+  }
 }

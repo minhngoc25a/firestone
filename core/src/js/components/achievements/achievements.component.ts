@@ -1,17 +1,17 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { Observable } from 'rxjs';
-import { CurrentView } from '../../models/mainwindow/achievement/current-view.type';
-import { AppUiStoreFacadeService } from '../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../abstract-subscription.component';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {Observable} from 'rxjs';
+import {CurrentView} from '../../models/mainwindow/achievement/current-view.type';
+import {AppUiStoreFacadeService} from '../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../abstract-subscription.component';
 
 @Component({
-	selector: 'achievements',
-	styleUrls: [
-		`../../../css/component/app-section.component.scss`,
-		`../../../css/global/components-global.scss`,
-		`../../../css/component/achievements/achievements.component.scss`,
-	],
-	template: `
+    selector: 'achievements',
+    styleUrls: [
+        `../../../css/component/app-section.component.scss`,
+        `../../../css/global/components-global.scss`,
+        `../../../css/component/achievements/achievements.component.scss`,
+    ],
+    template: `
 		<div class="app-section achievements">
 			<section
 				class="main"
@@ -32,22 +32,22 @@ import { AbstractSubscriptionComponent } from '../abstract-subscription.componen
 			</section>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AchievementsComponent extends AbstractSubscriptionComponent implements AfterContentInit {
-	currentView$: Observable<CurrentView>;
-	isLoading$: Observable<boolean>;
+    currentView$: Observable<CurrentView>;
+    isLoading$: Observable<boolean>;
 
-	constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
-		super(store, cdr);
-	}
+    constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.isLoading$ = this.store
-			.listen$(([main, nav, prefs]) => main.achievements.isLoading)
-			.pipe(this.mapData(([prefs]) => prefs));
-		this.currentView$ = this.store
-			.listen$(([main, nav, prefs]) => nav.navigationAchievements.currentView)
-			.pipe(this.mapData(([currentView]) => currentView));
-	}
+    ngAfterContentInit() {
+        this.isLoading$ = this.store
+            .listen$(([main, nav, prefs]) => main.achievements.isLoading)
+            .pipe(this.mapData(([prefs]) => prefs));
+        this.currentView$ = this.store
+            .listen$(([main, nav, prefs]) => nav.navigationAchievements.currentView)
+            .pipe(this.mapData(([currentView]) => currentView));
+    }
 }

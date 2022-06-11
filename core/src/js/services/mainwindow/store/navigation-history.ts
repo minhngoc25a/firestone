@@ -1,6 +1,6 @@
-import { StateHistory } from './state-history';
+import {StateHistory} from './state-history';
 
 export class NavigationHistory {
-	stateHistory: readonly StateHistory[] = [];
-	currentIndexInHistory: number;
+    stateHistory: readonly StateHistory[] = [];
+    currentIndexInHistory: number;
 }

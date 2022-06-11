@@ -1,21 +1,22 @@
-import { MainWindowStoreEvent } from '../main-window-store-event';
+import {MainWindowStoreEvent} from '../main-window-store-event';
 
 export class ToggleShowHiddenDecksEvent implements MainWindowStoreEvent {
-	constructor(public readonly newValue: boolean) {}
+    constructor(public readonly newValue: boolean) {
+    }
 
-	public static eventName(): string {
-		return 'ToggleShowHiddenDecksEvent';
-	}
+    public static eventName(): string {
+        return 'ToggleShowHiddenDecksEvent';
+    }
 
-	public eventName(): string {
-		return 'ToggleShowHiddenDecksEvent';
-	}
+    public eventName(): string {
+        return 'ToggleShowHiddenDecksEvent';
+    }
 
-	public isNavigationEvent(): boolean {
-		return false;
-	}
+    public isNavigationEvent(): boolean {
+        return false;
+    }
 
-	public isResetHistoryEvent(): boolean {
-		return false;
-	}
+    public isResetHistoryEvent(): boolean {
+        return false;
+    }
 }

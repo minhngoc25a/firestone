@@ -1,21 +1,21 @@
-import { AfterContentInit, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { LocalizationFacadeService } from '@services/localization-facade.service';
-import { Observable } from 'rxjs';
-import { OverwolfService } from '../../../services/overwolf.service';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { AbstractSubscriptionComponent } from '../../abstract-subscription.component';
-import { Knob } from '../preference-slider.component';
+import {AfterContentInit, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {LocalizationFacadeService} from '@services/localization-facade.service';
+import {Observable} from 'rxjs';
+import {OverwolfService} from '../../../services/overwolf.service';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {AbstractSubscriptionComponent} from '../../abstract-subscription.component';
+import {Knob} from '../preference-slider.component';
 
 @Component({
-	selector: 'settings-battlegrounds-general',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/global/scrollbar-settings.scss`,
-		`../../../../css/global/forms.scss`,
-		`../../../../css/component/settings/settings-common.component.scss`,
-		`../../../../css/component/settings/battlegrounds/settings-battlegrounds-general.component.scss`,
-	],
-	template: `
+    selector: 'settings-battlegrounds-general',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/global/scrollbar-settings.scss`,
+        `../../../../css/global/forms.scss`,
+        `../../../../css/component/settings/settings-common.component.scss`,
+        `../../../../css/component/settings/battlegrounds/settings-battlegrounds-general.component.scss`,
+    ],
+    template: `
 		<div
 			class="battlegrounds-general"
 			*ngIf="{
@@ -139,73 +139,73 @@ import { Knob } from '../preference-slider.component';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsBattlegroundsGeneralComponent
-	extends AbstractSubscriptionComponent
-	implements AfterContentInit, AfterViewInit {
-	useLocalSimulator$: Observable<boolean>;
-	enableSimulation$: Observable<boolean>;
-	bgsHideSimResultsOnRecruit$: Observable<boolean>;
-	bgsShowSimResultsOnlyOnRecruit$: Observable<boolean>;
-	bgsEnableOpponentBoardMouseOver$: Observable<boolean>;
-	bgsFullToggle$: Observable<boolean>;
-	bgsEnableApp$: Observable<boolean>;
-	bgsUseOverlay$: Observable<boolean>;
+    extends AbstractSubscriptionComponent
+    implements AfterContentInit, AfterViewInit {
+    useLocalSimulator$: Observable<boolean>;
+    enableSimulation$: Observable<boolean>;
+    bgsHideSimResultsOnRecruit$: Observable<boolean>;
+    bgsShowSimResultsOnlyOnRecruit$: Observable<boolean>;
+    bgsEnableOpponentBoardMouseOver$: Observable<boolean>;
+    bgsFullToggle$: Observable<boolean>;
+    bgsEnableApp$: Observable<boolean>;
+    bgsUseOverlay$: Observable<boolean>;
 
-	numberOfSimsKnobs: readonly Knob[] = [
-		{
-			absoluteValue: 2500,
-		},
-	];
-	sizeKnobs: readonly Knob[] = [
-		{
-			percentageValue: 0,
-			label: this.i18n.translateString('settings.global.knob-sizes.small'),
-		},
-		{
-			percentageValue: 18,
-			label: this.i18n.translateString('settings.global.knob-sizes.medium'),
-		},
-		{
-			percentageValue: 100,
-			label: this.i18n.translateString('settings.global.knob-sizes.large'),
-		},
-	];
+    numberOfSimsKnobs: readonly Knob[] = [
+        {
+            absoluteValue: 2500,
+        },
+    ];
+    sizeKnobs: readonly Knob[] = [
+        {
+            percentageValue: 0,
+            label: this.i18n.translateString('settings.global.knob-sizes.small'),
+        },
+        {
+            percentageValue: 18,
+            label: this.i18n.translateString('settings.global.knob-sizes.medium'),
+        },
+        {
+            percentageValue: 100,
+            label: this.i18n.translateString('settings.global.knob-sizes.large'),
+        },
+    ];
 
-	// private preferencesSubscription: Subscription;
+    // private preferencesSubscription: Subscription;
 
-	private reloadBgWindows;
+    private reloadBgWindows;
 
-	constructor(
-		protected readonly store: AppUiStoreFacadeService,
-		protected readonly cdr: ChangeDetectorRef,
-		private readonly ow: OverwolfService,
-		private readonly i18n: LocalizationFacadeService,
-	) {
-		super(store, cdr);
-	}
+    constructor(
+        protected readonly store: AppUiStoreFacadeService,
+        protected readonly cdr: ChangeDetectorRef,
+        private readonly ow: OverwolfService,
+        private readonly i18n: LocalizationFacadeService,
+    ) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit() {
-		this.useLocalSimulator$ = this.listenForBasicPref$((prefs) => prefs.bgsUseLocalSimulator);
-		this.enableSimulation$ = this.listenForBasicPref$((prefs) => prefs.bgsEnableSimulation);
-		this.bgsHideSimResultsOnRecruit$ = this.listenForBasicPref$((prefs) => prefs.bgsHideSimResultsOnRecruit);
-		this.bgsShowSimResultsOnlyOnRecruit$ = this.listenForBasicPref$(
-			(prefs) => prefs.bgsShowSimResultsOnlyOnRecruit,
-		);
-		this.bgsEnableOpponentBoardMouseOver$ = this.listenForBasicPref$(
-			(prefs) => prefs.bgsEnableOpponentBoardMouseOver,
-		);
-		this.bgsEnableApp$ = this.listenForBasicPref$((prefs) => prefs.bgsEnableApp);
-		this.bgsUseOverlay$ = this.listenForBasicPref$((prefs) => prefs.bgsUseOverlay);
-		this.bgsFullToggle$ = this.listenForBasicPref$((prefs) => prefs.bgsFullToggle);
-	}
+    ngAfterContentInit() {
+        this.useLocalSimulator$ = this.listenForBasicPref$((prefs) => prefs.bgsUseLocalSimulator);
+        this.enableSimulation$ = this.listenForBasicPref$((prefs) => prefs.bgsEnableSimulation);
+        this.bgsHideSimResultsOnRecruit$ = this.listenForBasicPref$((prefs) => prefs.bgsHideSimResultsOnRecruit);
+        this.bgsShowSimResultsOnlyOnRecruit$ = this.listenForBasicPref$(
+            (prefs) => prefs.bgsShowSimResultsOnlyOnRecruit,
+        );
+        this.bgsEnableOpponentBoardMouseOver$ = this.listenForBasicPref$(
+            (prefs) => prefs.bgsEnableOpponentBoardMouseOver,
+        );
+        this.bgsEnableApp$ = this.listenForBasicPref$((prefs) => prefs.bgsEnableApp);
+        this.bgsUseOverlay$ = this.listenForBasicPref$((prefs) => prefs.bgsUseOverlay);
+        this.bgsFullToggle$ = this.listenForBasicPref$((prefs) => prefs.bgsFullToggle);
+    }
 
-	ngAfterViewInit() {
-		this.reloadBgWindows = this.ow.getMainWindow().reloadBgWindows;
-	}
+    ngAfterViewInit() {
+        this.reloadBgWindows = this.ow.getMainWindow().reloadBgWindows;
+    }
 
-	toggleOverlay = () => {
-		this.reloadBgWindows();
-	};
+    toggleOverlay = () => {
+        this.reloadBgWindows();
+    };
 }

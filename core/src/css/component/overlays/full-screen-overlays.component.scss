@@ -1,19 +1,19 @@
 .full-screen-overlays {
-	width: 100%;
-	height: 100%;
+  width: 100%;
+  height: 100%;
 
-	.container {
-		width: 100%;
-		height: 100%;
-	}
+  .container {
+    width: 100%;
+    height: 100%;
+  }
 
-	& > * {
-		position: absolute;
-		display: flex;
-		z-index: 1;
-	}
+  & > * {
+    position: absolute;
+    display: flex;
+    z-index: 1;
+  }
 
-	current-session-widget-wrapper {
-		z-index: 2;
-	}
+  current-session-widget-wrapper {
+    z-index: 2;
+  }
 }

@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
-	selector: 'settings-achievements-menu',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/settings/achievements/settings-achievements-menu.component.scss`,
-	],
-	template: `
+    selector: 'settings-achievements-menu',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/settings/achievements/settings-achievements-menu.component.scss`,
+    ],
+    template: `
 		<ul class="achievements-menu">
 			<li [ngClass]="{ 'selected': selectedMenu === 'notifications' }" (mousedown)="selectMenu('notifications')">
 				<span [owTranslate]="'settings.achievements.menu.notifications'"></span>
@@ -16,13 +16,13 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 			</li> -->
 		</ul>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsAchievementsMenuComponent {
-	@Output() onMenuSelected = new EventEmitter<string>();
-	@Input() selectedMenu: string;
+    @Output() onMenuSelected = new EventEmitter<string>();
+    @Input() selectedMenu: string;
 
-	selectMenu(menu: string) {
-		this.onMenuSelected.next(menu);
-	}
+    selectMenu(menu: string) {
+        this.onMenuSelected.next(menu);
+    }
 }

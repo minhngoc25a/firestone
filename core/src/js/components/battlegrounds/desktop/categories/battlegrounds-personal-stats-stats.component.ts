@@ -1,19 +1,19 @@
-import { AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { BgsBestStat } from '@firestone-hs/user-bgs-post-match-stats';
-import { Observable } from 'rxjs';
-import { distinctUntilChanged, filter, map, takeUntil, tap } from 'rxjs/operators';
-import { AppUiStoreFacadeService } from '../../../../services/ui-store/app-ui-store-facade.service';
-import { cdLog } from '../../../../services/ui-store/app-ui-store.service';
-import { arraysEqual } from '../../../../services/utils';
-import { AbstractSubscriptionComponent } from '../../../abstract-subscription.component';
+import {AfterContentInit, ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
+import {BgsBestStat} from '@firestone-hs/user-bgs-post-match-stats';
+import {Observable} from 'rxjs';
+import {distinctUntilChanged, filter, map, takeUntil, tap} from 'rxjs/operators';
+import {AppUiStoreFacadeService} from '../../../../services/ui-store/app-ui-store-facade.service';
+import {cdLog} from '../../../../services/ui-store/app-ui-store.service';
+import {arraysEqual} from '../../../../services/utils';
+import {AbstractSubscriptionComponent} from '../../../abstract-subscription.component';
 
 @Component({
-	selector: 'battlegrounds-personal-stats-stats',
-	styleUrls: [
-		`../../../../../css/global/components-global.scss`,
-		`../../../../../css/component/battlegrounds/desktop/categories/battlegrounds-personal-stats-stats.component.scss`,
-	],
-	template: `
+    selector: 'battlegrounds-personal-stats-stats',
+    styleUrls: [
+        `../../../../../css/global/components-global.scss`,
+        `../../../../../css/component/battlegrounds/desktop/categories/battlegrounds-personal-stats-stats.component.scss`,
+    ],
+    template: `
 		<div class="header">
 			<div class="label">
 				<div class="record-icon">
@@ -144,92 +144,92 @@ import { AbstractSubscriptionComponent } from '../../../abstract-subscription.co
 			></stat-cell>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BattlegroundsPersonalStatsStatsComponent
-	extends AbstractSubscriptionComponent
-	implements AfterContentInit {
-	value$: Observable<Value>;
+    extends AbstractSubscriptionComponent
+    implements AfterContentInit {
+    value$: Observable<Value>;
 
-	constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
-		super(store, cdr);
-	}
+    constructor(protected readonly store: AppUiStoreFacadeService, protected readonly cdr: ChangeDetectorRef) {
+        super(store, cdr);
+    }
 
-	ngAfterContentInit(): void {
-		this.value$ = this.store
-			.listen$(([main, nav]) => main.stats.bestBgsUserStats)
-			.pipe(
-				filter(([stats]) => !!stats?.length),
-				distinctUntilChanged((a, b) => arraysEqual(a, b)),
-				map(([stats]) => this.buildValue(stats)),
-				tap((stat) => cdLog('emitting stat in ', this.constructor.name, stat)),
-				takeUntil(this.destroyed$),
-			);
-	}
+    ngAfterContentInit(): void {
+        this.value$ = this.store
+            .listen$(([main, nav]) => main.stats.bestBgsUserStats)
+            .pipe(
+                filter(([stats]) => !!stats?.length),
+                distinctUntilChanged((a, b) => arraysEqual(a, b)),
+                map(([stats]) => this.buildValue(stats)),
+                tap((stat) => cdLog('emitting stat in ', this.constructor.name, stat)),
+                takeUntil(this.destroyed$),
+            );
+    }
 
-	private buildValue(stats: readonly BgsBestStat[]): Value {
-		const negativeBattleLuckStat = this.getStat(stats, 'negativeBattleLuck');
-		return {
-			totalMinionsDamageDealt: this.getStat(stats, 'totalDamageDealtToMinions'),
-			totalMinionsDamageTaken: this.getStat(stats, 'totalDamageTakenByMinions'),
-			totalHeroDamageDealt: this.getStat(stats, 'totalDamageDealtToHeroes'),
-			maxSingleTurnHeroDamageDealt: this.getStat(stats, 'maxDamageDealtToHero'),
-			winStreak: this.getStat(stats, 'highestWinStreak'),
-			triples: this.getStat(stats, 'triplesCreated'),
-			maxBoardStats: this.getStat(stats, 'maxBoardStats'),
-			coinsWasted: this.getStat(stats, 'coinsWasted'),
-			rerolls: this.getStat(stats, 'rerolls'),
-			freezes: this.getStat(stats, 'freezes'),
-			heroPowers: this.getStat(stats, 'heroPowerUsed'),
-			minionsBought: this.getStat(stats, 'minionsBought'),
-			minionsSold: this.getStat(stats, 'minionsSold'),
-			minionsKilled: this.getStat(stats, 'enemyMinionsKilled'),
-			heroesKilled: this.getStat(stats, 'enemyHeroesKilled'),
-			percentageOfBattlesGoingFirst: this.getStat(stats, 'percentageOfBattlesGoingFirst'),
-			battleLuck: this.getStat(stats, 'battleLuck'),
-			negativeBattleLuck: {
-				value: Math.max(negativeBattleLuckStat.value, 0),
-				hero: negativeBattleLuckStat.hero,
-				reviewId: negativeBattleLuckStat.reviewId,
-			},
-		};
-	}
+    private buildValue(stats: readonly BgsBestStat[]): Value {
+        const negativeBattleLuckStat = this.getStat(stats, 'negativeBattleLuck');
+        return {
+            totalMinionsDamageDealt: this.getStat(stats, 'totalDamageDealtToMinions'),
+            totalMinionsDamageTaken: this.getStat(stats, 'totalDamageTakenByMinions'),
+            totalHeroDamageDealt: this.getStat(stats, 'totalDamageDealtToHeroes'),
+            maxSingleTurnHeroDamageDealt: this.getStat(stats, 'maxDamageDealtToHero'),
+            winStreak: this.getStat(stats, 'highestWinStreak'),
+            triples: this.getStat(stats, 'triplesCreated'),
+            maxBoardStats: this.getStat(stats, 'maxBoardStats'),
+            coinsWasted: this.getStat(stats, 'coinsWasted'),
+            rerolls: this.getStat(stats, 'rerolls'),
+            freezes: this.getStat(stats, 'freezes'),
+            heroPowers: this.getStat(stats, 'heroPowerUsed'),
+            minionsBought: this.getStat(stats, 'minionsBought'),
+            minionsSold: this.getStat(stats, 'minionsSold'),
+            minionsKilled: this.getStat(stats, 'enemyMinionsKilled'),
+            heroesKilled: this.getStat(stats, 'enemyHeroesKilled'),
+            percentageOfBattlesGoingFirst: this.getStat(stats, 'percentageOfBattlesGoingFirst'),
+            battleLuck: this.getStat(stats, 'battleLuck'),
+            negativeBattleLuck: {
+                value: Math.max(negativeBattleLuckStat.value, 0),
+                hero: negativeBattleLuckStat.hero,
+                reviewId: negativeBattleLuckStat.reviewId,
+            },
+        };
+    }
 
-	private getStat(stats: readonly BgsBestStat[], statName: string): NumberValue {
-		const stat = stats.find((stat) => stat.statName === statName);
-		const result = {
-			value: stat?.value || 0,
-			hero: stat?.heroCardId,
-			reviewId: stat?.reviewId,
-		};
+    private getStat(stats: readonly BgsBestStat[], statName: string): NumberValue {
+        const stat = stats.find((stat) => stat.statName === statName);
+        const result = {
+            value: stat?.value || 0,
+            hero: stat?.heroCardId,
+            reviewId: stat?.reviewId,
+        };
 
-		return result;
-	}
+        return result;
+    }
 }
 
 interface NumberValue {
-	value: number;
-	hero: string;
-	reviewId: string;
+    value: number;
+    hero: string;
+    reviewId: string;
 }
 
 interface Value {
-	readonly totalMinionsDamageDealt: NumberValue;
-	readonly totalMinionsDamageTaken: NumberValue;
-	readonly totalHeroDamageDealt: NumberValue;
-	readonly maxSingleTurnHeroDamageDealt: NumberValue;
-	readonly winStreak: NumberValue;
-	readonly triples: NumberValue;
-	readonly maxBoardStats: NumberValue;
-	readonly coinsWasted: NumberValue;
-	readonly rerolls: NumberValue;
-	readonly freezes: NumberValue;
-	readonly heroPowers: NumberValue;
-	readonly minionsBought: NumberValue;
-	readonly minionsSold: NumberValue;
-	readonly minionsKilled: NumberValue;
-	readonly heroesKilled: NumberValue;
-	readonly percentageOfBattlesGoingFirst: NumberValue;
-	readonly battleLuck: NumberValue;
-	readonly negativeBattleLuck: NumberValue;
+    readonly totalMinionsDamageDealt: NumberValue;
+    readonly totalMinionsDamageTaken: NumberValue;
+    readonly totalHeroDamageDealt: NumberValue;
+    readonly maxSingleTurnHeroDamageDealt: NumberValue;
+    readonly winStreak: NumberValue;
+    readonly triples: NumberValue;
+    readonly maxBoardStats: NumberValue;
+    readonly coinsWasted: NumberValue;
+    readonly rerolls: NumberValue;
+    readonly freezes: NumberValue;
+    readonly heroPowers: NumberValue;
+    readonly minionsBought: NumberValue;
+    readonly minionsSold: NumberValue;
+    readonly minionsKilled: NumberValue;
+    readonly heroesKilled: NumberValue;
+    readonly percentageOfBattlesGoingFirst: NumberValue;
+    readonly battleLuck: NumberValue;
+    readonly negativeBattleLuck: NumberValue;
 }

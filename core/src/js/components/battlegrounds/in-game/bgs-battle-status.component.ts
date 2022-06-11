@@ -1,19 +1,19 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, Optional, ViewRef } from '@angular/core';
-import { GameSample } from '@firestone-hs/simulate-bgs-battle/dist/simulation/spectator/game-sample';
-import { BgsFaceOffWithSimulation } from '../../../models/battlegrounds/bgs-face-off-with-simulation';
-import { BgsBattleSimulationService } from '../../../services/battlegrounds/bgs-battle-simulation.service';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
-import { OverwolfService } from '../../../services/overwolf.service';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, Optional, ViewRef} from '@angular/core';
+import {GameSample} from '@firestone-hs/simulate-bgs-battle/dist/simulation/spectator/game-sample';
+import {BgsFaceOffWithSimulation} from '../../../models/battlegrounds/bgs-face-off-with-simulation';
+import {BgsBattleSimulationService} from '../../../services/battlegrounds/bgs-battle-simulation.service';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
+import {OverwolfService} from '../../../services/overwolf.service';
 
 declare let amplitude: any;
 
 @Component({
-	selector: 'bgs-battle-status',
-	styleUrls: [
-		`../../../../css/global/reset-styles.scss`,
-		`../../../../css/component/battlegrounds/in-game/bgs-battle-status.component.scss`,
-	],
-	template: `
+    selector: 'bgs-battle-status',
+    styleUrls: [
+        `../../../../css/global/reset-styles.scss`,
+        `../../../../css/component/battlegrounds/in-game/bgs-battle-status.component.scss`,
+    ],
+    template: `
 		<div class="battle-simulation">
 			<div
 				class="warning"
@@ -143,213 +143,215 @@ declare let amplitude: any;
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsBattleStatusComponent {
-	@Input() showReplayLink: boolean;
+    @Input() showReplayLink: boolean;
 
-	_simulationMessage: string;
-	battleSimulationResultWin: string;
-	battleSimulationResultTie: string;
-	battleSimulationResultLose: string;
-	winSimulationSample: readonly GameSample[];
-	tieSimulationSample: readonly GameSample[];
-	loseSimulationSample: readonly GameSample[];
-	temporaryBattleTooltip: string;
-	damageWon: string;
-	damageLost: string;
-	wonLethalChance: string;
-	lostLethalChance: string;
+    _simulationMessage: string;
+    battleSimulationResultWin: string;
+    battleSimulationResultTie: string;
+    battleSimulationResultLose: string;
+    winSimulationSample: readonly GameSample[];
+    tieSimulationSample: readonly GameSample[];
+    loseSimulationSample: readonly GameSample[];
+    temporaryBattleTooltip: string;
+    damageWon: string;
+    damageLost: string;
+    wonLethalChance: string;
+    lostLethalChance: string;
 
-	battleSimulationWonLethalChance: number;
-	battleSimulationLostLethalChance: number;
+    battleSimulationWonLethalChance: number;
+    battleSimulationLostLethalChance: number;
 
-	processingSimulationSample: boolean;
+    processingSimulationSample: boolean;
 
-	private battle: BgsFaceOffWithSimulation;
-	private tempInterval;
+    private battle: BgsFaceOffWithSimulation;
+    private tempInterval;
 
-	@Input() set nextBattle(value: BgsFaceOffWithSimulation) {
-		if (value === this.battle) {
-			return;
-		}
-		this.battle = value;
-		this.updateInfo();
-	}
+    constructor(
+        private readonly cdr: ChangeDetectorRef,
+        private readonly i18n: LocalizationFacadeService,
+        @Optional() private readonly ow: OverwolfService,
+        private readonly bgsSim: BgsBattleSimulationService,
+    ) {
+    }
 
-	private updateInfo() {
-		if (this.tempInterval) {
-			clearInterval(this.tempInterval);
-		}
+    @Input() set nextBattle(value: BgsFaceOffWithSimulation) {
+        if (value === this.battle) {
+            return;
+        }
+        this.battle = value;
+        this.updateInfo();
+    }
 
-		switch (this.battle?.battleInfoMesage) {
-			case 'scallywag':
-				this._simulationMessage = this.i18n.translateString(
-					'battlegrounds.battle.composition-not-supported.general',
-					{
-						value: this.i18n.translateString(
-							'battlegrounds.battle.composition-not-supported.reason-pirate',
-						),
-					},
-				);
-				break;
-			case 'piloted-whirl-o-tron':
-				this._simulationMessage = this.i18n.translateString(
-					'battlegrounds.battle.composition-not-supported.general',
-					{
-						value: this.i18n.translateString(
-							'battlegrounds.battle.composition-not-supported.reason-piloted-whirl-o-tron',
-						),
-					},
-				);
-				break;
-			case 'secret':
-				this._simulationMessage = this.i18n.translateString(
-					'battlegrounds.battle.composition-not-supported.general',
-					{
-						value: this.i18n.translateString(
-							'battlegrounds.battle.composition-not-supported.reason-secret',
-						),
-					},
-				);
-				break;
-			case 'error':
-				this._simulationMessage = this.i18n.translateString(
-					'battlegrounds.battle.composition-not-supported.bug',
-				);
-				break;
-			default:
-				this._simulationMessage = undefined;
-				break;
-		}
+    async viewSimulationResult(category: 'win' | 'tie' | 'loss') {
+        const simulationSample: GameSample = this.pickSimulationResult(category);
 
-		if (!this.battle?.battleInfoStatus || this.battle?.battleInfoStatus === 'empty') {
-			this.temporaryBattleTooltip = "Battle simulation will start once we see the opponent's board";
-			this.battleSimulationResultWin = '--';
-			this.battleSimulationResultTie = '--';
-			this.battleSimulationResultLose = '--';
-			this.winSimulationSample = [];
-			this.tieSimulationSample = [];
-			this.loseSimulationSample = [];
-			this.damageWon = null;
-			this.damageLost = null;
-			this.wonLethalChance = null;
-			this.lostLethalChance = null;
-		} else if (this.battle?.battleInfoStatus === 'waiting-for-result') {
-			this.temporaryBattleTooltip = 'Battle simulation is running, results will arrive soon';
-			this.battleSimulationResultWin = '__';
-			this.battleSimulationResultTie = '__';
-			this.battleSimulationResultLose = '__';
-			this.damageWon = '__';
-			this.damageLost = '__';
-			this.battleSimulationWonLethalChance = null;
-			this.battleSimulationLostLethalChance = null;
-		} else {
-			this.temporaryBattleTooltip =
-				'Please be aware that the simulation assumes that the opponent uses their hero power, if it is an active hero power';
-		}
+        if (!simulationSample) {
+            return;
+        }
+        this.processingSimulationSample = true;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
 
-		if (this.battle?.battleResult?.wonPercent != null && this.battle?.battleInfoStatus !== 'empty') {
-			this.battleSimulationResultWin = this.battle.battleResult.wonPercent.toFixed(1) + '%';
-			this.battleSimulationResultTie = this.battle.battleResult.tiedPercent.toFixed(1) + '%';
-			this.battleSimulationResultLose = this.battle.battleResult.lostPercent.toFixed(1) + '%';
-			this.winSimulationSample = this.battle.battleResult.outcomeSamples?.won;
-			this.tieSimulationSample = this.battle.battleResult.outcomeSamples?.tied;
-			this.loseSimulationSample = this.battle.battleResult.outcomeSamples?.lost;
-			this.damageWon =
-				this.battle.battleResult.averageDamageWon != null
-					? this.battle.battleResult.averageDamageWon.toFixed(1)
-					: '--';
-			this.damageLost = this.battle.battleResult.averageDamageLost
-				? this.battle.battleResult.averageDamageLost.toFixed(1)
-				: '--';
-			// If we have no chance of winning / losing the battle, showcasing the lethal chance
-			// makes no sense
-			this.battleSimulationWonLethalChance = this.battle.battleResult.wonLethalPercent;
-			this.battleSimulationLostLethalChance = this.battle.battleResult.lostLethalPercent;
+        const id = this.ow?.isOwEnabled()
+            ? await this.bgsSim.getIdForSimulationSample(simulationSample)
+            : await this.bgsSim.getIdForSimulationSampleWithFetch(simulationSample);
+        if (id) {
+            if (this.ow?.isOwEnabled()) {
+                // Using window.open sometimes doesn't work?
+                this.ow.openUrlInDefaultBrowser(`https://replays.firestoneapp.com/?bgsSimulationId=${id}`);
+            } else {
+                window.open(`https://replays.firestoneapp.com/?bgsSimulationId=${id}`, '_blank');
+            }
+            try {
+                if (amplitude) {
+                    amplitude.getInstance().logEvent('bgsSimulation', {
+                        'bgsSimulationId': id,
+                    });
+                }
+            } catch (e) {
+            }
+        }
+        this.processingSimulationSample = false;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-			// 	'lethal chances',
-			// 	this.battleSimulationWonLethalChance,
-			// 	this.battleSimulationLostLethalChance,
-			// 	this.battle,
-			// );
-			this.wonLethalChance = this.battle.battleResult.wonPercent
-				? this.battle.battleResult.wonLethalPercent?.toFixed(1) + '%'
-				: null;
-			this.lostLethalChance = this.battle.battleResult.lostPercent
-				? this.battle.battleResult.lostLethalPercent?.toFixed(1) + '%'
-				: null;
-		}
-	}
+    hasSimulationResult(category: 'win' | 'tie' | 'loss') {
+        // return true;
+        switch (category) {
+            case 'win':
+                return this.winSimulationSample && this.winSimulationSample.length > 0;
+            case 'tie':
+                return this.tieSimulationSample && this.tieSimulationSample.length > 0;
+            case 'loss':
+                return this.loseSimulationSample && this.loseSimulationSample.length > 0;
+        }
+    }
 
-	constructor(
-		private readonly cdr: ChangeDetectorRef,
-		private readonly i18n: LocalizationFacadeService,
-		@Optional() private readonly ow: OverwolfService,
-		private readonly bgsSim: BgsBattleSimulationService,
-	) {}
+    private updateInfo() {
+        if (this.tempInterval) {
+            clearInterval(this.tempInterval);
+        }
 
-	async viewSimulationResult(category: 'win' | 'tie' | 'loss') {
-		const simulationSample: GameSample = this.pickSimulationResult(category);
+        switch (this.battle?.battleInfoMesage) {
+            case 'scallywag':
+                this._simulationMessage = this.i18n.translateString(
+                    'battlegrounds.battle.composition-not-supported.general',
+                    {
+                        value: this.i18n.translateString(
+                            'battlegrounds.battle.composition-not-supported.reason-pirate',
+                        ),
+                    },
+                );
+                break;
+            case 'piloted-whirl-o-tron':
+                this._simulationMessage = this.i18n.translateString(
+                    'battlegrounds.battle.composition-not-supported.general',
+                    {
+                        value: this.i18n.translateString(
+                            'battlegrounds.battle.composition-not-supported.reason-piloted-whirl-o-tron',
+                        ),
+                    },
+                );
+                break;
+            case 'secret':
+                this._simulationMessage = this.i18n.translateString(
+                    'battlegrounds.battle.composition-not-supported.general',
+                    {
+                        value: this.i18n.translateString(
+                            'battlegrounds.battle.composition-not-supported.reason-secret',
+                        ),
+                    },
+                );
+                break;
+            case 'error':
+                this._simulationMessage = this.i18n.translateString(
+                    'battlegrounds.battle.composition-not-supported.bug',
+                );
+                break;
+            default:
+                this._simulationMessage = undefined;
+                break;
+        }
 
-		if (!simulationSample) {
-			return;
-		}
-		this.processingSimulationSample = true;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
+        if (!this.battle?.battleInfoStatus || this.battle?.battleInfoStatus === 'empty') {
+            this.temporaryBattleTooltip = "Battle simulation will start once we see the opponent's board";
+            this.battleSimulationResultWin = '--';
+            this.battleSimulationResultTie = '--';
+            this.battleSimulationResultLose = '--';
+            this.winSimulationSample = [];
+            this.tieSimulationSample = [];
+            this.loseSimulationSample = [];
+            this.damageWon = null;
+            this.damageLost = null;
+            this.wonLethalChance = null;
+            this.lostLethalChance = null;
+        } else if (this.battle?.battleInfoStatus === 'waiting-for-result') {
+            this.temporaryBattleTooltip = 'Battle simulation is running, results will arrive soon';
+            this.battleSimulationResultWin = '__';
+            this.battleSimulationResultTie = '__';
+            this.battleSimulationResultLose = '__';
+            this.damageWon = '__';
+            this.damageLost = '__';
+            this.battleSimulationWonLethalChance = null;
+            this.battleSimulationLostLethalChance = null;
+        } else {
+            this.temporaryBattleTooltip =
+                'Please be aware that the simulation assumes that the opponent uses their hero power, if it is an active hero power';
+        }
 
-		const id = this.ow?.isOwEnabled()
-			? await this.bgsSim.getIdForSimulationSample(simulationSample)
-			: await this.bgsSim.getIdForSimulationSampleWithFetch(simulationSample);
-		if (id) {
-			if (this.ow?.isOwEnabled()) {
-				// Using window.open sometimes doesn't work?
-				this.ow.openUrlInDefaultBrowser(`https://replays.firestoneapp.com/?bgsSimulationId=${id}`);
-			} else {
-				window.open(`https://replays.firestoneapp.com/?bgsSimulationId=${id}`, '_blank');
-			}
-			try {
-				if (amplitude) {
-					amplitude.getInstance().logEvent('bgsSimulation', {
-						'bgsSimulationId': id,
-					});
-				}
-			} catch (e) {}
-		}
-		this.processingSimulationSample = false;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+        if (this.battle?.battleResult?.wonPercent != null && this.battle?.battleInfoStatus !== 'empty') {
+            this.battleSimulationResultWin = this.battle.battleResult.wonPercent.toFixed(1) + '%';
+            this.battleSimulationResultTie = this.battle.battleResult.tiedPercent.toFixed(1) + '%';
+            this.battleSimulationResultLose = this.battle.battleResult.lostPercent.toFixed(1) + '%';
+            this.winSimulationSample = this.battle.battleResult.outcomeSamples?.won;
+            this.tieSimulationSample = this.battle.battleResult.outcomeSamples?.tied;
+            this.loseSimulationSample = this.battle.battleResult.outcomeSamples?.lost;
+            this.damageWon =
+                this.battle.battleResult.averageDamageWon != null
+                    ? this.battle.battleResult.averageDamageWon.toFixed(1)
+                    : '--';
+            this.damageLost = this.battle.battleResult.averageDamageLost
+                ? this.battle.battleResult.averageDamageLost.toFixed(1)
+                : '--';
+            // If we have no chance of winning / losing the battle, showcasing the lethal chance
+            // makes no sense
+            this.battleSimulationWonLethalChance = this.battle.battleResult.wonLethalPercent;
+            this.battleSimulationLostLethalChance = this.battle.battleResult.lostLethalPercent;
 
-	hasSimulationResult(category: 'win' | 'tie' | 'loss') {
-		// return true;
-		switch (category) {
-			case 'win':
-				return this.winSimulationSample && this.winSimulationSample.length > 0;
-			case 'tie':
-				return this.tieSimulationSample && this.tieSimulationSample.length > 0;
-			case 'loss':
-				return this.loseSimulationSample && this.loseSimulationSample.length > 0;
-		}
-	}
+            // 	'lethal chances',
+            // 	this.battleSimulationWonLethalChance,
+            // 	this.battleSimulationLostLethalChance,
+            // 	this.battle,
+            // );
+            this.wonLethalChance = this.battle.battleResult.wonPercent
+                ? this.battle.battleResult.wonLethalPercent?.toFixed(1) + '%'
+                : null;
+            this.lostLethalChance = this.battle.battleResult.lostPercent
+                ? this.battle.battleResult.lostLethalPercent?.toFixed(1) + '%'
+                : null;
+        }
+    }
 
-	private pickSimulationResult(category: 'win' | 'tie' | 'loss') {
-		switch (category) {
-			case 'win':
-				return this.winSimulationSample && this.winSimulationSample.length > 0
-					? this.winSimulationSample[0]
-					: null;
-			case 'tie':
-				return this.tieSimulationSample && this.tieSimulationSample.length > 0
-					? this.tieSimulationSample[0]
-					: null;
-			case 'loss':
-				return this.loseSimulationSample && this.loseSimulationSample.length > 0
-					? this.loseSimulationSample[0]
-					: null;
-		}
-	}
+    private pickSimulationResult(category: 'win' | 'tie' | 'loss') {
+        switch (category) {
+            case 'win':
+                return this.winSimulationSample && this.winSimulationSample.length > 0
+                    ? this.winSimulationSample[0]
+                    : null;
+            case 'tie':
+                return this.tieSimulationSample && this.tieSimulationSample.length > 0
+                    ? this.tieSimulationSample[0]
+                    : null;
+            case 'loss':
+                return this.loseSimulationSample && this.loseSimulationSample.length > 0
+                    ? this.loseSimulationSample[0]
+                    : null;
+        }
+    }
 }

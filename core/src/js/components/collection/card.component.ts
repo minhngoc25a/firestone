@@ -1,28 +1,28 @@
 import {
-	AfterContentInit,
-	AfterViewInit,
-	ChangeDetectionStrategy,
-	ChangeDetectorRef,
-	Component,
-	EventEmitter,
-	HostListener,
-	Input,
-	ViewRef,
+    AfterContentInit,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    HostListener,
+    Input,
+    ViewRef,
 } from '@angular/core';
-import { AbstractSubscriptionComponent } from '@components/abstract-subscription.component';
-import { AppUiStoreFacadeService } from '@services/ui-store/app-ui-store-facade.service';
-import { Observable } from 'rxjs';
-import { SetCard } from '../../models/set';
-import { LocalizationFacadeService } from '../../services/localization-facade.service';
-import { ShowCardDetailsEvent } from '../../services/mainwindow/store/events/collection/show-card-details-event';
-import { MainWindowStoreEvent } from '../../services/mainwindow/store/events/main-window-store-event';
-import { OverwolfService } from '../../services/overwolf.service';
-import { CollectionReferenceCard } from './collection-reference-card';
+import {AbstractSubscriptionComponent} from '@components/abstract-subscription.component';
+import {AppUiStoreFacadeService} from '@services/ui-store/app-ui-store-facade.service';
+import {Observable} from 'rxjs';
+import {SetCard} from '../../models/set';
+import {LocalizationFacadeService} from '../../services/localization-facade.service';
+import {ShowCardDetailsEvent} from '../../services/mainwindow/store/events/collection/show-card-details-event';
+import {MainWindowStoreEvent} from '../../services/mainwindow/store/events/main-window-store-event';
+import {OverwolfService} from '../../services/overwolf.service';
+import {CollectionReferenceCard} from './collection-reference-card';
 
 @Component({
-	selector: 'card-view',
-	styleUrls: [`../../../css/component/collection/card.component.scss`],
-	template: `
+    selector: 'card-view',
+    styleUrls: [`../../../css/component/collection/card.component.scss`],
+    template: `
 		<div
 			class="card-container {{ secondaryClass }}"
 			[ngClass]="{ 'missing': missing, 'showing-placeholder': showPlaceholder }"
@@ -69,125 +69,124 @@ import { CollectionReferenceCard } from './collection-reference-card';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CardComponent extends AbstractSubscriptionComponent implements AfterContentInit, AfterViewInit {
-	showRelatedCards$: Observable<boolean>;
+    showRelatedCards$: Observable<boolean>;
+    @Input() tooltips = true;
+    @Input() showCounts: boolean;
+    showPlaceholder = true;
+    showNonPremiumCount: boolean;
+    showPremiumCount: boolean;
+    showDiamondCount: boolean;
+    secondaryClass: string;
+    image: string;
+    missing: boolean;
+    ownedPremium: number;
+    ownedDiamond: number;
+    ownedNonPremium: number;
+    // private _loadImage = true;
+    private _imageLoaded: boolean;
+    private stateUpdater: EventEmitter<MainWindowStoreEvent>;
 
-	@Input() set card(card: SetCard) {
-		this._card = card;
-		if (!card) {
-			return;
-		}
+    constructor(
+        protected readonly cdr: ChangeDetectorRef,
+        protected readonly store: AppUiStoreFacadeService,
+        private readonly ow: OverwolfService,
+        private readonly i18n: LocalizationFacadeService,
+    ) {
+        super(store, cdr);
+    }
 
-		this.ownedNonPremium = (this._card as SetCard).ownedNonPremium ?? 0;
-		this.showNonPremiumCount = this.ownedNonPremium > 0;
+    @Input() set collectionCard(card: CollectionReferenceCard) {
+        this._card = card;
+        if (!card) {
+            return;
+        }
 
-		this.ownedPremium = (this._card as SetCard).ownedPremium ?? 0;
-		this.showPremiumCount = this.ownedPremium > 0;
+        this.missing = !card.numberOwned;
+        this.updateImage();
+    }
 
-		this.ownedDiamond = (this._card as SetCard).ownedDiamond ?? 0;
-		this.showDiamondCount = this.ownedDiamond > 0;
+    _highRes = false;
 
-		this.missing = this._card.ownedNonPremium + this._card.ownedPremium + this._card.ownedDiamond === 0;
-		this.updateImage();
-	}
+    @Input() set highRes(value: boolean) {
+        this._highRes = value;
+        this.updateImage();
+    }
 
-	@Input() set collectionCard(card: CollectionReferenceCard) {
-		this._card = card;
-		if (!card) {
-			return;
-		}
+    _bgs = false;
 
-		this.missing = !card.numberOwned;
-		this.updateImage();
-	}
+    @Input() set bgs(value: boolean) {
+        this._bgs = value;
+        this.updateImage();
+    }
 
-	@Input() set highRes(value: boolean) {
-		this._highRes = value;
-		this.updateImage();
-	}
+    _premium = false;
 
-	@Input() set bgs(value: boolean) {
-		this._bgs = value;
-		this.updateImage();
-	}
+    @Input() set premium(value: boolean) {
+        this._premium = value;
+        this.updateImage();
+    }
 
-	@Input() set premium(value: boolean) {
-		this._premium = value;
-		this.updateImage();
-	}
+    _card: SetCard | CollectionReferenceCard;
 
-	@Input() tooltips = true;
-	@Input() showCounts: boolean;
+    @Input() set card(card: SetCard) {
+        this._card = card;
+        if (!card) {
+            return;
+        }
 
-	_highRes = false;
-	_bgs = false;
-	_premium = false;
+        this.ownedNonPremium = (this._card as SetCard).ownedNonPremium ?? 0;
+        this.showNonPremiumCount = this.ownedNonPremium > 0;
 
-	showPlaceholder = true;
-	showNonPremiumCount: boolean;
-	showPremiumCount: boolean;
-	showDiamondCount: boolean;
+        this.ownedPremium = (this._card as SetCard).ownedPremium ?? 0;
+        this.showPremiumCount = this.ownedPremium > 0;
 
-	secondaryClass: string;
-	image: string;
-	missing: boolean;
-	_card: SetCard | CollectionReferenceCard;
-	ownedPremium: number;
-	ownedDiamond: number;
-	ownedNonPremium: number;
+        this.ownedDiamond = (this._card as SetCard).ownedDiamond ?? 0;
+        this.showDiamondCount = this.ownedDiamond > 0;
 
-	// private _loadImage = true;
-	private _imageLoaded: boolean;
-	private stateUpdater: EventEmitter<MainWindowStoreEvent>;
+        this.missing = this._card.ownedNonPremium + this._card.ownedPremium + this._card.ownedDiamond === 0;
+        this.updateImage();
+    }
 
-	constructor(
-		protected readonly cdr: ChangeDetectorRef,
-		protected readonly store: AppUiStoreFacadeService,
-		private readonly ow: OverwolfService,
-		private readonly i18n: LocalizationFacadeService,
-	) {
-		super(store, cdr);
-	}
+    ngAfterContentInit() {
+        this.showRelatedCards$ = this.listenForBasicPref$((prefs) => prefs.collectionShowRelatedCards);
+    }
 
-	ngAfterContentInit() {
-		this.showRelatedCards$ = this.listenForBasicPref$((prefs) => prefs.collectionShowRelatedCards);
-	}
+    ngAfterViewInit() {
+        this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
+    }
 
-	ngAfterViewInit() {
-		this.stateUpdater = this.ow.getMainWindow().mainWindowStoreUpdater;
-	}
+    @HostListener('mousedown')
+    onClick() {
+        if (this.tooltips) {
+            this.stateUpdater.next(new ShowCardDetailsEvent(this._card.id));
+        }
+    }
 
-	@HostListener('mousedown')
-	onClick() {
-		if (this.tooltips) {
-			this.stateUpdater.next(new ShowCardDetailsEvent(this._card.id));
-		}
-	}
+    imageLoadedHandler() {
+        this.showPlaceholder = false;
+        this._imageLoaded = true;
 
-	imageLoadedHandler() {
-		this.showPlaceholder = false;
-		this._imageLoaded = true;
+        // this.imageLoaded.next(this._card.id);
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-		// this.imageLoaded.next(this._card.id);
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
-
-	private updateImage() {
-		if (!this._imageLoaded) {
-			this.showPlaceholder = true;
-		}
-		this.image = this.i18n.getCardImage(this._card.id, {
-			isBgs: this._bgs,
-			isPremium: this._premium,
-			isHighRes: this._highRes,
-		});
-		this.secondaryClass = this._highRes ? 'high-res' : '';
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    private updateImage() {
+        if (!this._imageLoaded) {
+            this.showPlaceholder = true;
+        }
+        this.image = this.i18n.getCardImage(this._card.id, {
+            isBgs: this._bgs,
+            isPremium: this._premium,
+            isHighRes: this._highRes,
+        });
+        this.secondaryClass = this._highRes ? 'high-res' : '';
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 }

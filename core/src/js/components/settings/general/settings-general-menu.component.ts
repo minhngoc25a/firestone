@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
-	selector: 'settings-general-menu',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/settings/general/settings-general-menu.component.scss`,
-	],
-	template: `
+    selector: 'settings-general-menu',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/settings/general/settings-general-menu.component.scss`,
+    ],
+    template: `
 		<ul class="general-menu">
 			<li [ngClass]="{ 'selected': selectedMenu === 'launch' }" (mousedown)="selectMenu('launch')">
 				<span [owTranslate]="'settings.general.menu.general'"></span>
@@ -25,13 +25,13 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 			</li>
 		</ul>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsGeneralMenuComponent {
-	@Output() onMenuSelected = new EventEmitter<string>();
-	@Input() selectedMenu: string;
+    @Output() onMenuSelected = new EventEmitter<string>();
+    @Input() selectedMenu: string;
 
-	selectMenu(menu: string) {
-		this.onMenuSelected.next(menu);
-	}
+    selectMenu(menu: string) {
+        this.onMenuSelected.next(menu);
+    }
 }

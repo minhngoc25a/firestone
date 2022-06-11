@@ -1,15 +1,15 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { MatchupStat } from '../../../models/mainwindow/stats/matchup-stat';
-import { formatClass } from '../../../services/hs-utils';
-import { LocalizationFacadeService } from '../../../services/localization-facade.service';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {MatchupStat} from '../../../models/mainwindow/stats/matchup-stat';
+import {formatClass} from '../../../services/hs-utils';
+import {LocalizationFacadeService} from '../../../services/localization-facade.service';
 
 @Component({
-	selector: 'deck-matchup-info',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/decktracker/main/deck-matchup-info.component.scss`,
-	],
-	template: `
+    selector: 'deck-matchup-info',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/decktracker/main/deck-matchup-info.component.scss`,
+    ],
+    template: `
 		<div class="deck-matchup-info">
 			<div class="cell class">
 				<img class="icon" [src]="icon" [helpTooltip]="className" *ngIf="icon" />
@@ -61,76 +61,76 @@ import { LocalizationFacadeService } from '../../../services/localization-facade
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeckMatchupInfoComponent {
-	@Input() set matchup(value: MatchupStat) {
-		this._matchup = value;
-		this.updateInfos();
-	}
+    icon: string;
+    className: string;
+    games: number;
+    winrate: number;
+    winrateFirst: number;
+    winrateFirstTooltip: string;
+    winrateCoin: number;
+    winrateCoinTooltip: string;
+    wins: number;
+    losses: number;
+    winsFirst: number;
+    lossesFirst: number;
+    winsSecond: number;
+    lossesSecond: number;
 
-	@Input() set showMatchupAsPercentages(value: boolean) {
-		this._showMatchupAsPercentages = value;
-		this.updateInfos();
-	}
+    constructor(private readonly i18n: LocalizationFacadeService) {
+    }
 
-	icon: string;
-	className: string;
-	games: number;
-	_showMatchupAsPercentages = true;
+    _showMatchupAsPercentages = true;
 
-	winrate: number;
-	winrateFirst: number;
-	winrateFirstTooltip: string;
-	winrateCoin: number;
-	winrateCoinTooltip: string;
+    @Input() set showMatchupAsPercentages(value: boolean) {
+        this._showMatchupAsPercentages = value;
+        this.updateInfos();
+    }
 
-	wins: number;
-	losses: number;
-	winsFirst: number;
-	lossesFirst: number;
-	winsSecond: number;
-	lossesSecond: number;
+    private _matchup: MatchupStat;
 
-	private _matchup: MatchupStat;
+    @Input() set matchup(value: MatchupStat) {
+        this._matchup = value;
+        this.updateInfos();
+    }
 
-	constructor(private readonly i18n: LocalizationFacadeService) {}
+    buildValue(value: number): string {
+        return value == null ? '-' : value.toFixed(0) + '%';
+    }
 
-	buildValue(value: number): string {
-		return value == null ? '-' : value.toFixed(0) + '%';
-	}
+    private updateInfos() {
+        if (!this._matchup) {
+            return;
+        }
 
-	private updateInfos() {
-		if (!this._matchup) {
-			return;
-		}
-
-		const isTotalRow = this._matchup.opponentClass.toLowerCase() === 'total';
-		this.icon = isTotalRow ? null : `assets/images/deck/classes/${this._matchup.opponentClass.toLowerCase()}.png`;
-		this.className =
-			this._matchup.opponentClass?.toLowerCase() === 'total'
-				? this.i18n.translateString('app.decktracker.matchup-info.total-header')
-				: formatClass(this._matchup.opponentClass, this.i18n);
-		this.games = this._matchup.totalGames;
-		this.wins = this._matchup.totalWins;
-		this.losses = this._matchup.totalGames - this._matchup.totalWins;
-		this.winsFirst = this._matchup.totalWinsFirst;
-		this.lossesFirst = this._matchup.totalGamesFirst - this._matchup.totalWinsFirst;
-		this.winsSecond = this._matchup.totalWinsCoin;
-		this.lossesSecond = this._matchup.totalGamesCoin - this._matchup.totalWinsCoin;
-		this.winrate =
-			this._matchup.totalWins != null && this._matchup.totalGames
-				? (100 * this._matchup.totalWins) / this._matchup.totalGames
-				: null;
-		this.winrateFirst =
-			this._matchup.totalWinsFirst != null && this._matchup.totalGamesFirst
-				? (100 * this._matchup.totalWinsFirst) / this._matchup.totalGamesFirst
-				: null;
-		this.winrateFirstTooltip = `Played ${this._matchup.totalGamesFirst} matches going first`;
-		this.winrateCoin =
-			this._matchup.totalWinsCoin != null && this._matchup.totalGamesCoin
-				? (100 * this._matchup.totalWinsCoin) / this._matchup.totalGamesCoin
-				: null;
-		this.winrateCoinTooltip = `Played ${this._matchup.totalGamesCoin} matches going second`;
-	}
+        const isTotalRow = this._matchup.opponentClass.toLowerCase() === 'total';
+        this.icon = isTotalRow ? null : `assets/images/deck/classes/${this._matchup.opponentClass.toLowerCase()}.png`;
+        this.className =
+            this._matchup.opponentClass?.toLowerCase() === 'total'
+                ? this.i18n.translateString('app.decktracker.matchup-info.total-header')
+                : formatClass(this._matchup.opponentClass, this.i18n);
+        this.games = this._matchup.totalGames;
+        this.wins = this._matchup.totalWins;
+        this.losses = this._matchup.totalGames - this._matchup.totalWins;
+        this.winsFirst = this._matchup.totalWinsFirst;
+        this.lossesFirst = this._matchup.totalGamesFirst - this._matchup.totalWinsFirst;
+        this.winsSecond = this._matchup.totalWinsCoin;
+        this.lossesSecond = this._matchup.totalGamesCoin - this._matchup.totalWinsCoin;
+        this.winrate =
+            this._matchup.totalWins != null && this._matchup.totalGames
+                ? (100 * this._matchup.totalWins) / this._matchup.totalGames
+                : null;
+        this.winrateFirst =
+            this._matchup.totalWinsFirst != null && this._matchup.totalGamesFirst
+                ? (100 * this._matchup.totalWinsFirst) / this._matchup.totalGamesFirst
+                : null;
+        this.winrateFirstTooltip = `Played ${this._matchup.totalGamesFirst} matches going first`;
+        this.winrateCoin =
+            this._matchup.totalWinsCoin != null && this._matchup.totalGamesCoin
+                ? (100 * this._matchup.totalWinsCoin) / this._matchup.totalGamesCoin
+                : null;
+        this.winrateCoinTooltip = `Played ${this._matchup.totalGamesCoin} matches going second`;
+    }
 }

@@ -1,18 +1,19 @@
-import { BinderState } from '../../../../../models/mainwindow/binder-state';
-import { MainWindowStoreEvent } from '../main-window-store-event';
+import {BinderState} from '../../../../../models/mainwindow/binder-state';
+import {MainWindowStoreEvent} from '../main-window-store-event';
 
 export class CollectionInitEvent implements MainWindowStoreEvent {
-	public static eventName(): string {
-		return 'CollectionInitEvent';
-	}
+    constructor(public readonly newState: BinderState) {
+    }
 
-	constructor(public readonly newState: BinderState) {}
+    public static eventName(): string {
+        return 'CollectionInitEvent';
+    }
 
-	public eventName(): string {
-		return 'CollectionInitEvent';
-	}
+    public eventName(): string {
+        return 'CollectionInitEvent';
+    }
 
-	public isNavigationEvent(): boolean {
-		return false;
-	}
+    public isNavigationEvent(): boolean {
+        return false;
+    }
 }

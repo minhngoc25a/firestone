@@ -1,56 +1,57 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef } from '@angular/core';
-import { GameTag } from '@firestone-hs/reference-data';
-import { Entity } from '@firestone-hs/replay-parser';
-import { LocalizationFacadeService } from '../../services/localization-facade.service';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef} from '@angular/core';
+import {GameTag} from '@firestone-hs/reference-data';
+import {Entity} from '@firestone-hs/replay-parser';
+import {LocalizationFacadeService} from '../../services/localization-facade.service';
 
 @Component({
-	selector: 'bgs-card-tooltip',
-	styleUrls: [`../../../css/component/battlegrounds/bgs-card-tooltip.component.scss`],
-	template: `
+    selector: 'bgs-card-tooltip',
+    styleUrls: [`../../../css/component/battlegrounds/bgs-card-tooltip.component.scss`],
+    template: `
 		<div class="container" [ngClass]="{ 'hidden': !_visible }">
 			<img [src]="image" class="card" />
 			<card-stats [cardId]="cardId" [attack]="attack" [health]="health" [autoFontResize]="false"> </card-stats>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BgsCardTooltipComponent {
-	_entity: Entity;
-	_visible: boolean;
+    _entity: Entity;
+    image: string;
+    cardId: string;
+    attack: number;
+    health: number;
 
-	image: string;
-	cardId: string;
-	attack: number;
-	health: number;
+    constructor(private readonly cdr: ChangeDetectorRef, private readonly i18n: LocalizationFacadeService) {
+    }
 
-	@Input() set config(value: Entity) {
-		if (value === this._entity) {
-			return;
-		}
-		this._entity = value;
-		this.cardId = value.cardID;
-		this.attack = this._entity.getTag(GameTag.ATK);
-		this.health = this._entity.getTag(GameTag.HEALTH);
-		this.image = this.i18n.getCardImage(this._entity.cardID, {
-			isBgs: true,
-			isPremium: this._entity.getTag(GameTag.PREMIUM) === 1,
-		});
+    _visible: boolean;
 
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    @Input() set visible(value: boolean) {
+        if (value === this._visible) {
+            return;
+        }
 
-	@Input() set visible(value: boolean) {
-		if (value === this._visible) {
-			return;
-		}
+        this._visible = value;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-		this._visible = value;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    @Input() set config(value: Entity) {
+        if (value === this._entity) {
+            return;
+        }
+        this._entity = value;
+        this.cardId = value.cardID;
+        this.attack = this._entity.getTag(GameTag.ATK);
+        this.health = this._entity.getTag(GameTag.HEALTH);
+        this.image = this.i18n.getCardImage(this._entity.cardID, {
+            isBgs: true,
+            isPremium: this._entity.getTag(GameTag.PREMIUM) === 1,
+        });
 
-	constructor(private readonly cdr: ChangeDetectorRef, private readonly i18n: LocalizationFacadeService) {}
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 }

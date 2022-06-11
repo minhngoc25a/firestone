@@ -1,11 +1,15 @@
-import { GameEvent } from '../../../../models/game-event';
+import {GameEvent} from '../../../../models/game-event';
 
 export interface Challenge {
-	readonly achievementId: string;
+    readonly achievementId: string;
 
-	detect(gameEvent: GameEvent, callback: () => void);
-	getRecordPastDurationMillis(): number;
-	getRecordingDuration(): number;
-	notificationTimeout(): number;
-	resetState(): void;
+    detect(gameEvent: GameEvent, callback: () => void);
+
+    getRecordPastDurationMillis(): number;
+
+    getRecordingDuration(): number;
+
+    notificationTimeout(): number;
+
+    resetState(): void;
 }

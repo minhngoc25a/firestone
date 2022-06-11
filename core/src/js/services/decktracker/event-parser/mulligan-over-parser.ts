@@ -1,20 +1,20 @@
-import { GameState } from '../../../models/decktracker/game-state';
-import { GameEvent } from '../../../models/game-event';
-import { EventParser } from './event-parser';
+import {GameState} from '../../../models/decktracker/game-state';
+import {GameEvent} from '../../../models/game-event';
+import {EventParser} from './event-parser';
 
 export class MulliganOverParser implements EventParser {
-	applies(gameEvent: GameEvent, state: GameState): boolean {
-		return state && gameEvent.type === GameEvent.MULLIGAN_DEALING;
-	}
+    applies(gameEvent: GameEvent, state: GameState): boolean {
+        return state && gameEvent.type === GameEvent.MULLIGAN_DEALING;
+    }
 
-	async parse(currentState: GameState, gameEvent: GameEvent): Promise<GameState> {
-		return Object.assign(new GameState(), currentState, {
-			mulliganOver: true,
-			currentTurn: 0,
-		} as GameState);
-	}
+    async parse(currentState: GameState, gameEvent: GameEvent): Promise<GameState> {
+        return Object.assign(new GameState(), currentState, {
+            mulliganOver: true,
+            currentTurn: 0,
+        } as GameState);
+    }
 
-	event(): string {
-		return GameEvent.MULLIGAN_INPUT;
-	}
+    event(): string {
+        return GameEvent.MULLIGAN_INPUT;
+    }
 }

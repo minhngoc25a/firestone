@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { DeckState } from '../../../models/decktracker/deck-state';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {DeckState} from '../../../models/decktracker/deck-state';
 
 @Component({
-	selector: 'decktracker-cards-recap',
-	styleUrls: [
-		'../../../../css/global/components-global.scss',
-		'../../../../css/component/decktracker/overlay/decktracker-cards-recap.component.scss',
-	],
-	template: `
+    selector: 'decktracker-cards-recap',
+    styleUrls: [
+        '../../../../css/global/components-global.scss',
+        '../../../../css/component/decktracker/overlay/decktracker-cards-recap.component.scss',
+    ],
+    template: `
 		<div class="cards-recap">
 			<div class="recap cards-in-hand">
 				<div
@@ -35,21 +35,21 @@ import { DeckState } from '../../../models/decktracker/deck-state';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeckTrackerCardsRecapComponent {
-	cardsInHand: number;
-	cardsInDeck: number;
+    cardsInHand: number;
+    cardsInDeck: number;
 
-	@Input() set deck(value: DeckState) {
-		this.cardsInHand = value && value.hand ? value.hand.length : 0;
-		if (value && value.cardsLeftInDeck != null) {
-			this.cardsInDeck = value.cardsLeftInDeck;
-		} else if (value && value.isOpponent && value.hero && value.deckList.length > 0 && value.deck.length > 0) {
-			// Our best guess if we don't have the direct info but have a decklist
-			this.cardsInDeck = value.deck.length - value.hand.length;
-		} else {
-			this.cardsInDeck = value && value.deck ? value.deck.length : 0;
-		}
-	}
+    @Input() set deck(value: DeckState) {
+        this.cardsInHand = value && value.hand ? value.hand.length : 0;
+        if (value && value.cardsLeftInDeck != null) {
+            this.cardsInDeck = value.cardsLeftInDeck;
+        } else if (value && value.isOpponent && value.hero && value.deckList.length > 0 && value.deck.length > 0) {
+            // Our best guess if we don't have the direct info but have a decklist
+            this.cardsInDeck = value.deck.length - value.hand.length;
+        } else {
+            this.cardsInDeck = value && value.deck ? value.deck.length : 0;
+        }
+    }
 }

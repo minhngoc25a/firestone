@@ -1,17 +1,19 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef } from '@angular/core';
-import { LocalizationFacadeService } from '@services/localization-facade.service';
-import { MercenariesHeroSelectedEvent } from '../../../services/mainwindow/store/events/mercenaries/mercenaries-hero-selected-event';
-import { AppUiStoreFacadeService } from '../../../services/ui-store/app-ui-store-facade.service';
-import { MercenaryInfo } from './mercenary-info';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef} from '@angular/core';
+import {LocalizationFacadeService} from '@services/localization-facade.service';
+import {
+    MercenariesHeroSelectedEvent
+} from '../../../services/mainwindow/store/events/mercenaries/mercenaries-hero-selected-event';
+import {AppUiStoreFacadeService} from '../../../services/ui-store/app-ui-store-facade.service';
+import {MercenaryInfo} from './mercenary-info';
 
 @Component({
-	selector: 'mercenaries-meta-hero-stat',
-	styleUrls: [
-		`../../../../css/component/app-section.component.scss`,
-		`../../../../css/component/menu-selection.component.scss`,
-		`../../../../css/component/mercenaries/desktop/mercenaries-meta-hero-stat.component.scss`,
-	],
-	template: `
+    selector: 'mercenaries-meta-hero-stat',
+    styleUrls: [
+        `../../../../css/component/app-section.component.scss`,
+        `../../../../css/component/menu-selection.component.scss`,
+        `../../../../css/component/mercenaries/desktop/mercenaries-meta-hero-stat.component.scss`,
+    ],
+    template: `
 		<div class="mercenaries-hero-stat" (click)="select()">
 			<div class="name-container">
 				<div class="name" [helpTooltip]="role + ' - ' + name">{{ name }}</div>
@@ -54,54 +56,55 @@ import { MercenaryInfo } from './mercenary-info';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MercenariesMetaHeroStatComponent {
-	@Input() set stat(value: MercenaryInfo) {
-		// console.debug('set value', value.name, value);
-		this.cardId = value.id;
-		this.role = this.i18n.translateString(`global.role.${value.role}`);
-		this.name = value.name;
-		this.portraitUrl = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.id}.jpg`;
-		this.frameUrl = `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_hero_frame_golden_${value.role}.png?v=2`;
-		this.numberOfGamesTooltip = this.i18n.translateString('mercenaries.hero-stats.number-of-games-tooltip', {
-			totalMatches: value.globalTotalMatches.toLocaleString(),
-			popularity: this.buildPercents(value.globalPopularity),
-		});
-		this.globalWinrate = value.globalWinrate;
-		this.playerWinrate = value.playerWinrate;
-		this.playerGamesPlayed = value.playerTotalMatches;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr?.detectChanges();
-		}
-	}
+    cardId: string;
+    name: string;
+    role: string;
+    portraitUrl: string;
+    frameUrl: string;
+    numberOfGamesTooltip: string;
+    globalWinrate: number;
+    playerWinrate: number;
+    playerGamesPlayed: number;
 
-	cardId: string;
-	name: string;
-	role: string;
-	portraitUrl: string;
-	frameUrl: string;
-	numberOfGamesTooltip: string;
-	globalWinrate: number;
-	playerWinrate: number;
-	playerGamesPlayed: number;
+    constructor(
+        private readonly cdr: ChangeDetectorRef,
+        private readonly store: AppUiStoreFacadeService,
+        private readonly i18n: LocalizationFacadeService,
+    ) {
+    }
 
-	constructor(
-		private readonly cdr: ChangeDetectorRef,
-		private readonly store: AppUiStoreFacadeService,
-		private readonly i18n: LocalizationFacadeService,
-	) {}
+    @Input() set stat(value: MercenaryInfo) {
+        // console.debug('set value', value.name, value);
+        this.cardId = value.id;
+        this.role = this.i18n.translateString(`global.role.${value.role}`);
+        this.name = value.name;
+        this.portraitUrl = `https://static.zerotoheroes.com/hearthstone/cardart/256x/${value.id}.jpg`;
+        this.frameUrl = `https://static.zerotoheroes.com/hearthstone/asset/firestone/mercenaries_hero_frame_golden_${value.role}.png?v=2`;
+        this.numberOfGamesTooltip = this.i18n.translateString('mercenaries.hero-stats.number-of-games-tooltip', {
+            totalMatches: value.globalTotalMatches.toLocaleString(),
+            popularity: this.buildPercents(value.globalPopularity),
+        });
+        this.globalWinrate = value.globalWinrate;
+        this.playerWinrate = value.playerWinrate;
+        this.playerGamesPlayed = value.playerTotalMatches;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr?.detectChanges();
+        }
+    }
 
-	select() {
-		return;
-		this.store.send(new MercenariesHeroSelectedEvent(this.cardId));
-	}
+    select() {
+        return;
+        this.store.send(new MercenariesHeroSelectedEvent(this.cardId));
+    }
 
-	buildPercents(value: number): string {
-		return value == null ? '-' : value.toFixed(1) + '%';
-	}
+    buildPercents(value: number): string {
+        return value == null ? '-' : value.toFixed(1) + '%';
+    }
 
-	buildValue(value: number, decimal = 2): string {
-		return value == null ? '-' : value === 0 ? '0' : value.toFixed(decimal);
-	}
+    buildValue(value: number, decimal = 2): string {
+        return value == null ? '-' : value === 0 ? '0' : value.toFixed(decimal);
+    }
 }

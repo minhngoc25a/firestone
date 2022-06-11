@@ -1,24 +1,25 @@
-import { MainWindowStoreEvent } from '../main-window-store-event';
+import {MainWindowStoreEvent} from '../main-window-store-event';
 
 export class TriggerSocialNetworkLoginToggleEvent implements MainWindowStoreEvent {
-	constructor(network: string) {
-		this.network = network;
-	}
-	readonly network: string;
+    readonly network: string;
 
-	public static eventName(): string {
-		return 'TriggerSocialNetworkLoginToggleEvent';
-	}
+    constructor(network: string) {
+        this.network = network;
+    }
 
-	public eventName(): string {
-		return 'TriggerSocialNetworkLoginToggleEvent';
-	}
+    public static eventName(): string {
+        return 'TriggerSocialNetworkLoginToggleEvent';
+    }
 
-	public isNavigationEvent(): boolean {
-		return false;
-	}
+    public eventName(): string {
+        return 'TriggerSocialNetworkLoginToggleEvent';
+    }
 
-	public isResetHistoryEvent(): boolean {
-		return false;
-	}
+    public isNavigationEvent(): boolean {
+        return false;
+    }
+
+    public isResetHistoryEvent(): boolean {
+        return false;
+    }
 }

@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef } from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef} from '@angular/core';
 
 @Component({
-	selector: 'empty-card',
-	styleUrls: [
-		'../../../../../css/global/components-global.scss',
-		'../../../../../css/component/decktracker/overlay/twitch/empty-card.component.scss',
-	],
-	template: `
+    selector: 'empty-card',
+    styleUrls: [
+        '../../../../../css/global/components-global.scss',
+        '../../../../../css/component/decktracker/overlay/twitch/empty-card.component.scss',
+    ],
+    template: `
 		<div
 			class="card"
 			[cardTooltip]="_cardId"
@@ -16,54 +16,59 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewRef }
 			[style.top.%]="_topOffset"
 		></div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmptyCardComponent {
-	@Input() set leftOffset(value: number) {
-		this._leftOFfset = value;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    _leftOFfset: number;
 
-	@Input() set topOffset(value: number) {
-		this._topOffset = value;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    constructor(private readonly cdr: ChangeDetectorRef) {
+    }
 
-	@Input() set transform(value: string) {
-		this._transform = value;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    @Input() set leftOffset(value: number) {
+        this._leftOFfset = value;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	@Input() set cardTooltipBgs(value: boolean) {
-		this._cardTooltipBgs = value;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    _cardId: string;
 
-	@Input() set cardId(value: string) {
-		this._cardId = value;
-		// const imageUrl = `https://static.firestoneapp.com/cards/enUS/512/${value}.png?v=3`;
-		// // Preload
-		// const image = new Image();
-		// image.onload = () => console.debug('[image-preloader] preloaded image', imageUrl);
-		// image.src = imageUrl;
-		if (!(this.cdr as ViewRef)?.destroyed) {
-			this.cdr.detectChanges();
-		}
-	}
+    @Input() set cardId(value: string) {
+        this._cardId = value;
+        // const imageUrl = `https://static.firestoneapp.com/cards/enUS/512/${value}.png?v=3`;
+        // // Preload
+        // const image = new Image();
+        // image.onload = () => console.debug('[image-preloader] preloaded image', imageUrl);
+        // image.src = imageUrl;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 
-	_cardId: string;
-	_leftOFfset: number;
-	_topOffset: number;
-	_transform: string;
-	_cardTooltipBgs: boolean;
+    _topOffset: number;
 
-	constructor(private readonly cdr: ChangeDetectorRef) {}
+    @Input() set topOffset(value: number) {
+        this._topOffset = value;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
+
+    _transform: string;
+
+    @Input() set transform(value: string) {
+        this._transform = value;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
+
+    _cardTooltipBgs: boolean;
+
+    @Input() set cardTooltipBgs(value: boolean) {
+        this._cardTooltipBgs = value;
+        if (!(this.cdr as ViewRef)?.destroyed) {
+            this.cdr.detectChanges();
+        }
+    }
 }

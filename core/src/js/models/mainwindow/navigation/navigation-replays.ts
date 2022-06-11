@@ -1,21 +1,21 @@
-import { BgsStatsFilterId } from '../../battlegrounds/post-match/bgs-stats-filter-id.type';
-import { CurrentViewType } from '../replays/current-view.type';
-import { MatchDetail } from '../replays/match-detail';
+import {BgsStatsFilterId} from '../../battlegrounds/post-match/bgs-stats-filter-id.type';
+import {CurrentViewType} from '../replays/current-view.type';
+import {MatchDetail} from '../replays/match-detail';
 
 export class NavigationReplays {
-	readonly currentView: CurrentViewType = 'list';
-	readonly selectedReplay: MatchDetail;
-	readonly selectedTab: ReplaysTab;
-	readonly selectedStatsTabs: readonly BgsStatsFilterId[] = ['hp-by-turn'];
-	readonly numberOfDisplayedTabs: number = 1;
+    readonly currentView: CurrentViewType = 'list';
+    readonly selectedReplay: MatchDetail;
+    readonly selectedTab: ReplaysTab;
+    readonly selectedStatsTabs: readonly BgsStatsFilterId[] = ['hp-by-turn'];
+    readonly numberOfDisplayedTabs: number = 1;
 
-	public update(base: NavigationReplays): NavigationReplays {
-		return Object.assign(new NavigationReplays(), this, base);
-	}
+    public update(base: NavigationReplays): NavigationReplays {
+        return Object.assign(new NavigationReplays(), this, base);
+    }
 
-	public getPageName(): string {
-		return this.selectedTab;
-	}
+    public getPageName(): string {
+        return this.selectedTab;
+    }
 }
 
 export type ReplaysTab = 'replay' | 'match-stats';

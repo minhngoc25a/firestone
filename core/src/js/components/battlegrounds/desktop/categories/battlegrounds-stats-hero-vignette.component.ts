@@ -1,16 +1,16 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { GameType } from '@firestone-hs/reference-data';
-import { BgsHeroStat } from '../../../../models/battlegrounds/stats/bgs-hero-stat';
-import { defaultStartingHp } from '../../../../services/hs-utils';
-import { OverwolfService } from '../../../../services/overwolf.service';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {GameType} from '@firestone-hs/reference-data';
+import {BgsHeroStat} from '../../../../models/battlegrounds/stats/bgs-hero-stat';
+import {defaultStartingHp} from '../../../../services/hs-utils';
+import {OverwolfService} from '../../../../services/overwolf.service';
 
 @Component({
-	selector: 'battlegrounds-stats-hero-vignette',
-	styleUrls: [
-		`../../../../../css/global/components-global.scss`,
-		`../../../../../css/component/battlegrounds/desktop/categories/battlegrounds-stats-hero-vignette.component.scss`,
-	],
-	template: `
+    selector: 'battlegrounds-stats-hero-vignette',
+    styleUrls: [
+        `../../../../../css/global/components-global.scss`,
+        `../../../../../css/component/battlegrounds/desktop/categories/battlegrounds-stats-hero-vignette.component.scss`,
+    ],
+    template: `
 		<div class="battlegrounds-stats-hero-vignette" [ngClass]="{ 'unused': gamesPlayed === 0 }" tabindex="0">
 			<div class="wrapper-for-flip">
 				<div class="box-side">
@@ -57,40 +57,41 @@ import { OverwolfService } from '../../../../services/overwolf.service';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BattlegroundsStatsHeroVignetteComponent {
-	_stat: BgsHeroStat;
-	heroName: string;
-	// icon: string;
-	heroCardId: string;
-	heroStartingHealth: number;
-	averagePosition: number;
-	gamesPlayed: number;
-	netMmr: number;
+    heroName: string;
+    // icon: string;
+    heroCardId: string;
+    heroStartingHealth: number;
+    averagePosition: number;
+    gamesPlayed: number;
+    netMmr: number;
+    flip = 'inactive';
 
-	flip = 'inactive';
+    constructor(private readonly ow: OverwolfService) {
+    }
 
-	@Input() set stat(value: BgsHeroStat) {
-		if (!value) {
-			return;
-		}
-		this._stat = value;
-		this.heroName = value.name;
-		this.heroCardId = value.id;
-		this.heroStartingHealth = defaultStartingHp(GameType.GT_BATTLEGROUNDS, value.id);
-		this.averagePosition = value.playerAveragePosition;
-		this.gamesPlayed = value.playerGamesPlayed;
-		this.netMmr = value.playerAverageMmr;
-	}
+    _stat: BgsHeroStat;
 
-	constructor(private readonly ow: OverwolfService) {}
+    @Input() set stat(value: BgsHeroStat) {
+        if (!value) {
+            return;
+        }
+        this._stat = value;
+        this.heroName = value.name;
+        this.heroCardId = value.id;
+        this.heroStartingHealth = defaultStartingHp(GameType.GT_BATTLEGROUNDS, value.id);
+        this.averagePosition = value.playerAveragePosition;
+        this.gamesPlayed = value.playerGamesPlayed;
+        this.netMmr = value.playerAverageMmr;
+    }
 
-	buildPercents(value: number): string {
-		return value == null ? '-' : value.toFixed(1) + '%';
-	}
+    buildPercents(value: number): string {
+        return value == null ? '-' : value.toFixed(1) + '%';
+    }
 
-	buildValue(value: number): string {
-		return !value ? '-' : value.toFixed(2);
-	}
+    buildValue(value: number): string {
+        return !value ? '-' : value.toFixed(2);
+    }
 }

@@ -2,139 +2,139 @@
 @import '../../global/fonts';
 
 .achievement-message-container {
-	display: flex;
-	align-items: center;
-	background-image: url('/Files/assets/images/backgrounds/achievement-notif-bg.jpg');
-	background-size: 100%;
-	background-position: center center;
-	outline: 1px solid #4b3052;
-	width: 410px;
-	height: 110px;
-	box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.9);
-	padding: 15px;
+  display: flex;
+  align-items: center;
+  background-image: url('/Files/assets/images/backgrounds/achievement-notif-bg.jpg');
+  background-size: 100%;
+  background-position: center center;
+  outline: 1px solid #4b3052;
+  width: 410px;
+  height: 110px;
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.9);
+  padding: 15px;
 
-	.achievement-image-container {
-		display: flex;
-		margin-right: 20px;
-		justify-content: center;
-		align-items: center;
-		position: relative;
+  .achievement-image-container {
+    display: flex;
+    margin-right: 20px;
+    justify-content: center;
+    align-items: center;
+    position: relative;
 
-		svg {
-			fill: transparent;
-		}
+    svg {
+      fill: transparent;
+    }
 
-		.real-achievement {
-			width: 100%;
-			margin: auto;
-			position: absolute;
-			clip-path: ellipse(34% 48% at 50% 50%);
+    .real-achievement {
+      width: 100%;
+      margin: auto;
+      position: absolute;
+      clip-path: ellipse(34% 48% at 50% 50%);
 
-			&.spell {
-				width: 120%;
-				clip-path: ellipse(28% 40% at 50% 50%);
-			}
-		}
+      &.spell {
+        width: 120%;
+        clip-path: ellipse(28% 40% at 50% 50%);
+      }
+    }
 
-		.frame {
-			--icon-color: #ffb948;
-			--icon-color-secondary: #8e5b23;
-		}
+    .frame {
+      --icon-color: #ffb948;
+      --icon-color-secondary: #8e5b23;
+    }
 
-		.placeholder {
-			position: absolute;
-			margin: auto;
-		}
-	}
+    .placeholder {
+      position: absolute;
+      margin: auto;
+    }
+  }
 
-	.message {
-		display: flex;
-		flex-direction: column;
+  .message {
+    display: flex;
+    flex-direction: column;
 
-		.title {
-			@extend %achievement-name;
-			display: flex;
-			align-items: center;
+    .title {
+      @extend %achievement-name;
+      display: flex;
+      align-items: center;
 
-			i {
-				--icon-color: #ffb948;
-				margin-right: 10px;
-			}
-		}
+      i {
+        --icon-color: #ffb948;
+        margin-right: 10px;
+      }
+    }
 
-		.text {
-			@extend %achievements-notification-text;
-			margin-top: 3px;
-		}
+    .text {
+      @extend %achievements-notification-text;
+      margin-top: 3px;
+    }
 
-		.recap-text {
-			@extend %achievements-recap-text;
-			margin-top: 5px;
-			position: relative;
-			color: #a89782;
+    .recap-text {
+      @extend %achievements-recap-text;
+      margin-top: 5px;
+      position: relative;
+      color: #a89782;
 
-			.pending {
-				display: flex;
-				align-items: center;
-			}
+      .pending {
+        display: flex;
+        align-items: center;
+      }
 
-			.loader {
-				width: 10px;
-				height: 10px;
-				position: relative;
-				margin-left: 5px;
-				animation-name: spin;
-				animation-duration: 1500ms;
-				animation-iteration-count: 50; // In case something goes wrong, we don't hog the CPU all the time
-				animation-timing-function: linear;
-				transform: translateZ(
-					0
-				); // https://stackoverflow.com/questions/13176746/css-keyframe-animation-cpu-usage-is-high-should-it-be-this-way
+      .loader {
+        width: 10px;
+        height: 10px;
+        position: relative;
+        margin-left: 5px;
+        animation-name: spin;
+        animation-duration: 1500ms;
+        animation-iteration-count: 50; // In case something goes wrong, we don't hog the CPU all the time
+        animation-timing-function: linear;
+        transform: translateZ(
+                        0
+        ); // https://stackoverflow.com/questions/13176746/css-keyframe-animation-cpu-usage-is-high-should-it-be-this-way
 
-				&::before {
-					content: '';
-					background: url(/Files/assets/svg/loader.svg) center center;
-					background-size: 10px 10px;
-					position: absolute;
-					top: 0;
-					left: 0;
-					right: 0;
-					bottom: 0;
-					background-repeat: no-repeat;
-				}
-			}
-		}
-	}
+        &::before {
+          content: '';
+          background: url(/Files/assets/svg/loader.svg) center center;
+          background-size: 10px 10px;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-repeat: no-repeat;
+        }
+      }
+    }
+  }
 
-	a.open-settings {
-		color: #d9c3ab;
+  a.open-settings {
+    color: #d9c3ab;
 
-		&:hover {
-			color: #ffb948;
-		}
-	}
+    &:hover {
+      color: #ffb948;
+    }
+  }
 
-	.close-button {
-		position: absolute;
-		top: 0;
-		right: 0;
-		width: 30px;
-		height: 30px;
-		--icon-color: #cb9fd7;
+  .close-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    --icon-color: #cb9fd7;
 
-		&:hover {
-			color: #2a1030;
-			--icon-color: #2a1030;
-			background: #cb9fd7;
-		}
-	}
+    &:hover {
+      color: #2a1030;
+      --icon-color: #2a1030;
+      background: #cb9fd7;
+    }
+  }
 }
 
 @keyframes spin {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(360deg);
-	}
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

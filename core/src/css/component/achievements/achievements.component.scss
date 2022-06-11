@@ -2,77 +2,77 @@
 @import '../../global/scrollbar';
 
 .achievements {
-	padding-top: 14px;
+  padding-top: 14px;
 
-	achievements-menu {
-		transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out, flex-shrink 0.4s ease-in-out,
-			flex-grow 0.4s ease-in-out;
-	}
+  achievements-menu {
+    transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out, flex-shrink 0.4s ease-in-out,
+    flex-grow 0.4s ease-in-out;
+  }
 
-	with-loading {
-		flex-grow: 1;
-	}
+  with-loading {
+    flex-grow: 1;
+  }
 
-	.main {
-		achievements-list {
-			flex-grow: 1;
-		}
+  .main {
+    achievements-list {
+      flex-grow: 1;
+    }
 
-		achievement-sharing-modal {
-			position: absolute;
-			background: rgba(0, 0, 0, 0.8);
-			z-index: 999;
-			bottom: 0;
-			left: 0;
-			height: calc(100vh - 40px);
-		}
-	}
+    achievement-sharing-modal {
+      position: absolute;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 999;
+      bottom: 0;
+      left: 0;
+      height: calc(100vh - 40px);
+    }
+  }
 }
 
 .content {
-	display: flex;
-	flex-direction: column;
-	flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 
-	& > * {
-		display: flex;
-		min-height: 0;
-		opacity: 1;
-	}
+  & > * {
+    display: flex;
+    min-height: 0;
+    opacity: 1;
+  }
 
-	& > ::ng-deep * {
-		display: flex;
-		min-height: 0;
-		opacity: 1;
-	}
+  & > ::ng-deep * {
+    display: flex;
+    min-height: 0;
+    opacity: 1;
+  }
 
-	::ng-deep & > * {
-		display: flex;
-		min-height: 0;
-		opacity: 1;
-	}
+  ::ng-deep & > * {
+    display: flex;
+    min-height: 0;
+    opacity: 1;
+  }
 }
 
 .secondary.secondary.secondary.secondary.secondary {
-	position: relative;
-	top: 9px;
-	// height: calc(100% - 17px);
-	min-height: 0;
+  position: relative;
+  top: 9px;
+  // height: calc(100% - 17px);
+  min-height: 0;
 
-	achievement-history {
-		flex-grow: 1;
-		flex-shrink: 1;
-		position: relative;
-		display: flex;
-		max-height: calc(100% - 42px);
-	}
+  achievement-history {
+    flex-grow: 1;
+    flex-shrink: 1;
+    position: relative;
+    display: flex;
+    max-height: calc(100% - 42px);
+  }
 
-	achievements-filter {
-		margin-bottom: 10px;
-	}
+  achievements-filter {
+    margin-bottom: 10px;
+  }
 }
 
 loading-state {
-	height: 100%;
-	display: flex;
+  height: 100%;
+  display: flex;
 }

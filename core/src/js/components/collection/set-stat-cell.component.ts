@@ -1,14 +1,14 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 
 @Component({
-	selector: 'set-stat-cell',
-	styleUrls: [
-		`../../../css/global/scrollbar.scss`,
-		`../../../css/global/forms.scss`,
-		`../../../css/global/toggle.scss`,
-		`../../../css/component/collection/set-stat-cell.component.scss`,
-	],
-	template: `
+    selector: 'set-stat-cell',
+    styleUrls: [
+        `../../../css/global/scrollbar.scss`,
+        `../../../css/global/forms.scss`,
+        `../../../css/global/toggle.scss`,
+        `../../../css/component/collection/set-stat-cell.component.scss`,
+    ],
+    template: `
 		<div class="set-stat-cell">
 			<div class="text">{{ text }}</div>
 			<div class="value" [ngClass]="{ 'completed': current === total }">
@@ -18,10 +18,10 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 			</div>
 		</div>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SetStatCellComponent {
-	@Input() text: string;
-	@Input() current: number;
-	@Input() total: number;
+    @Input() text: string;
+    @Input() current: number;
+    @Input() total: number;
 }

@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 
 @Component({
-	selector: 'settings-decktracker',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/settings/decktracker/settings-decktracker.component.scss`,
-	],
-	template: `
+    selector: 'settings-decktracker',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/settings/decktracker/settings-decktracker.component.scss`,
+    ],
+    template: `
 		<ul class="decktracker">
 			<settings-decktracker-menu [selectedMenu]="_selectedMenu" (onMenuSelected)="onMenuSelected($event)">
 			</settings-decktracker-menu>
@@ -21,15 +21,15 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 			</ng-container>
 		</ul>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsDecktrackerComponent {
-	_selectedMenu: string;
-	@Input() set selectedMenu(value: string) {
-		this._selectedMenu = value || 'your-deck';
-	}
+    _selectedMenu: string;
+    @Input() set selectedMenu(value: string) {
+        this._selectedMenu = value || 'your-deck';
+    }
 
-	onMenuSelected(selectedMenuItem) {
-		this.selectedMenu = selectedMenuItem;
-	}
+    onMenuSelected(selectedMenuItem) {
+        this.selectedMenu = selectedMenuItem;
+    }
 }

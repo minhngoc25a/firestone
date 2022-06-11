@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
-	selector: 'settings-decktracker-menu',
-	styleUrls: [
-		`../../../../css/global/components-global.scss`,
-		`../../../../css/component/settings/decktracker/settings-decktracker-menu.component.scss`,
-	],
-	template: `
+    selector: 'settings-decktracker-menu',
+    styleUrls: [
+        `../../../../css/global/components-global.scss`,
+        `../../../../css/component/settings/decktracker/settings-decktracker-menu.component.scss`,
+    ],
+    template: `
 		<ul class="decktracker-menu">
 			<li [ngClass]="{ 'selected': selectedMenu === 'global' }" (mousedown)="selectMenu('global')">
 				<span [owTranslate]="'settings.decktracker.menu.global'"></span>
@@ -25,13 +25,13 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 			</li>
 		</ul>
 	`,
-	changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingsDecktrackerMenuComponent {
-	@Output() onMenuSelected = new EventEmitter<string>();
-	@Input() selectedMenu: string;
+    @Output() onMenuSelected = new EventEmitter<string>();
+    @Input() selectedMenu: string;
 
-	selectMenu(menu: string) {
-		this.onMenuSelected.next(menu);
-	}
+    selectMenu(menu: string) {
+        this.onMenuSelected.next(menu);
+    }
 }

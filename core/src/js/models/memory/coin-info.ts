@@ -1,3 +1,3 @@
 export interface CoinInfo {
-	readonly CoinId: number;
+    readonly CoinId: number;
 }
